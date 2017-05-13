@@ -10,7 +10,7 @@ const COLORS = {
 var HEIGHT = window.innerHeight;
 var WIDTH = window.innerWidth;
 
-//global variables for testing
+//global variables for testing...
 var meth = []; var temp; var neg = -1; var fog; var gasherbrum; var torusRing;
 
 //separate function for loop
