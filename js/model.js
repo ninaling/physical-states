@@ -173,7 +173,6 @@ Sea = function() {
 }
 
 // Instantiate the sea and add it to the scene:
-
 var sea;
 
 function createSea() {
@@ -271,7 +270,6 @@ Sky = function() {
 
 // Now we instantiate the sky and push its center a bit
 // towards the bottom of the screen
-
 var sky;
 
 function createSky() {
