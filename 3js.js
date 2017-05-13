@@ -5,8 +5,7 @@ var Colors = {
 	pink:0xF5986E,
 	brownDark:0x23190f,
 	blue:0x68c3c0,
-	gray: 0x999999,
-	lightgray: 0xdddddd
+	gray: 0x999999
 };
 
 window.addEventListener('load', init, false);
@@ -20,9 +19,6 @@ function init() {
 
 	// add the objects
 	createSalt();
-
-	//add the listener
-	document.addEventListener('mousemove', handleMouseMove, false);
 
 	// start a loop that will update the objects' positions 
 	// and render the scene on each frame
@@ -45,7 +41,7 @@ function createScene() {
 
 	// Add a fog effect to the scene; same color as the
 	// background color used in the style sheet
-	scene.fog = new THREE.Fog(0x393732, 300, 950);
+	scene.fog = new THREE.Fog(0xf7d9aa, 100, 950);
 	
 	// Create the camera
 	aspectRatio = WIDTH / HEIGHT;
@@ -137,75 +133,16 @@ function createLights() {
 	scene.add(shadowLight);
 }
 
-Sodium = function(size){
-	//size *= 2;
-	var sodium = new THREE.BoxGeometry(size, size, size, 100, 100, 100);
-	var geo = new THREE.EdgesGeometry(sodium);
-	//var sodium = new THREE.SphereGeometry(size, 100, 100);
-
-	var namat = new THREE.MeshPhongMaterial({
-		color: Colors.red,
-		transparent: true,
-		opacity: 1,
-		shading: THREE.FlatShading,
-	});
-	var mat = new THREE.LineBasicMaterial({color: Colors.red, linewidth: 100});
-	var wireframe = new THREE.LineSegments(geo, mat);
-
-	var group = new THREE.Group();
-	/*var i = 0;
-	for(i=0; i<4; i++){
-		var sodium1 = new THREE.Mesh(sodium, namat);
-		sodium1.position.x = size/2;
-		sodium1.position.z = size/2;
-		var sodium2 = new THREE.Mesh(sodium, namat);
-		sodium2.position.x = -size/2;
-		sodium2.position.z = size/2;
-		var sodium3 = new THREE.Mesh(sodium, namat);
-		sodium3.position.x = size/2;
-		sodium3.position.z = -size/2;
-		var sodium4 = new THREE.Mesh(sodium, namat);
-		sodium4.position.x = -size/2;
-		sodium4.position.z = -size/2;
-		group.add(sodium1);
-		group.add(sodium2);
-		group.add(sodium3);
-		group.add(sodium4);
-	}
-	var sodium5 = new THREE.Mesh(sodium, namat);
-	var sodium6 = new THREE.Mesh(sodium, namat);
-	var sodium7 = new THREE.Mesh(sodium, namat);
-	var sodium8 = new THREE.Mesh(sodium, namat);
-	var sodium9 = new THREE.Mesh(sodium, namat);
-	var sodium10 = new THREE.Mesh(sodium, namat);
-	var sodium11 = new THREE.Mesh(sodium, namat);
-	var sodium12 = new THREE.Mesh(sodium, namat);*/
-	//sodium1.position.x = x;
-	//sodium1.position.y = y;
-	//sodium1.position.z = z;
-	//mesh.add(sodium1);
-	//mesh.receiveShadow = true;
-	//console.log("works")
-	//console.log(sodium1.position.x);
-	//return this.mesh;
-	//group.add(sodium1);
-	return wireframe;
-}
-
-Salt = function(n){
-	var na = 8;
+Salt = function(){
+	var n = 3;
+	var na = 4;
 	var cl = 2*na;
-	var dis = 16*(na+cl)/3;
-	var connectsmall = new THREE.CylinderGeometry(.2*na, .2*na, .1*dis, 30, 30);
-	na *= 2;
-	cl *= 1.5;
+	var dis = 10*(na+cl)/3;
 	this.mesh = new THREE.Object3D();
 
-	//var sodium = new THREE.SphereGeometry(na, 100, 100);
-	var sodium = new THREE.BoxGeometry(na, na, na, 20, 20, 20);
-	//var chloride = new THREE.SphereGeometry(cl, 100, 100);
-	var chloride = new THREE.BoxGeometry(cl, cl, cl, 20, 20, 20);
-	//var connect = new THREE.CylinderGeometry(.2*na, .2*na, dis, 100, 100);
+	var sodium = new THREE.SphereGeometry(na, 100, 100);
+	var chloride = new THREE.SphereGeometry(cl, 100, 100);
+	var connect = new THREE.CylinderGeometry(.2*na, .2*na, dis, 100, 100);
 
 	var namat = new THREE.MeshPhongMaterial({
 		color: Colors.blue,
@@ -222,9 +159,9 @@ Salt = function(n){
 	});
 
 	var connectormat = new THREE.MeshPhongMaterial({
-		color: Colors.lightgray,
+		color: Colors.gray,
 		transparent: true,
-		opacity: .85,
+		opacity: .9,
 		shading: THREE.FlatShading,
 	});
 
@@ -232,34 +169,26 @@ Salt = function(n){
 	cl1 = new THREE.Mesh(sodium, clmat);
 	this.mesh.add(na1);
 	this.mesh.add(cl1);*/
-	/*connect1 = new THREE.Mesh(connect, connectormat);
+	connect1 = new THREE.Mesh(connect, connectormat);
 	connect1.rotation.z = Math.PI/2;
 	connect1.position.x = dis/2;
-	connect1.position.y = 6;*/
+	connect1.position.y = 6;
 	//this.mesh.add(connect1);
 
-	var i, j, k;
+	var i;
+	var j;
 	var atom;
-	var x, y, z;
-	var m;
 
-	//cl1 = new Sodium(na);
-	//this.mesh.add(cl1);
-
-	for(i=0; i<(n*2-1)+1; i++){
-		for(j=0; j<(n*2-1)-1; j++){
+	for(i=0; i<(n*2-1); i++){
+		for(j=0; j<(n*2-1); j++){
 			for(k=0; k<(n*2-1); k++){
 				if((i+j+k)%2==0){
 					cl1 = new THREE.Mesh(chloride, clmat);
-					//cl1 = new Sodium(na);
 					cl1.position.x += i*dis;
 					cl1.position.y -= j*dis;
 					cl1.position.z -= k*dis;
 					this.mesh.add(cl1);
 					atom = cl1;
-					x = i*dis;
-					y = -j*dis;
-					z = -k*dis;
 				}else{
 					na1 = new THREE.Mesh(sodium, namat);
 					na1.position.x += i*dis;
@@ -269,36 +198,28 @@ Salt = function(n){
 					atom = na1;
 				}
 				if(i!=0){
-					//connect1 = new THREE.Mesh(connect, connectormat);
-					for(m=0; m<5; m++){
-					connect1 = new THREE.Mesh(connectsmall, connectormat);
+					connect1 = new THREE.Mesh(connect, connectormat);
 					connect1.rotation.z = Math.PI/2;
 					connect1.position.z = atom.position.z;
 					connect1.position.y = atom.position.y;
-					connect1.position.x = atom.position.x - .45*m*dis/2 - .05*dis/2;
+					connect1.position.x = atom.position.x - dis/2;
 					this.mesh.add(connect1);
-					}
 				}
 				if(j!=0){
-					//connect2 = new THREE.Mesh(connect, connectormat);
-					for(m=0; m<5; m++){
-					connect2 = new THREE.Mesh(connectsmall, connectormat);
-					connect2.position.y = atom.position.y + .45*m*dis/2 + .05*dis/2;
+					connect2 = new THREE.Mesh(connect, connectormat);
+					//connect1.rotation.z = Math.PI/2;
+					connect2.position.y = atom.position.y + dis/2;
 					connect2.position.x = atom.position.x;
 					connect2.position.z = atom.position.z;
 					this.mesh.add(connect2);
-					}
 				}
 				if(k!=0){
-					//connect1 = new THREE.Mesh(connect, connectormat);
-					for(m=0; m<5; m++){
-					connect1 = new THREE.Mesh(connectsmall, connectormat);
+					connect1 = new THREE.Mesh(connect, connectormat);
 					connect1.rotation.x = Math.PI/2;
 					connect1.position.x = atom.position.x;
 					connect1.position.y = atom.position.y;
-					connect1.position.z = atom.position.z + .45*m*dis/2 + .05*dis/2;
+					connect1.position.z = atom.position.z + dis/2;
 					this.mesh.add(connect1);
-					}
 				}
 			}
 		}
@@ -310,33 +231,11 @@ Salt = function(n){
 var salt;
 
 function createSalt(){
-	var n = 4;
-	salt = new Salt(n);
-	var move = (n-1)*16*(8+8*2)/3;
-	salt.mesh.position.y = 1.3*move;
-	salt.mesh.position.x = -1.1*move;
-	salt.mesh.position.z = -100;
+	salt = new Salt();
+	salt.mesh.position.y = 175;
+	salt.mesh.position.x = -75;
+	salt.mesh.position.z = -50;
 	scene.add(salt.mesh);
-}
-
-var mousePos={x:0, y:0};
-
-// now handle the mousemove event
-
-function handleMouseMove(event) {
-
-	// here we are converting the mouse position value received 
-	// to a normalized value varying between -1 and 1;
-	// this is the formula for the horizontal axis:
-	
-	var tx = -1 + (event.clientX / WIDTH)*2;
-
-	// for the vertical axis, we need to inverse the formula 
-	// because the 2D y-axis goes the opposite direction of the 3D y-axis
-	
-	var ty = 1 - (event.clientY / HEIGHT)*2;
-	mousePos = {x:tx, y:ty};
-
 }
 
 renderer.render(scene, camera);
@@ -350,37 +249,9 @@ function loop(){
 	glycine.mesh.rotation.y += 0.005;
 	glycine.mesh.rotation.z += 0.005;*/
 
-	//updateSalt();
-
 	// render the scene
 	renderer.render(scene, camera);
 
 	// call the loop function again
 	requestAnimationFrame(loop);
-}
-
-function updateSalt(){
-
-	// let's move the airplane between -100 and 100 on the horizontal axis, 
-	// and between 25 and 175 on the vertical axis,
-	// depending on the mouse position which ranges between -1 and 1 on both axes;
-	// to achieve that we use a normalize function (see below)
-	
-	var targetX = normalize(mousePos.x, -1, 1, -175, 25);
-	var targetY = normalize(mousePos.y, -1, 1, 75, 275);
-
-	// update the airplane's position
-	salt.mesh.position.y = targetY;
-	salt.mesh.position.x = targetX;
-}
-
-function normalize(v,vmin,vmax,tmin, tmax){
-
-	var nv = Math.max(Math.min(v,vmax), vmin);
-	var dv = vmax-vmin;
-	var pc = (nv-vmin)/dv;
-	var dt = tmax-tmin;
-	var tv = tmin + (pc*dt);
-	return tv;
-
 }
