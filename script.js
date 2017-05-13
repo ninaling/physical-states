@@ -9,15 +9,34 @@ const COLORS = {
 
 var HEIGHT = window.innerHeight;
 var WIDTH = window.innerWidth;
+const ORIGIN = new THREE.Vector3(0, 0, 0);
 
-//global variables for testing...
+//global variables for testing
 var meth = []; var temp; var neg = -1; var fog; var gasherbrum; var torusRing;
 
-//separate function for loop
+//auxillary functions
 function loop(){
-	World.update();
+	World.update(); //update positions of all objects in scene
+	World.collectTrash();
+	// World.camera.position.z -= 1.5;
 	World.renderer.render(World.scene, World.camera);
 	window.requestAnimationFrame(loop);
+}
+
+var requestId;
+function collapseWorld(){
+	if(World.collapse()){
+		console.log("completed");
+		window.cancelAnimationFrame(requestId);
+		return;
+	}
+	requestId = window.requestAnimationFrame(collapseWorld);
+}
+
+var requestId2;
+function float(){
+	World.float(5, 2);
+	requestId2 = window.requestAnimationFrame(float);
 }
 
 //WORLD CLASS.. will eventually control transitions/destruction of objects. find a way to customize populate function?
@@ -25,7 +44,6 @@ function loop(){
 class WORLD{
 	constructor(){ //initialize scene
 		var scene, camera, aspectRatio, near, far, fieldOfView, renderer;
-		var ORIGIN;
 
 		scene = new THREE.Scene();
 		scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
@@ -43,6 +61,7 @@ class WORLD{
 		renderer.shadowMapEnabled = true;
 		document.body.appendChild(renderer.domElement);
 		this.objects = [];
+		this.zPositions = [];
 		this.lights = [];
 		this.scene = scene;
 		this.camera = camera;
@@ -60,15 +79,69 @@ class WORLD{
 	}
 
 	populate(){
-		torusRing = new TorusRing(50, 0, 0, 850);
-		this.scene.add(torusRing.mesh);
-		this.objects.push(torusRing);
+		for (var i=0; i < 30; i++){
+			neg = -1;
+			if (Math.random() <= 0.500000)
+				neg = 1;
+			temp = new TorusRing(50, Math.random()*500*neg, Math.random()*500*neg, Math.random()*500*neg);
+			temp.mesh.scale.multiplyScalar(0.5);
+			this.scene.add(temp.mesh);
+			this.objects.push(temp);
+			this.zPositions.push(temp.mesh.position.z);
+		}
+		// torusRing = new TorusRing(50, 0, 0, 900);
+		// this.scene.add(torusRing.mesh);
+		// this.objects.push(torusRing);
 	}
 
 	update(){
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
+	}
+
+	collectTrash(){
+		for (var i=0; i<this.objects.length; i++){ //if past camera, remove from scene and delete from array
+			if (this.objects[i].pastCamera()){
+				this.scene.remove(this.objects[i].mesh);
+				this.objects.splice(i, 1);
+			}
+		} 
+	}
+
+	collapse(){ //returns complete if all objects have reached the origin
+		var objectsAtOrigin = true;
+		var objectAtOrigin = false;
+		for (var i=0; i<this.objects.length; i++){
+			objectAtOrigin = this.objects[i].moveToward(0, 0, 0, 10);
+			if(!objectAtOrigin){
+				objectsAtOrigin = false;
+			}
+		}
+		return objectsAtOrigin;
+	}
+
+	saveObjectPositions(){
+		for (var i=0; i<this.objects.length; i++){
+			this.objectPositions.push(this.objects[i].mesh.position);
+		}
+	}
+
+	float(magnitude, speed){
+		var x, y, z; //get current positions
+		for(var i=0; i<World.objects.length; i++){
+			x = this.objects[i].mesh.position.x;
+			y = this.objects[i].mesh.position.y;
+			z = this.objects[i].mesh.position.z;
+			this.objects[i].moveToward(x+magnitude, y+magnitude, z+magnitude, speed);
+		}
+	}
+
+	clearScene(){ //remove all existing objects except for light/camera, etc.
+		for (var i=0; i<this.objects.length; i++){
+			this.scene.remove(this.objects[i].mesh); //remove the mesh
+		}
+		this.objects = []; //clear objects array
 	}
 }
 
@@ -84,6 +157,41 @@ class Item{
 		this.mesh.rotation.x += x;
 		this.mesh.rotation.y += y;
 		this.mesh.rotation.z += z;
+	}
+	translate(x, y, z){ //moves one unit towards a point in space
+		this.mesh.position.x += x;
+		this.mesh.position.y += y;
+		this.mesh.position.z += z;
+	}
+
+	moveToward(x, y, z, magnitude){
+		if (x == Math.floor(Math.abs(this.mesh.position.x)/magnitude) && y == Math.floor(Math.abs(this.mesh.position.y)/magnitude) && z == Math.floor(Math.abs(this.mesh.position.z)/magnitude)){
+			// console.log(this.mesh.position);
+			return true;
+		} //if at the position already
+
+		var amtX, amtY, amtZ;
+		amtX = x-this.mesh.position.x;
+
+		amtX = amtX/Math.abs(amtX);
+
+		amtX *= magnitude;
+
+
+		amtY = y-this.mesh.position.y;
+		amtY = amtY/Math.abs(amtY);
+		amtY *= magnitude;
+
+		amtZ = z-this.mesh.position.z;
+		amtZ = amtZ/Math.abs(amtZ);
+		amtZ *= magnitude
+
+		this.translate(amtX, amtY, amtZ);
+		return false;
+	}
+
+	pastCamera(){
+		return this.mesh.position.z > World.camera.position.z;
 	}
 }
 
@@ -274,7 +382,6 @@ class TorusRing extends Molecule{
 			angle = i*Math.PI/3; //add rings
 			dispX = radius*Math.cos(angle);
 			dispY = radius*Math.sin(angle);
-			console.log(dispX + ", " + dispY);
 			temp = new Torus(dispX, dispY, 0);
 			temp.mesh.rotation.x += Math.PI/2;
 			temp.mesh.rotation.y += angle;
@@ -369,6 +476,7 @@ class Lightning extends Atom{
 	update(){
 		this.crackle();
 	}
+
 }
 
 //mouse events
@@ -386,7 +494,7 @@ function handleMouseMove(e){
 
 // window.addEventListener('mousemove', handleMouseMove);
 
-//Start the scene
+//render
 
 World.createLights();
 World.populate();
