@@ -4,7 +4,8 @@ const COLORS = {
 	LightBlue: 0xeaf2ff,
 	Red: 0xff0000,
 	White: 0xffffff,
-	Gray: 0xe1e1e1
+	Gray: 0xe1e1e1,
+	DarkBlue: 0x070a19
 };
 
 var HEIGHT = window.innerHeight;
@@ -12,7 +13,8 @@ var WIDTH = window.innerWidth;
 const ORIGIN = new THREE.Vector3(0, 0, 0);
 
 //global variables for testing
-var meth = []; var temp; var neg = -1; var fog; var gasherbrum; var torusRing;
+var meth = []; var temp; var temp2; var neg = -1; var fog; var gasherbrum; var torusRing; var iceCrystal; var iceLayer; var iceLayer2; var background;
+var reflectiveMaterial;
 
 //auxillary functions
 function loop(){
@@ -43,7 +45,7 @@ function float(){
 
 class WORLD{
 	constructor(){ //initialize scene
-		var scene, camera, aspectRatio, near, far, fieldOfView, renderer;
+		var scene, camera, cubeCamera, aspectRatio, near, far, fieldOfView, renderer;
 
 		scene = new THREE.Scene();
 		scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
@@ -55,8 +57,13 @@ class WORLD{
 		camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, near, far);
 		camera.position.set(0, 0, 1000);
 
+		cubeCamera = new THREE.CubeCamera(near, far, 256); //by default, set cubeCamera in same position as regular camera w/ same near/far
+		cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
+		cubeCamera.position.set(0, 0, 900);
+		scene.add(cubeCamera);
+
 		renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
-		renderer.setClearColor(0x111111);
+		renderer.setClearColor(COLORS.DarkBlue);
 		renderer.setSize(WIDTH, HEIGHT);
 		renderer.shadowMapEnabled = true;
 		document.body.appendChild(renderer.domElement);
@@ -65,33 +72,49 @@ class WORLD{
 		this.lights = [];
 		this.scene = scene;
 		this.camera = camera;
+		this.cubeCamera = cubeCamera;
 		this.renderer = renderer;
 		return this;
 	}
 
 	createLights(){
 		var directionalLight = new THREE.DirectionalLight(COLORS.White, .7);
-		directionalLight.position.set(-1, 1, 0).normalize();
+		directionalLight.position.set(0, 0, 1).normalize();
+		var ambientLight = new THREE.AmbientLight();
+		ambientLight.position.set(0, 0, 950);
 		var hemLight = new THREE.HemisphereLight(COLORS.Blue, COLORS.LightBlue);
 		// scene.add(hemLight);
 		this.scene.add(directionalLight);
+		// this.scene.add(ambientLight);
+		// this.lights.push(ambientLight);
 		this.lights.push(directionalLight);
 	}
 
 	populate(){
-		for (var i=0; i < 30; i++){
-			neg = -1;
-			if (Math.random() <= 0.500000)
-				neg = 1;
-			temp = new TorusRing(50, Math.random()*500*neg, Math.random()*500*neg, Math.random()*500*neg);
-			temp.mesh.scale.multiplyScalar(0.5);
-			this.scene.add(temp.mesh);
-			this.objects.push(temp);
-			this.zPositions.push(temp.mesh.position.z);
+
+		var tubes = [];
+
+		for (var i=0; i<4; i++){
+			tubes.push(new IceTube(0, 0, 600, i*Math.PI/2, 3));
+			this.scene.add(tubes[i].mesh);
+			this.objects.push(tubes[i]);
 		}
-		// torusRing = new TorusRing(50, 0, 0, 900);
+
+		// torusRing = new TorusRing(50, 50, 0, 899);
 		// this.scene.add(torusRing.mesh);
 		// this.objects.push(torusRing);
+
+		// iceCrystal = new IceCrystal(1, 0, 0, 950);
+		// this.scene.add(iceCrystal.mesh);
+		// this.objects.push(iceCrystal);
+
+		// iceLayer = new IceLayer(50, 0, 0, 700, 1, 4);
+		// this.scene.add(iceLayer.mesh);
+		// this.objects.push(iceLayer);
+
+		// iceLayer2 = new IceLayer(100, 0, 0, 800, 0, 8);
+		// this.scene.add(iceLayer2.mesh);
+		// this.objects.push(iceLayer2);
 	}
 
 	update(){
@@ -145,8 +168,6 @@ class WORLD{
 	}
 }
 
-var World = new WORLD();
-
 //BASE CLASSES
 
 class Item{
@@ -193,6 +214,10 @@ class Item{
 	pastCamera(){
 		return this.mesh.position.z > World.camera.position.z;
 	}
+
+	update(){ //default update
+		return;
+	}
 }
 
 class Atom extends Item{
@@ -202,8 +227,15 @@ class Atom extends Item{
 }
 
 class Molecule extends Item{
-	constructor(mesh, x, y, z){
+	constructor(mesh, x, y, z, atoms){
 		super(mesh, x, y, z);
+		this.atoms = atoms;
+	}
+
+	update(){
+		for (var i=0; i<this.atoms.length; i++){
+			this.atoms[i].update();
+		}
 	}
 }
 
@@ -317,9 +349,9 @@ Gasherbrum = function(x, y, z){ //four intersecting triangles
 }
 
 class Torus extends Atom{
-	constructor(x, y, z){
+	constructor(radius, x, y, z){
 		var mesh = new THREE.Group();
-		var geom = new THREE.TorusGeometry( 12, 2, 5, 7);
+		var geom = new THREE.TorusGeometry( radius, 2, 5, 7);
 		var mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
 			ambient: 0x050505,
@@ -382,7 +414,7 @@ class TorusRing extends Molecule{
 			angle = i*Math.PI/3; //add rings
 			dispX = radius*Math.cos(angle);
 			dispY = radius*Math.sin(angle);
-			temp = new Torus(dispX, dispY, 0);
+			temp = new Torus(12, dispX, dispY, 0);
 			temp.mesh.rotation.x += Math.PI/2;
 			temp.mesh.rotation.y += angle;
 			atoms.push(temp);
@@ -400,9 +432,9 @@ class TorusRing extends Molecule{
 		mesh.add(nucleus.mesh);
 
 		mesh.position.set(x, y, z);
-		super(mesh, x, y, z);
 
-		this.atoms = atoms.slice();
+		atoms = atoms.slice();
+		super(mesh, x, y, z, atoms);
 
 		var _this = this;
 		this.amp = Math.random()*.01;
@@ -476,7 +508,264 @@ class Lightning extends Atom{
 	update(){
 		this.crackle();
 	}
+}
+ 
+class IceCrystal extends Atom{ //construct them with radius 1
+	constructor(radius, x, y, z){
+		var mesh = new THREE.Group();
 
+		var geom = new THREE.TorusGeometry(1, 10, 4, 25, 6.3);
+		var mat = new THREE.MeshBasicMaterial({transparent: true, opacity: 1, shading: THREE.SmoothShading});
+
+		var centralMesh = new THREE.Mesh(geom, mat);
+		centralMesh.rotation.x += Math.PI/2;
+		centralMesh.position.set(0, 0, 0);
+
+		var sphereGeom = new THREE.SphereGeometry(1, 32, 32);
+		var sphereMeshTop = new THREE.Mesh(sphereGeom, mat);
+		var sphereMeshBottom = sphereMeshTop.clone();
+		sphereMeshTop.position.set(0, 15, 0);
+		sphereMeshBottom.position.set(0, -15, 0);
+
+		mesh.add(centralMesh);
+		mesh.add(sphereMeshTop);
+		mesh.add(sphereMeshBottom);
+		mesh.position.set(x, y, z);
+
+		super(mesh, x, y, z);
+		return this;
+	}
+
+	mapToCube(cubeCamera){
+		for(var i=0; i<this.mesh.children.length; i++){
+			this.mesh.children[i].material.envMap = cubeCamera.renderTarget;
+		}
+	}
+
+	update(){
+		this.mesh.children[0].geometry.arc -= .01;
+		this.mesh.rotation.x += .01;
+		this.mesh.rotation.y += .01;
+		this.mesh.rotation.z += .01;
+	}
+}
+
+class IceLayer extends Molecule{
+	constructor(radius, x, y, z, hasNucleus, numNodes, spinDirection, cubeCamera){ //pass in "nucleus" argument as 1 or 0 only (T/F)
+		var dispX, dispY, temp, lightning;
+		var angle = 2*Math.PI/numNodes;
+		var tempAngle;
+		var mesh = new THREE.Group();
+		var atoms = [];
+
+		for (var i=0; i<numNodes; i++){
+			tempAngle = i*angle; //add rings
+			dispX = radius*Math.cos(tempAngle);
+			dispY = radius*Math.sin(tempAngle);
+			temp = new IceCrystal(1, dispX, dispY, 0);
+			temp.mesh.rotation.x += Math.PI/2;
+			temp.mesh.rotation.y += angle;
+			atoms.push(temp);
+			mesh.add(temp.mesh);
+
+			// lightning = new Lightning(1, 50, dispX, dispY, 0); //add lightnings
+			// lightning.mesh.rotation.z += angle + Math.PI/3;
+			// lightning.mesh.position.x -= 25*Math.cos(angle + Math.PI/3);
+			// lightning.mesh.position.y -= 25*Math.sin(angle + Math.PI/3);
+			// atoms.push(lightning);
+			// mesh.add(lightning.mesh);
+		}
+
+		if (hasNucleus){
+			var nucleus = new IceCube(0, 0, 0);
+			nucleus.mesh.rotation.x = Math.PI/2;
+			mesh.add(nucleus.mesh);
+			atoms.push(nucleus);
+		}
+
+		mesh.position.set(x, y, z);
+		atoms = atoms.slice();
+		super(mesh, x, y, z, atoms);
+
+		var _this = this;
+
+		for (var i=0; i<this.atoms.length-hasNucleus; i++){ 
+			this.atoms[i].mapToCube(cubeCamera);
+		}
+		
+		if (spinDirection == 0)
+			this.spin = -1;
+		else
+			this.spin = 1;
+
+		return this;
+	}
+
+	update(){
+		for(var i=0; i<this.atoms.length; i++){
+			this.atoms[i].update();
+		}
+		this.mesh.rotation.z += .01*this.spin;
+	}
+}
+
+class LightningCircle extends Atom{
+	constructor(radius, x, y, z){
+		var geom, mat, circle;
+		geom = new THREE.TorusGeometry(radius, .75, 10, 65);
+		geom.mergeVertices();
+		var vertices = [];
+
+		for (var i=0; i<geom.vertices.length; i++){
+			var v = geom.vertices[i];
+
+			vertices.push({
+				x: v.x,
+				y: v.y,
+				z: v.z,
+				angle: Math.PI/2, //Math.random() * Math.PI * 2, 
+				amp: Math.random()*3.5,
+				speed: Math.random()*2
+			});
+		}
+
+		mat = new THREE.MeshPhongMaterial({
+			shininess: 50,
+			ambient: 0x050505,
+			emissive: COLORS.Ice,
+			wireframe: true,
+			wireframeLinecap: "round",
+			wireframeLinejoin: "round",
+			wireFrameLinewidth: .1
+		});
+
+		circle = new THREE.Mesh(geom, mat);
+		circle.position.set(x, y, z);
+		circle.rotation.z = Math.PI/2
+
+		super(circle, x, y, z);
+		this.vertices = vertices.slice();
+		return this;
+	}
+
+	crackle(){
+		var verts = this.mesh.geometry.vertices;
+		var length = verts.length;
+
+		for (var i=0; i<length; i++){
+			var v = verts[i];
+			var vprops = this.vertices[i];
+
+			// v.x = vprops.x + Math.cos(vprops.angle)*vprops.amp;
+			v.x = vprops.x + Math.sin(vprops.angle)*vprops.amp;
+
+			vprops.angle += vprops.speed;
+		}
+
+		this.mesh.geometry.verticesNeedUpdate = true;
+		// this.mesh.rotation.x += .0025;
+	}
+
+	update(){
+		this.crackle();
+	}
+}
+
+class IceCube extends Atom{
+	constructor(x, y, z){
+		var mesh = new THREE.Group();
+		var mat = new THREE.MeshPhongMaterial({ //use this material for the cylinder (inner)
+			shininess: 25,
+			ambient: 0x050505,
+			specular: 0xffffff,
+			emissive: COLORS.Ice,
+			color: COLORS.Blue
+		});
+
+		var cylinderGeom = new THREE.CylinderGeometry(5, 10, 25, 3, 1);
+		var cylinder = new THREE.Mesh(cylinderGeom, mat);
+		cylinder.position.set(0, 0, 0);
+		mesh.add(cylinder);
+
+		var lightningCircles = [];
+		var temp;
+
+		for (var i=1; i>-2; i--){
+			temp = new LightningCircle(15, 0, 0, 0);
+			temp.mesh.rotation.x = Math.PI/2;
+			temp.mesh.position.y = i*8;
+			mesh.add(temp.mesh);
+			lightningCircles.push(temp);
+		}
+
+		mesh.position.set(x, y, z);
+		super(mesh, x, y, z);
+		this.lightningCircles = lightningCircles;
+	}
+
+	update(){
+		for (var i=0; i<this.lightningCircles.length; i++){
+			this.lightningCircles[i].update();
+		}
+		this.mesh.rotation.x += .01*Math.random();
+		this.mesh.rotation.y += .02*Math.random();
+		this.mesh.rotation.z += .03*Math.random();
+	}
+}
+
+class IceTube extends Item{
+	constructor(x, y, z, rotation, length){
+		var mesh = new THREE.Group();
+		var layers = [];
+
+		var cubeCamera = new THREE.CubeCamera(World.near, World.far, 256);
+		cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
+		cubeCamera.position.set(x, y, z+120); //set right in front of the layer
+		World.scene.add(cubeCamera);
+
+		for (var i=1; i<length+1; i++){
+			if (i==1)
+				temp = new IceLayer(50*i, 0, 0, z+100*i, 1, 3*i, i%2, cubeCamera);
+			else{
+				temp = new IceLayer(50*i, 0, 0, z+100*i, 0, 3*i, i%2, cubeCamera);
+			}
+
+			layers.push(temp);
+			mesh.add(temp.mesh);
+		}
+
+		mesh.rotation.y = rotation;
+
+		super(mesh, x, y, z);
+		this.mesh = mesh;
+		this.layers = layers;
+		this.cubeCamera = cubeCamera;
+	}
+
+	update(){
+		for(var i=0; i<this.layers.length; i++){
+			this.layers[i].update();
+		}
+		this.cubeCamera.updateCubeMap(World.renderer, World.scene);
+	}
+}
+
+class Background extends Item{
+	constructor(height, x, y, z){
+		var geom = new THREE.SphereGeometry(200, 32, 32);
+		var material =  new THREE.MeshBasicMaterial({transparent: true, opacity: 1, color: COLORS.Red, shading: THREE.SmoothShading});
+		// material.envMap = World.cubeCamera.renderTarget;
+
+		var mesh = new THREE.Mesh(geom, material);
+		mesh.position.set(x, y, z);
+
+		super(mesh, x, y, z);
+		return this;
+	}
+
+	update(){
+		// this.mesh.rotation.y += Math.PI/2/360;
+	}
 }
 
 //mouse events
@@ -495,6 +784,8 @@ function handleMouseMove(e){
 // window.addEventListener('mousemove', handleMouseMove);
 
 //render
+
+var World = new WORLD();
 
 World.createLights();
 World.populate();
