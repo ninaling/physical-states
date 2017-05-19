@@ -94,8 +94,8 @@ class WORLD{
 
 		var tubes = [];
 
-		for (var i=0; i<4; i++){
-			tubes.push(new IceTube(0, 0, 600, i*Math.PI/2, 3));
+		for (var i=0; i<1; i++){
+			tubes.push(new IceTube(0, 0, 800, i*Math.PI/2, 3));
 			this.scene.add(tubes[i].mesh);
 			this.objects.push(tubes[i]);
 		}
@@ -682,7 +682,7 @@ class IceCube extends Atom{
 			color: COLORS.Blue
 		});
 
-		var cylinderGeom = new THREE.CylinderGeometry(5, 10, 25, 3, 1);
+		var cylinderGeom = new THREE.CylinderGeometry(5, 10, 15, 3, 1);
 		var cylinder = new THREE.Mesh(cylinderGeom, mat);
 		cylinder.position.set(0, 0, 0);
 		mesh.add(cylinder);
