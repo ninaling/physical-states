@@ -1,0 +1,17 @@
+#world {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+    background-color: #1A497A;
+	background: linear-gradient(#1A497A, #12B3CB);
+   // background-image: url(imageedit_1_8884229473.png)
+}
+
+#left
+{
+    position: fixed;
+   float:left;
+    width:100px;
+    
+}
