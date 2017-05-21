@@ -94,8 +94,8 @@ class WORLD{
 
 		var tubes = [];
 
-		for (var i=0; i<1; i++){
-			tubes.push(new IceTube(0, 0, 800, i*Math.PI/2, 3));
+		for (var i=0; i<4; i++){
+			tubes.push(new IceTube(0, 0, 600, i*Math.PI/2, 3));
 			this.scene.add(tubes[i].mesh);
 			this.objects.push(tubes[i]);
 		}
