@@ -24,7 +24,7 @@ function init() {
 	//add the listener
 	document.addEventListener('mousemove', handleMouseMove, false);
 
-	// start a loop that will update the objects' positions 
+	// start a loop that will update the objects' positions
 	// and render the scene on each frame
 	loop();
 }
@@ -35,7 +35,7 @@ var scene,
 
 function createScene() {
 	// Get the width and the height of the screen,
-	// use them to set up the aspect ratio of the camera 
+	// use them to set up the aspect ratio of the camera
 	// and the size of the renderer.
 	HEIGHT = window.innerHeight;
 	WIDTH = window.innerWidth;
@@ -46,7 +46,7 @@ function createScene() {
 	// Add a fog effect to the scene; same color as the
 	// background color used in the style sheet
 	scene.fog = new THREE.Fog(0x393732, 300, 950);
-	
+
 	// Create the camera
 	aspectRatio = WIDTH / HEIGHT;
 	fieldOfView = 60;
@@ -58,35 +58,35 @@ function createScene() {
 		nearPlane,
 		farPlane
 		);
-	
+
 	// Set the position of the camera
 	camera.position.x = 0;
 	camera.position.z = 150;
 	camera.position.y = 100;
-	
+
 	// Create the renderer
-	renderer = new THREE.WebGLRenderer({ 
+	renderer = new THREE.WebGLRenderer({
 		// Allow transparency to show the gradient background
 		// we defined in the CSS
-		alpha: true, 
+		alpha: true,
 
 		// Activate the anti-aliasing; this is less performant,
 		// but, as our project is low-poly based, it should be fine :)
-		antialias: true 
+		antialias: true
 	});
 
 	// Define the size of the renderer; in this case,
 	// it will fill the entire screen
 	renderer.setSize(WIDTH, HEIGHT);
-	
+
 	// Enable shadow rendering
 	renderer.shadowMap.enabled = true;
-	
-	// Add the DOM element of the renderer to the 
+
+	// Add the DOM element of the renderer to the
 	// container we created in the HTML
 	container = document.getElementById('world');
 	container.appendChild(renderer.domElement);
-	
+
 	// Listen to the screen: if the user resizes it
 	// we have to update the camera and the renderer size
 	window.addEventListener('resize', handleWindowResize, false);
@@ -104,19 +104,19 @@ function handleWindowResize() {
 var hemisphereLight, shadowLight;
 
 function createLights() {
-	// A hemisphere light is a gradient colored light; 
-	// the first parameter is the sky color, the second parameter is the ground color, 
+	// A hemisphere light is a gradient colored light;
+	// the first parameter is the sky color, the second parameter is the ground color,
 	// the third parameter is the intensity of the light
 	hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9)
-	
-	// A directional light shines from a specific direction. 
-	// It acts like the sun, that means that all the rays produced are parallel. 
+
+	// A directional light shines from a specific direction.
+	// It acts like the sun, that means that all the rays produced are parallel.
 	shadowLight = new THREE.DirectionalLight(0xffffff, .9);
 
-	// Set the direction of the light  
+	// Set the direction of the light
 	shadowLight.position.set(150, 350, 350);
-	
-	// Allow shadow casting 
+
+	// Allow shadow casting
 	shadowLight.castShadow = true;
 
 	// define the visible area of the projected shadow
@@ -127,13 +127,13 @@ function createLights() {
 	shadowLight.shadow.camera.near = 1;
 	shadowLight.shadow.camera.far = 1000;
 
-	// define the resolution of the shadow; the higher the better, 
+	// define the resolution of the shadow; the higher the better,
 	// but also the more expensive and less performant
 	shadowLight.shadow.mapSize.width = 2048;
 	shadowLight.shadow.mapSize.height = 2048;
-	
+
 	// to activate the lights, just add them to the scene
-	scene.add(hemisphereLight);  
+	scene.add(hemisphereLight);
 	scene.add(shadowLight);
 }
 
@@ -224,7 +224,7 @@ Salt = function(n){
 	var connectormat = new THREE.MeshPhongMaterial({
 		color: Colors.lightgray,
 		transparent: true,
-		opacity: .85,
+		opacity: .3,
 		shading: THREE.FlatShading,
 	});
 
@@ -243,19 +243,27 @@ Salt = function(n){
 	var x, y, z;
 	var m;
 
+	var numKLayers = (n*2) + 2;
+
 	//cl1 = new Sodium(na);
 	//this.mesh.add(cl1);
 
-	for(i=0; i<(n*2-1)+1; i++){
+	this.layers = [];
+
+	for(k=0; k<numKLayers; k++){
+
+		this.layers[k] = new THREE.Group();
+
 		for(j=0; j<(n*2-1)-1; j++){
-			for(k=0; k<(n*2-1); k++){
+			for(i=0; i<(n*2-1)+1; i++){
 				if((i+j+k)%2==0){
 					cl1 = new THREE.Mesh(chloride, clmat);
 					//cl1 = new Sodium(na);
 					cl1.position.x += i*dis;
 					cl1.position.y -= j*dis;
-					cl1.position.z -= k*dis;
-					this.mesh.add(cl1);
+					cl1.position.z = 0;
+					// this.mesh.add(cl1);
+					this.layers[k].add(cl1);
 					atom = cl1;
 					x = i*dis;
 					y = -j*dis;
@@ -264,8 +272,9 @@ Salt = function(n){
 					na1 = new THREE.Mesh(sodium, namat);
 					na1.position.x += i*dis;
 					na1.position.y -= j*dis;
-					na1.position.z -= k*dis;
-					this.mesh.add(na1);
+					cl1.position.z = 0;
+					// this.mesh.add(na1);
+					this.layers[k].add(na1);
 					atom = na1;
 				}
 				if(i!=0){
@@ -273,10 +282,11 @@ Salt = function(n){
 					for(m=0; m<5; m++){
 					connect1 = new THREE.Mesh(connectsmall, connectormat);
 					connect1.rotation.z = Math.PI/2;
-					connect1.position.z = atom.position.z;
+					connect1.position.z = 0;
 					connect1.position.y = atom.position.y;
 					connect1.position.x = atom.position.x - .45*m*dis/2 - .05*dis/2;
-					this.mesh.add(connect1);
+					// this.mesh.add(connect1);
+					this.layers[k].add(connect1);
 					}
 				}
 				if(j!=0){
@@ -285,8 +295,9 @@ Salt = function(n){
 					connect2 = new THREE.Mesh(connectsmall, connectormat);
 					connect2.position.y = atom.position.y + .45*m*dis/2 + .05*dis/2;
 					connect2.position.x = atom.position.x;
-					connect2.position.z = atom.position.z;
-					this.mesh.add(connect2);
+					connect2.position.z = 0;
+					// this.mesh.add(connect2);
+					this.layers[k].add(connect2);
 					}
 				}
 				if(k!=0){
@@ -296,15 +307,29 @@ Salt = function(n){
 					connect1.rotation.x = Math.PI/2;
 					connect1.position.x = atom.position.x;
 					connect1.position.y = atom.position.y;
-					connect1.position.z = atom.position.z + .45*m*dis/2 + .05*dis/2;
-					this.mesh.add(connect1);
+					connect1.position.z = - .45*m*dis/2 - .05*dis/2;
+					// this.mesh.add(connect1);
+					this.layers[k].add(connect1);
 					}
 				}
 			}
 		}
+		this.layers[k].position.z -= k*dis;
+		this.mesh.add(this.layers[k]);
 	}
 
 	this.mesh.receiveShadow = true;
+
+	this.update = function() {
+		var speed = 15;
+		for (var i = 0; i < numKLayers; i++) {
+			// console.log(this.layers[i].position.z);
+			if (this.layers[i].position.z >= 200) {
+				this.layers[i].position.z -= numKLayers*dis + speed;
+			}
+			this.layers[i].position.z += speed;
+		}
+	}
 };
 
 var salt;
@@ -325,32 +350,25 @@ var mousePos={x:0, y:0};
 
 function handleMouseMove(event) {
 
-	// here we are converting the mouse position value received 
+	// here we are converting the mouse position value received
 	// to a normalized value varying between -1 and 1;
 	// this is the formula for the horizontal axis:
-	
+
 	var tx = -1 + (event.clientX / WIDTH)*2;
 
-	// for the vertical axis, we need to inverse the formula 
+	// for the vertical axis, we need to inverse the formula
 	// because the 2D y-axis goes the opposite direction of the 3D y-axis
-	
+
 	var ty = 1 - (event.clientY / HEIGHT)*2;
 	mousePos = {x:tx, y:ty};
 
 }
 
-renderer.render(scene, camera);
+
+// renderer.render(scene, camera);
 
 function loop(){
-	// Rotate the propeller, the sea and the sky
-	//airplane.propeller.rotation.x += 0.3;
-	//sea.mesh.rotation.z += .005;
-	//sky.mesh.rotation.z += .01;
-	/*glycine.mesh.rotation.x += 0.005;
-	glycine.mesh.rotation.y += 0.005;
-	glycine.mesh.rotation.z += 0.005;*/
-
-	//updateSalt();
+	salt.update();
 
 	// render the scene
 	renderer.render(scene, camera);
@@ -359,20 +377,6 @@ function loop(){
 	requestAnimationFrame(loop);
 }
 
-function updateSalt(){
-
-	// let's move the airplane between -100 and 100 on the horizontal axis, 
-	// and between 25 and 175 on the vertical axis,
-	// depending on the mouse position which ranges between -1 and 1 on both axes;
-	// to achieve that we use a normalize function (see below)
-	
-	var targetX = normalize(mousePos.x, -1, 1, -175, 25);
-	var targetY = normalize(mousePos.y, -1, 1, 75, 275);
-
-	// update the airplane's position
-	salt.mesh.position.y = targetY;
-	salt.mesh.position.x = targetX;
-}
 
 function normalize(v,vmin,vmax,tmin, tmax){
 
