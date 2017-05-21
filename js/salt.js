@@ -45,7 +45,7 @@ function createScene() {
 
 	// Add a fog effect to the scene; same color as the
 	// background color used in the style sheet
-	scene.fog = new THREE.Fog(0x393732, 300, 950);
+	scene.fog = new THREE.Fog(0x1e1d1b, -100, 800);
 
 	// Create the camera
 	aspectRatio = WIDTH / HEIGHT;
@@ -210,14 +210,14 @@ Salt = function(n){
 	var namat = new THREE.MeshPhongMaterial({
 		color: Colors.blue,
 		transparent: true,
-		opacity: 1,
+		opacity: .9,
 		shading: THREE.FlatShading,
 	});
 
 	var clmat = new THREE.MeshPhongMaterial({
 		color: Colors.red,
 		transparent: true,
-		opacity: 1,
+		opacity: .9,
 		shading: THREE.FlatShading,
 	});
 
@@ -321,7 +321,7 @@ Salt = function(n){
 	this.mesh.receiveShadow = true;
 
 	this.update = function() {
-		var speed = 15;
+		var speed = 25;
 		for (var i = 0; i < numKLayers; i++) {
 			// console.log(this.layers[i].position.z);
 			if (this.layers[i].position.z >= 200) {
