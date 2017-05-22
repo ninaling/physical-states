@@ -13,7 +13,9 @@ var WIDTH = window.innerWidth;
 const ORIGIN = new THREE.Vector3(0, 0, 0);
 
 //global variables for testing
-var meth = []; var temp; var temp2; var neg = -1; var fog; var gasherbrum; var torusRing; var iceCrystal; var iceLayer; var iceLayer2; var background;
+var test;
+var customUniforms;
+var meth = []; var temp; var temp2; var neg = -1; var fog; var gasherbrum; var torusRing; var metalNode; var metalLayer; var metalLayer2; var background;
 var reflectiveMaterial;
 
 //auxillary functions
@@ -45,7 +47,7 @@ function float(){
 
 class WORLD{
 	constructor(){ //initialize scene
-		var scene, camera, cubeCamera, aspectRatio, near, far, fieldOfView, renderer;
+		var scene, camera, cubeCamera, aspectRatio, near, far, fieldOfView, renderer; //cube camera isn't necessary, but use it to test 
 
 		scene = new THREE.Scene();
 		scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
@@ -92,35 +94,50 @@ class WORLD{
 
 	populate(){
 
+		// var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg');
+		// sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+		// var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/cloud.png');
+		// noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+		// customUniforms = {
+		// baseTexture: 	{ type: "t", value: sampleTexture },
+		// baseSpeed: 		{ type: "f", value: 0.05 },
+		// noiseTexture: 	{ type: "t", value: noiseTexture },
+		// noiseScale:		{ type: "f", value: 0.5337 },
+		// alpha: 			{ type: "f", value: 1.0 },
+		// time: 			{ type: "f", value: 1.0 }
+		// };
+
+		// var mat = new THREE.ShaderMaterial({
+		// 	uniforms: customUniforms,
+		// 	vertexShader: document.getElementById('vertexShader').textContent,
+		// 	fragmentShader: document.getElementById('fragmentShader').textContent,
+		// 	map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+		// });
+
+		// test = new THREE.Mesh(new THREE.SphereGeometry(10, 40, 40), mat);
+		// test.position.set(0, 0, 950);
+		// this.scene.add(test);
+		// console.log(test);
+
 		var tubes = [];
 
-		for (var i=0; i<4; i++){
-			tubes.push(new IceTube(0, 0, 600, i*Math.PI/2, 3));
+		for (var i=0; i<1; i++){
+			tubes.push(new IceTube(0, 0, 800, i*Math.PI/2, 3));
 			this.scene.add(tubes[i].mesh);
 			this.objects.push(tubes[i]);
 		}
 
-		// torusRing = new TorusRing(50, 50, 0, 899);
-		// this.scene.add(torusRing.mesh);
-		// this.objects.push(torusRing);
 
-		// iceCrystal = new IceCrystal(1, 0, 0, 950);
-		// this.scene.add(iceCrystal.mesh);
-		// this.objects.push(iceCrystal);
-
-		// iceLayer = new IceLayer(50, 0, 0, 700, 1, 4);
-		// this.scene.add(iceLayer.mesh);
-		// this.objects.push(iceLayer);
-
-		// iceLayer2 = new IceLayer(100, 0, 0, 800, 0, 8);
-		// this.scene.add(iceLayer2.mesh);
-		// this.objects.push(iceLayer2);
 	}
 
 	update(){
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
+		// test.material.uniforms.time.value += .005;
+		// test.rotation.y += .003;
 	}
 
 	collectTrash(){
@@ -510,7 +527,7 @@ class Lightning extends Atom{
 	}
 }
  
-class IceCrystal extends Atom{ //construct them with radius 1
+class MetalNode extends Atom{ //construct them with radius 1
 	constructor(radius, x, y, z){
 		var mesh = new THREE.Group();
 
@@ -550,7 +567,7 @@ class IceCrystal extends Atom{ //construct them with radius 1
 	}
 }
 
-class IceLayer extends Molecule{
+class MetalLayer extends Molecule{
 	constructor(radius, x, y, z, hasNucleus, numNodes, spinDirection, cubeCamera){ //pass in "nucleus" argument as 1 or 0 only (T/F)
 		var dispX, dispY, temp, lightning;
 		var angle = 2*Math.PI/numNodes;
@@ -562,7 +579,7 @@ class IceLayer extends Molecule{
 			tempAngle = i*angle; //add rings
 			dispX = radius*Math.cos(tempAngle);
 			dispY = radius*Math.sin(tempAngle);
-			temp = new IceCrystal(1, dispX, dispY, 0);
+			temp = new MetalNode(1, dispX, dispY, 0);
 			temp.mesh.rotation.x += Math.PI/2;
 			temp.mesh.rotation.y += angle;
 			atoms.push(temp);
@@ -725,9 +742,9 @@ class IceTube extends Item{
 
 		for (var i=1; i<length+1; i++){
 			if (i==1)
-				temp = new IceLayer(50*i, 0, 0, z+100*i, 1, 3*i, i%2, cubeCamera);
+				temp = new MetalLayer(50*i, 0, 0, z+100*i, 1, 3*i, i%2, cubeCamera);
 			else{
-				temp = new IceLayer(50*i, 0, 0, z+100*i, 0, 3*i, i%2, cubeCamera);
+				temp = new MetalLayer(50*i, 0, 0, z+100*i, 0, 3*i, i%2, cubeCamera);
 			}
 
 			layers.push(temp);
