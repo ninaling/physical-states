@@ -11,8 +11,12 @@
 	}
 </style>
 <body>
+<div class="content">
+	<!-- The canvas where ThreeJs renders the WebGL -->
+	<canvas id="scene" class="clickable"></canvas>
+</div>
 </body>
-<script src="bower_components/threejs-build/build/three.js"></script>
+<!-- <script src="bower_components/threejs-build/build/three.js"></script> -->
 
 <script id="vertexShader" type="x-shader/x-vertex">
 varying vec2 vUv;
@@ -46,7 +50,9 @@ void main()
 }  
 </script>
 
-<script src="regl.min.js"></script>
+<script src="three.min.js"></script>
 <script src="bower_components/tween.js/src/Tween.js"></script>
-<script src="script.js"></script>
+<script src="TweenMax.min.js"></script>
+<script src="tunnel.js"></script>
+<!-- <script src="script.js"></script> -->
 </html>

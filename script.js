@@ -68,7 +68,7 @@ class WORLD{
 		renderer.setClearColor(COLORS.DarkBlue);
 		renderer.setSize(WIDTH, HEIGHT);
 		renderer.shadowMapEnabled = true;
-		document.body.appendChild(renderer.domElement);
+		// document.body.appendChild(renderer.domElement);
 		this.objects = [];
 		this.zPositions = [];
 		this.lights = [];
