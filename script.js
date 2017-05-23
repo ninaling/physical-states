@@ -76,6 +76,11 @@ class WORLD{
 		this.camera = camera;
 		this.cubeCamera = cubeCamera;
 		this.renderer = renderer;
+		this.mouse_x = 0;
+		this.mouse_y = 0;
+
+		document.body.addEventListener('mousemove', this.onMouseMove.bind(this), false);
+
 		return this;
 	}
 
@@ -123,8 +128,8 @@ class WORLD{
 
 		var tubes = [];
 
-		for (var i=0; i<1; i++){
-			tubes.push(new IceTube(0, 0, 800, i*Math.PI/2, 3));
+		for (var i=0; i< 1; i++){
+			tubes.push(new IceTube(0, 0, 0, i*Math.PI/2, 1));
 			this.scene.add(tubes[i].mesh);
 			this.objects.push(tubes[i]);
 		}
@@ -133,6 +138,10 @@ class WORLD{
 	}
 
 	update(){
+		if(this.objects.length < 15) {
+			this.populate();
+		}
+
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
@@ -182,6 +191,16 @@ class WORLD{
 			this.scene.remove(this.objects[i].mesh); //remove the mesh
 		}
 		this.objects = []; //clear objects array
+	}
+
+	onMouseMove(e) {
+	  if (e.type === "mousemove"){
+	    this.mouse_x = e.clientX;
+	    this.mouse_y = e.clientY;
+	  } else {
+	    this.mouse_x = e.touches[0].clientX;
+	    this.mouse_y = e.touches[0].clientY;
+	  }
 	}
 }
 
@@ -756,6 +775,21 @@ class IceTube extends Item{
 		super(mesh, x, y, z);
 		this.mesh = mesh;
 		this.layers = layers;
+		this.speed = 7 + Math.random() * 3;
+		this.private_x = 0 + Math.random() * 100;
+		if(Math.random() > 0.5) {
+			this.private_x *= -1;
+		}
+		this.mesh.position.x = 0;
+
+		//CONTROL: populate according to mouse position
+		// if(World.mouse_x) {
+		// 	this.mesh.position.x = World.mouse_x - window.innerWidth/2;	
+		// 	console.log(this.mesh.position);
+		// }
+		
+		this.mesh.position.z = 0;
+		this.speed_x = (this.private_x * this.speed / 1000);
 		this.cubeCamera = cubeCamera;
 	}
 
@@ -763,6 +797,10 @@ class IceTube extends Item{
 		for(var i=0; i<this.layers.length; i++){
 			this.layers[i].update();
 		}
+
+		this.mesh.position.x += this.speed_x;
+		this.mesh.position.z += this.speed;
+
 		this.cubeCamera.updateCubeMap(World.renderer, World.scene);
 	}
 }
