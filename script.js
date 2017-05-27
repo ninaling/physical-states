@@ -15,6 +15,7 @@ const ORIGIN = new THREE.Vector3(0, 0, 0);
 //global variables for testing
 var test;
 var customUniforms;
+var iceTube;
 var meth = []; var temp; var temp2; var neg = -1; var fog; var gasherbrum; var torusRing; var metalNode; var metalLayer; var metalLayer2; var background;
 var reflectiveMaterial;
 
@@ -94,41 +95,42 @@ class WORLD{
 
 	populate(){
 
-		// var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg');
-		// sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+		var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg');
+		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-		// var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/cloud.png');
-		// noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+		var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/cloud.png');
+		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
-		// customUniforms = {
-		// baseTexture: 	{ type: "t", value: sampleTexture },
-		// baseSpeed: 		{ type: "f", value: 0.05 },
-		// noiseTexture: 	{ type: "t", value: noiseTexture },
-		// noiseScale:		{ type: "f", value: 0.5337 },
-		// alpha: 			{ type: "f", value: 1.0 },
-		// time: 			{ type: "f", value: 1.0 }
-		// };
+		customUniforms = {
+		baseTexture: 	{ type: "t", value: sampleTexture },
+		baseSpeed: 		{ type: "f", value: 0.05 },
+		noiseTexture: 	{ type: "t", value: noiseTexture },
+		noiseScale:		{ type: "f", value: 0.5337 },
+		alpha: 			{ type: "f", value: 1.0 },
+		time: 			{ type: "f", value: 1.0 }
+		};
 
-		// var mat = new THREE.ShaderMaterial({
-		// 	uniforms: customUniforms,
-		// 	vertexShader: document.getElementById('vertexShader').textContent,
-		// 	fragmentShader: document.getElementById('fragmentShader').textContent,
-		// 	map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
-		// });
+		var mat = new THREE.ShaderMaterial({
+			uniforms: customUniforms,
+			vertexShader: document.getElementById('vertexShader').textContent,
+			fragmentShader: document.getElementById('fragmentShader').textContent,
+			map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+		});
 
-		// test = new THREE.Mesh(new THREE.SphereGeometry(10, 40, 40), mat);
-		// test.position.set(0, 0, 950);
-		// this.scene.add(test);
-		// console.log(test);
+		test = new THREE.Mesh(new THREE.SphereGeometry(10, 40, 40), mat);
+		test.position.set(0, 0, 950);
+		this.scene.add(test);
+		console.log(test);
 
-		var tubes = [];
+		// var ring = new TorusRing(50, 0, 0, 900);
+		// this.scene.add(ring.mesh);
+		// this.objects.push(ring);
 
-		for (var i=0; i<1; i++){
-			tubes.push(new IceTube(0, 0, 800, i*Math.PI/2, 3));
-			this.scene.add(tubes[i].mesh);
-			this.objects.push(tubes[i]);
-		}
 
+		// var tubes = [];
+		// iceTube = new IceTube(0, 0, 800, 0*Math.PI/2, 1);
+		// this.scene.add(iceTube.mesh);
+		// this.objects.push(iceTube);
 
 	}
 
@@ -136,8 +138,8 @@ class WORLD{
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
-		// test.material.uniforms.time.value += .005;
-		// test.rotation.y += .003;
+		test.material.uniforms.time.value += .005;
+		test.rotation.y += .003;
 	}
 
 	collectTrash(){
@@ -738,7 +740,9 @@ class IceTube extends Item{
 		var cubeCamera = new THREE.CubeCamera(World.near, World.far, 256);
 		cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
 		cubeCamera.position.set(x, y, z+120); //set right in front of the layer
-		World.scene.add(cubeCamera);
+		// World.scene.add(cubeCamera);
+
+		mesh.add(cubeCamera);
 
 		for (var i=1; i<length+1; i++){
 			if (i==1)
