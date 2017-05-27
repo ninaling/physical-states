@@ -111,12 +111,11 @@ function createLights() {
 }
 
 Lattice = function(n){
-	var ionSize = 16;
-	var dis = 20*ionSize/3;
-	ionSize *= 1.5;
+	var ionSize = 22;
+	var dis = 110;
 	this.mesh = new THREE.Object3D();
 
-	var ion = new THREE.SphereGeometry(ionSize, 7, 7);
+	var ion = new THREE.SphereGeometry(ionSize, 5, 5);
 
 	var ionmat = new THREE.MeshPhongMaterial({
 		color: Colors.red,
@@ -141,8 +140,8 @@ Lattice = function(n){
 		for(j=0; j<(n*2-1)-1; j++){
 			for(i=0; i<(n*2-1)+1; i++){
 				cl1 = new THREE.Mesh(ion, ionmat);
-				cl1.position.x += i*dis;
-				cl1.position.y -= j*dis;
+				cl1.position.x += i*dis + (Math.random()*0.8*dis - 0.4*dis);
+				cl1.position.y -= j*dis + (Math.random()*0.8*dis - 0.4*dis);
 				cl1.position.z = 0;
 				this.layers[k].add(cl1);
 				atom = cl1;
@@ -175,7 +174,7 @@ function createLattice(){
 	var n =3;
 	lattice = new Lattice(n);
 	var move = (n-1)*16*(8+8*2)/3;
-	lattice.mesh.position.y = 1.3*move;
+	lattice.mesh.position.y = 1.2*move;
 	lattice.mesh.position.x = -1.1*move;
 	lattice.mesh.position.z = -100;
 	scene.add(lattice.mesh);
