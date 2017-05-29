@@ -99,7 +99,9 @@ class WORLD{
 	}
 
 	populate(){
-		var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/blue.jpg');
+
+		if (!coreSet){
+			var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/blue.jpg');
 			sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
 			var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/cloud.png');
@@ -122,14 +124,27 @@ class WORLD{
 			});
 
 			core = new THREE.Mesh(new THREE.SphereGeometry(50, 40, 40), mat);
-			core.position.set(0, 0, 800);
+			core.position.set(0, 0, 0);
 			this.scene.add(core);
+			coreSet = true;
+		}
+
+		for (var i=0; i< 1; i++){
+			temp = new IceTube(0, 0, 0, i*Math.PI/2, 1);
+			this.scene.add(temp.mesh);
+			this.objects.push(temp);
+		}
+
+		// temp = new IceCube(0, 0, 900);
+		// // temp.mesh.rotation.x = Math.PI/2;
+		// this.scene.add(temp.mesh);
+
 	}
 
 	update(){
-		// if(this.objects.length < 7) {
-		// 	this.populate();
-		// }
+		if(this.objects.length < 7) {
+			this.populate();
+		}
 
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
