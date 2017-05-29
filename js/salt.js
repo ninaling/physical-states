@@ -1,12 +1,6 @@
 var Colors = {
-	red:0xf25346,
-	white:0xd8d0d1,
-	brown:0x59332e,
-	pink:0xF5986E,
-	brownDark:0x23190f,
-	blue:0x68c3c0,
-	gray: 0x999999,
-	lightgray: 0xdddddd
+	iron: 0x6b6e72,
+	electron: 0xffffff
 };
 
 window.addEventListener('load', init, false);
@@ -46,9 +40,9 @@ function createScene() {
 		);
 
 	// Set the position of the camera
-	camera.position.x = 0;
+	camera.position.x = 5;
 	camera.position.z = 150;
-	camera.position.y = 100;
+	camera.position.y = 130;
 
 	// Create the renderer
 	renderer = new THREE.WebGLRenderer({
@@ -80,11 +74,11 @@ function createLights() {
 	// A hemisphere light is a gradient colored light;
 	// the first parameter is the sky color, the second parameter is the ground color,
 	// the third parameter is the intensity of the light
-	hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9)
+	hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, 1)
 
 	// A directional light shines from a specific direction.
 	// It acts like the sun, that means that all the rays produced are parallel.
-	shadowLight = new THREE.DirectionalLight(0xffffff, .9);
+	shadowLight = new THREE.DirectionalLight(0xffffff, .8);
 
 	// Set the direction of the light
 	shadowLight.position.set(150, 350, 350);
@@ -116,41 +110,75 @@ Lattice = function(n){
 	ionSize *= 1.5;
 	this.mesh = new THREE.Object3D();
 
-	var ion = new THREE.SphereGeometry(ionSize, 7, 7);
-
+	var iongeo = new THREE.SphereGeometry(ionSize, 30, 30);
 	var ionmat = new THREE.MeshPhongMaterial({
-		color: Colors.red,
-		transparent: true,
-		opacity: .9,
-		shading: THREE.FlatShading,
+		color: Colors.iron,
+		reflectivity: .3,
+		metal: true,
+		shininess: 50
+	});
+
+	var egeo = new THREE.SphereGeometry(ionSize/15, 10, 10);
+	var emat = new THREE.MeshPhongMaterial({
+		color: Colors.electron,
+		reflectivity: .3,
+		metal: true,
+		shininess: 50
 	});
 
 	var i, j, k;
-	var atom;
 	var x, y, z;
 	var m;
 
-	var numKLayers = (n*2) + 2;
+	var numKLayers = (n*2)-3;
 
 	this.layers = [];
+	this.electrons = [];
 
-	for(k=0; k<numKLayers; k++){
+	for(k=0; k<numKLayers*2; k++){
 
 		this.layers[k] = new THREE.Group();
+		this.electrons[k] = new THREE.Group();
 
-		for(j=0; j<(n*2-1)-1; j++){
-			for(i=0; i<(n*2-1)+1; i++){
-				cl1 = new THREE.Mesh(ion, ionmat);
-				cl1.position.x += i*dis;
-				cl1.position.y -= j*dis;
-				cl1.position.z = 0;
-				this.layers[k].add(cl1);
-				atom = cl1;
-				x = i*dis;
-				y = -j*dis;
-				z = -k*dis;
+		if (k%2 == 0) {
+			for(j=0; j<(n*2-1)+1; j++){
+				for(i=0; i<(n*2-1)+1; i++){
+					var ion = new THREE.Mesh(iongeo, ionmat);
+					ion.position.x += i*dis;
+					ion.position.y -= j*dis;
+					ion.position.z = 0;
+					this.layers[k].add(ion);
+				}
 			}
 		}
+		else {
+			for(j=0; j<(n*2-1); j++){
+				for(i=0; i<(n*2-1); i++){
+					var ion = new THREE.Mesh(iongeo, ionmat);
+					ion.geometry.computeVertexNormals();
+					ion.position.x += (i + 0.5)*dis;
+					ion.position.y -= (j + 0.5)*dis;
+					ion.position.z = 0;
+					this.layers[k].add(ion);
+				}
+			}
+		}
+
+		i=j=0;
+		for(j=0; j<(n*2-1)+1; j++){
+			for(i=0; i<(n*2-1)+1; i++){
+				for (var m=0;m<2;m++){
+					var electron = new THREE.Mesh(egeo, emat);
+					electron.position.x += i*dis + (Math.random()-0.5)*dis;
+					electron.position.y -= j*dis + (Math.random()-0.5)*dis;
+					electron.position.z = 0;
+					this.electrons[k].add(electron);
+				}
+			}
+		}
+		this.electrons[k].position.z -=k*dis;
+		this.mesh.add(this.electrons[k]);
+
 		this.layers[k].position.z -= k*dis;
 		this.mesh.add(this.layers[k]);
 	}
@@ -159,12 +187,16 @@ Lattice = function(n){
 
 	this.update = function() {
 		var speed = 3;
-		for (var i = 0; i < numKLayers; i++) {
-			// console.log(this.layers[i].position.z);
+		for (var i = 0; i < numKLayers*2; i++) {
 			if (this.layers[i].position.z >= 200) {
-				this.layers[i].position.z -= numKLayers*dis + speed;
+				this.layers[i].position.z -= numKLayers*2*dis + speed;
 			}
 			this.layers[i].position.z += speed;
+
+			if (this.electrons[i].position.z >= 200) {
+				this.electrons[i].position.z -= numKLayers*2*dis + speed*5;
+			}
+			this.electrons[i].position.z += speed*5;
 		}
 	}
 };
@@ -172,7 +204,7 @@ Lattice = function(n){
 var lattice;
 
 function createLattice(){
-	var n =3;
+	var n =4;
 	lattice = new Lattice(n);
 	var move = (n-1)*16*(8+8*2)/3;
 	lattice.mesh.position.y = 1.3*move;
