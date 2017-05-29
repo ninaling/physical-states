@@ -9,7 +9,34 @@ var Colors = {
 	lightgray: 0xdddddd
 };
 
-window.addEventListener('load', init, false);
+var texture;
+
+window.addEventListener('load', controller, false);
+/*window.addEventListener('load', create_textures, false);
+window.addEventListener('load', init, false);*/
+
+function controller(){
+	create_textures(function(){
+		init();
+	});
+}
+
+function create_textures(callback){
+	//THREE.ImageUtils.crossOrigin = '';
+	//texture = new THREE.ImageUtils.loadTexture( "./crate.jpg");
+	var loader = new THREE.TextureLoader();
+
+	//allow cross origin loading
+	loader.crossOrigin = '';
+
+	// load a resource
+	//loader.load('http://spiralgraphics.biz/packs/crystal_cut/previews/Salt.jpg', function(txtr){texture=txtr;});
+	//texture = new THREE.TextureLoader().load( "./crate.jpg");
+	/*texture.wrapS = THREE.RepeatWrapping;
+	texture.wrapT = THREE.RepeatWrapping;
+	texture.repeat.set( 4, 4 );*/
+	callback();
+}
 
 function init() {
 	// set up the scene, the camera and the renderer
@@ -45,7 +72,7 @@ function createScene() {
 
 	// Add a fog effect to the scene; same color as the
 	// background color used in the style sheet
-	scene.fog = new THREE.Fog(0x1e1d1b, -100, 800);
+	scene.fog = new THREE.Fog(0x1e1d1b, -50, 800);
 
 	// Create the camera
 	aspectRatio = WIDTH / HEIGHT;
@@ -153,47 +180,12 @@ Sodium = function(size){
 	var wireframe = new THREE.LineSegments(geo, mat);
 
 	var group = new THREE.Group();
-	/*var i = 0;
-	for(i=0; i<4; i++){
-		var sodium1 = new THREE.Mesh(sodium, namat);
-		sodium1.position.x = size/2;
-		sodium1.position.z = size/2;
-		var sodium2 = new THREE.Mesh(sodium, namat);
-		sodium2.position.x = -size/2;
-		sodium2.position.z = size/2;
-		var sodium3 = new THREE.Mesh(sodium, namat);
-		sodium3.position.x = size/2;
-		sodium3.position.z = -size/2;
-		var sodium4 = new THREE.Mesh(sodium, namat);
-		sodium4.position.x = -size/2;
-		sodium4.position.z = -size/2;
-		group.add(sodium1);
-		group.add(sodium2);
-		group.add(sodium3);
-		group.add(sodium4);
-	}
-	var sodium5 = new THREE.Mesh(sodium, namat);
-	var sodium6 = new THREE.Mesh(sodium, namat);
-	var sodium7 = new THREE.Mesh(sodium, namat);
-	var sodium8 = new THREE.Mesh(sodium, namat);
-	var sodium9 = new THREE.Mesh(sodium, namat);
-	var sodium10 = new THREE.Mesh(sodium, namat);
-	var sodium11 = new THREE.Mesh(sodium, namat);
-	var sodium12 = new THREE.Mesh(sodium, namat);*/
-	//sodium1.position.x = x;
-	//sodium1.position.y = y;
-	//sodium1.position.z = z;
-	//mesh.add(sodium1);
-	//mesh.receiveShadow = true;
-	//console.log("works")
-	//console.log(sodium1.position.x);
-	//return this.mesh;
-	//group.add(sodium1);
+
 	return wireframe;
 }
 
 Salt = function(n){
-	var na = 8;
+	var na = 4;
 	var cl = 2*na;
 	var dis = 16*(na+cl)/3;
 	var connectsmall = new THREE.CylinderGeometry(.2*na, .2*na, .1*dis, 30, 30);
@@ -207,19 +199,66 @@ Salt = function(n){
 	var chloride = new THREE.BoxGeometry(cl, cl, cl, 20, 20, 20);
 	//var connect = new THREE.CylinderGeometry(.2*na, .2*na, dis, 100, 100);
 
-	var namat = new THREE.MeshPhongMaterial({
+	var sampleTexture = THREE.ImageUtils.loadTexture('../salt.jpg');
+			sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+			var noiseTexture = THREE.ImageUtils.loadTexture('../crate.jpg');
+			noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+			customUniforms = {
+			baseTexture: 	{ type: "t", value: sampleTexture },
+			baseSpeed: 		{ type: "f", value: 0.05 },
+			noiseTexture: 	{ type: "t", value: noiseTexture },
+			noiseScale:		{ type: "f", value: 0.5337 },
+			alpha: 			{ type: "f", value: 1.0 },
+			time: 			{ type: "f", value: 1.0 },				
+		    fogColor:    { type: "c", value: scene.fog.color },
+    		fogNear:     { type: "f", value: scene.fog.near },
+    		fogFar:      { type: "f", value: scene.fog.far }
+			};
+
+			var namat = new THREE.ShaderMaterial({
+				uniforms: customUniforms,
+				vertexShader: document.getElementById('vertexShader').textContent,
+				fragmentShader: document.getElementById('fragmentShader').textContent,
+				fog: true,
+				// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+			});
+
+	/*var namat = new THREE.MeshPhongMaterial({
 		color: Colors.blue,
 		transparent: true,
 		opacity: .9,
-		shading: THREE.FlatShading,
-	});
+		//shading: THREE.FlatShading,
+		map: texture,
+	});*/
 
-	var clmat = new THREE.MeshPhongMaterial({
+	/*var clmat = new THREE.MeshPhongMaterial({
 		color: Colors.red,
 		transparent: true,
 		opacity: .9,
 		shading: THREE.FlatShading,
-	});
+	});*/
+	var sampleTexture2 = THREE.ImageUtils.loadTexture('../salt2.jpg');
+	sampleTexture2.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+	customUniforms2 = {
+			baseTexture: 	{ type: "t", value: sampleTexture2 },
+			baseSpeed: 		{ type: "f", value: 0.05 },
+			noiseTexture: 	{ type: "t", value: noiseTexture },
+			noiseScale:		{ type: "f", value: 0.5337 },
+			alpha: 			{ type: "f", value: 1.0 },
+			time: 			{ type: "f", value: 1.0 },				
+		    fogColor:    { type: "c", value: scene.fog.color },
+    		fogNear:     { type: "f", value: scene.fog.near },
+    		fogFar:      { type: "f", value: scene.fog.far }
+			};
+	var clmat = new THREE.ShaderMaterial({
+				uniforms: customUniforms2,
+				vertexShader: document.getElementById('vertexShader').textContent,
+				fragmentShader: document.getElementById('fragmentShader').textContent,
+				fog: true,
+				// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+			});
 
 	var connectormat = new THREE.MeshPhongMaterial({
 		color: Colors.lightgray,
@@ -228,15 +267,6 @@ Salt = function(n){
 		shading: THREE.FlatShading,
 	});
 
-	/*na1 = new THREE.Mesh(sodium, namat);
-	cl1 = new THREE.Mesh(sodium, clmat);
-	this.mesh.add(na1);
-	this.mesh.add(cl1);*/
-	/*connect1 = new THREE.Mesh(connect, connectormat);
-	connect1.rotation.z = Math.PI/2;
-	connect1.position.x = dis/2;
-	connect1.position.y = 6;*/
-	//this.mesh.add(connect1);
 
 	var i, j, k;
 	var atom;
@@ -321,7 +351,7 @@ Salt = function(n){
 	this.mesh.receiveShadow = true;
 
 	this.update = function() {
-		var speed = 10;
+		var speed = 5;
 		for (var i = 0; i < numKLayers; i++) {
 			// console.log(this.layers[i].position.z);
 			if (this.layers[i].position.z >= 200) {
@@ -329,6 +359,8 @@ Salt = function(n){
 			}
 			this.layers[i].position.z += speed;
 		}
+		//na1.material.uniforms.time.value += .005;
+		//na1.rotation.y += .003;
 	}
 };
 
@@ -337,7 +369,7 @@ var salt;
 function createSalt(){
 	var n = 4;
 	salt = new Salt(n);
-	var move = (n-1)*16*(8+8*2)/3;
+	var move = (n-1)*16*(4+4*2)/3;
 	salt.mesh.position.y = 1.3*move;
 	salt.mesh.position.x = -1.1*move;
 	salt.mesh.position.z = -100;
