@@ -307,7 +307,7 @@ Salt = function(n){
 					connect1.rotation.x = Math.PI/2;
 					connect1.position.x = atom.position.x;
 					connect1.position.y = atom.position.y;
-					connect1.position.z = - .45*m*dis/2 - .05*dis/2;
+					connect1.position.z = .45*m*dis/2 - .05*dis/2;
 					// this.mesh.add(connect1);
 					this.layers[k].add(connect1);
 					}
@@ -321,7 +321,7 @@ Salt = function(n){
 	this.mesh.receiveShadow = true;
 
 	this.update = function() {
-		var speed = 25;
+		var speed = 10;
 		for (var i = 0; i < numKLayers; i++) {
 			// console.log(this.layers[i].position.z);
 			if (this.layers[i].position.z >= 200) {
