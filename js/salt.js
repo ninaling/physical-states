@@ -6,7 +6,7 @@ var Colors = {
 	brownDark:0x23190f,
 	blue:0x68c3c0,
 	gray: 0x999999,
-	lightgray: 0xdddddd
+	lightgray: 0xbbbbbb
 };
 
 var texture;
@@ -183,7 +183,7 @@ Sodium = function(size){
 
 	return wireframe;
 }
-
+var time = 0;
 Salt = function(n){
 	var na = 4;
 	var cl = 2*na;
@@ -263,7 +263,7 @@ Salt = function(n){
 	var connectormat = new THREE.MeshPhongMaterial({
 		color: Colors.lightgray,
 		transparent: true,
-		opacity: .3,
+		opacity: .5,
 		shading: THREE.FlatShading,
 	});
 
@@ -314,7 +314,7 @@ Salt = function(n){
 					connect1.rotation.z = Math.PI/2;
 					connect1.position.z = 0;
 					connect1.position.y = atom.position.y;
-					connect1.position.x = atom.position.x - .45*m*dis/2 - .05*dis/2;
+					connect1.position.x = atom.position.x + (-1*(-.40*m*dis/2 - .20*dis/2 - time))%dis;
 					// this.mesh.add(connect1);
 					this.layers[k].add(connect1);
 					}
@@ -323,7 +323,7 @@ Salt = function(n){
 					//connect2 = new THREE.Mesh(connect, connectormat);
 					for(m=0; m<5; m++){
 					connect2 = new THREE.Mesh(connectsmall, connectormat);
-					connect2.position.y = atom.position.y + .45*m*dis/2 + .05*dis/2;
+					connect2.position.y = atom.position.y + .40*m*dis/2 + .20*dis/2;
 					connect2.position.x = atom.position.x;
 					connect2.position.z = 0;
 					// this.mesh.add(connect2);
@@ -337,7 +337,7 @@ Salt = function(n){
 					connect1.rotation.x = Math.PI/2;
 					connect1.position.x = atom.position.x;
 					connect1.position.y = atom.position.y;
-					connect1.position.z = .45*m*dis/2 - .05*dis/2;
+					connect1.position.z = .40*m*dis/2 - .20*dis/2;
 					// this.mesh.add(connect1);
 					this.layers[k].add(connect1);
 					}
@@ -351,10 +351,10 @@ Salt = function(n){
 	this.mesh.receiveShadow = true;
 
 	this.update = function() {
-		var speed = 5;
+		var speed = 2;
 		for (var i = 0; i < numKLayers; i++) {
 			// console.log(this.layers[i].position.z);
-			if (this.layers[i].position.z >= 200) {
+			if (this.layers[i].position.z >= 225) {
 				this.layers[i].position.z -= numKLayers*dis + speed;
 			}
 			this.layers[i].position.z += speed;
@@ -372,7 +372,7 @@ function createSalt(){
 	var move = (n-1)*16*(4+4*2)/3;
 	salt.mesh.position.y = 1.3*move;
 	salt.mesh.position.x = -1.1*move;
-	salt.mesh.position.z = -100;
+	salt.mesh.position.z = 00;
 	scene.add(salt.mesh);
 }
 
@@ -400,7 +400,9 @@ function handleMouseMove(event) {
 // renderer.render(scene, camera);
 
 function loop(){
-	salt.update();
+	time += 1;
+	//console.log(time);
+	salt.update(time);
 
 	// render the scene
 	renderer.render(scene, camera);
