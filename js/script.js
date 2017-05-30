@@ -22,7 +22,7 @@ function createScene() {
 
 	scene = new THREE.Scene();
 
-	scene.fog = new THREE.Fog(0x1e1d1b, -100, 800);
+	scene.fog = new THREE.Fog(0x1e1d1b, 100, 500);
 
 	// Create the camera
 	aspectRatio = WIDTH / HEIGHT;
@@ -92,7 +92,7 @@ function createLights() {
 
 var MDMALattice = function(n){
 	this.mesh = new THREE.Object3D();
-	var dis = 60;
+	var dis = 80;
 
 	var i, j, k;
 	var x, y, z;
