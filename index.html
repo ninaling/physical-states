@@ -8,25 +8,37 @@
     <link rel='stylesheet' href="main.css">
     <script src="js/three.js"></script>
     <script src="js/SphereGeometry.js"></script>
+    <script src="js/OrbitControls.js"></script>
     <div id='world'>
         <div id='left'></div>
     </div>
 
     <script>
-        var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        var container = document.getElementById('world');
+
+    var camera, controls, scene, renderer;
+    var container;
+    init();
+    animate();
+
+      function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+        controls;
+        controls = new THREE.OrbitControls( camera);
+        controls.addEventListener( 'change', render );
+
+        container = document.getElementById('world');
         HEIGHT = container.height;
         WIDTH = container.width;
 
-        var light = new THREE.AmbientLight(0xffffff, 0.1);
+        var light = new THREE.AmbientLight(0xffffff, 0.8);
         scene.add(light);
 
         var light1 = new THREE.PointLight(0xffffff, 1, 5000);
         light1.position.set(100, 50, 50);
         scene.add(light1);
 
-        var renderer = new THREE.WebGLRenderer({
+        renderer = new THREE.WebGLRenderer({
             alpha: true,
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -34,200 +46,7 @@
         document.body.appendChild(container);
         container.appendChild(renderer.domElement);
 
-
-
-        //           var geometry = new THREE.SphereGeometry(5,32,32 );
-        //            var material = new THREE.MeshLambertMaterial( {color: 0xffffff} );
-        //            var sphere = new THREE.Mesh( geometry, material );
-        //            
-        //            var geometry1 = new THREE.BoxGeometry( 0.3, 10, 0.3 );
-        //            var material = new THREE.MeshLambertMaterial( {color:0x12B3CB} );
-        //            var cube = new THREE.Mesh( geometry1, material );
-
-        //Creating Atoms
-
-
-        function CreateSphere(x, y, z, n = 1, k = 8, j = 8) {
-            var neheTexture = new THREE.ImageUtils.loadTexture("images.png");
-            var geometry = new THREE.SphereGeometry(n, k, j);
-            var material = new THREE.MeshLambertMaterial({
-                //color: 0xFFFF01
-                map: neheTexture,
-                //side:THREE.DoubleSide 
-            });
-            neheTexture.offset.x = Math.random(); // 0.0 - 1.0
-            neheTexture.offset.y = 0;
-            //            neheTexture.repeat.set(1, 2);
-            //            neheTexture.wrapS = THREE.RepeatWrapping;
-            //            neheTexture.wrapT = THREE.RepeatWrapping;
-            var sphere = new THREE.Mesh(geometry, material);
-            sphere.position.set(x, y, z);
-            return sphere;
-        }
-
-        var atom = CreateSphere(-3, -1.2, 0);
-        var atom2 = CreateSphere(-3, 3, 0);
-        var atom3 = CreateSphere(-7, -2.7, 0);
-        var atom4 = CreateSphere(-7, 4.8, 0);
-        var atom5 = CreateSphere(-9.6, 1.1, 0);
-        var atom6 = CreateSphere(-12.5, 2.5, 0, 0.8, 6, 6);
-        var atom7 = CreateSphere(-12, -0.6, 0, 0.8, 6, 6);
-        var atom8 = CreateSphere(0.8, 5, 0);
-        var atom9 = CreateSphere(0.8, -3, 0);
-        var atom10 = CreateSphere(0.8, 9, 0, 0.8, 6, 6);
-        var atom11 = CreateSphere(0.8, -7, 0, 0.8, 6, 6);
-        var atom12 = CreateSphere(4.8, 3.5, 0);
-        var atom13 = CreateSphere(4.8, -1.2, 0);
-        var atom14 = CreateSphere(8.4, 5.2, 0);
-        var atom15 = CreateSphere(7.4, -3, 0, 0.8, 6, 6);
-        var atom16 = CreateSphere(6.3, 8.3, 0, 0.8, 6, 6);
-        var atom17 = CreateSphere(10, 8.5, 0.8, 0.8, 6, 6);
-        var atom18 = CreateSphere(11.8, 3.4, 0);
-        var atom19 = CreateSphere(12, -1, 0);
-        var atom20 = CreateSphere(9.5, -3, 0, 0.8, 6, 6);
-        var atom21 = CreateSphere(11.8, 7, 0, 0.8, 6, 6);
-        var atom22 = CreateSphere(15.8, 5.4, 0);
-        var atom23 = CreateSphere(16, -3.3, 0);
-        var atom24 = CreateSphere(14, 8, 0, 0.8, 6, 6);
-        var atom25 = CreateSphere(18, 8, 0, 0.8, 6, 6);
-        var atom26 = CreateSphere(17, 3, 0, 0.8, 6, 6);
-        var atom27 = CreateSphere(17.6, -1, 0.2, 0.8, 6, 6);
-        var atom28 = CreateSphere(17.5, -5.6, 0, 0.8, 6, 6);
-        var atom29 = CreateSphere(15, -6, 0.2, 0.8, 6, 6);
-
-
-        //Creating Cylinder
-        var geometry1 = new THREE.CylinderGeometry(0.15, 0.2, 3, 3);
-        var geometry3 = new THREE.CylinderGeometry(0.15, 0.2, 2, 3);
-        var geometry2 = new THREE.CylinderGeometry(0.3, 0.3, 3.1, 3);
-        var material = new THREE.MeshLambertMaterial({
-            color: 0xFFFF01,
-        });
-        var Cylinder = new THREE.Mesh(geometry1, material);
-        var Cylinder2 = new THREE.Mesh(geometry1, material);
-        var Cylinder10 = new THREE.Mesh(geometry1, material);
-        var Cylinder11 = new THREE.Mesh(geometry1, material);
-        var Cylinder14 = new THREE.Mesh(geometry2, material);
-        var Cylinder21 = new THREE.Mesh(geometry2, material);
-        Cylinder.position.set(-3.3, 1, 0);
-        Cylinder2.position.set(-2.7, 1, 0);
-        Cylinder10.position.set(0.8, 7, 0);
-        Cylinder11.position.set(0.8, -5, 0);
-        Cylinder14.position.set(4.8, 1, 0);
-        Cylinder21.position.set(12, 1, 0);
-
-
-        function CreateCylinder(x, y, z, vx, vy, vz, n = 0.15, k = 0.2) {
-            var geometry1 = new THREE.CylinderGeometry(n, k, 3, 3);
-            var material = new THREE.MeshLambertMaterial({
-                color: 0xFFFF01
-            });
-            var Cylinder1 = new THREE.Mesh(geometry1, material);
-            Cylinder1.position.set(x, y, z);
-            var vector = new THREE.Vector3(vx, vy, vz);
-
-            var focalPoint = new THREE.Vector3(
-                Cylinder1.position.x + vector.x,
-                Cylinder1.position.y + vector.y,
-                Cylinder1.position.z + vector.z
-            );
-            Cylinder1.up = new THREE.Vector3(0, 0, 1); //Z axis up
-            Cylinder1.lookAt(focalPoint);
-
-            return Cylinder1;
-        }
-
-        var Cylinder1 = CreateCylinder(-5.1, -2, 0, 4, 2, 45, 0.3, 0.3);
-        var Cylinder3 = CreateCylinder(-4.85, 4.2, 0, -4, 2, 45, 0.3, 0.3);
-        var Cylinder4 = CreateCylinder(-8.5, 3, 0, 2.7, 4, 200, 0.3, 0.3);
-        var Cylinder5 = CreateCylinder(-8.5, -0.9, 0, -0.8, 1, 20, 0.3, 0.3);
-        var Cylinder6 = CreateCylinder(-11.3, 1.9, 0.35, -1.5, 0.8, 20);
-        var Cylinder7 = CreateCylinder(-11.3, 0.2, 0, 1, 1, 10);
-        var Cylinder8 = CreateCylinder(-0.9, -2.1, 0, -1.5, 1, 20, 0.3, 0.3);
-        var Cylinder9 = CreateCylinder(-0.97, 4.2, 0, 1.5, 1, 20, 0.3, 0.3);
-        var Cylinder12 = CreateCylinder(3.1, 4.7, 0, -4, 2, 45);
-        var Cylinder13 = CreateCylinder(3.2, 4.2, 0, -4, 2, 45);
-        var Cylinder15 = CreateCylinder(3, -2, 0, 4, 2, 45, 0.3, 0.3);
-        var Cylinder16 = CreateCylinder(5.8, -2, 0, -1.5, 1, 20, 0.3, 0.3);
-        var Cylinder17 = CreateCylinder(6.8, 4.3, 0, 1.5, 1, 20, 0.3, 0.3);
-        var Cylinder18 = CreateCylinder(7.2, 6.8, 0, -0.6, 1, -20);
-        var Cylinder19 = CreateCylinder(9, 6.8, 0.6, 0.5, 1, 50);
-        var Cylinder20 = CreateCylinder(10.5, 4, 0, -3, 2, 45, 0.3, 0.3);
-        var Cylinder22 = CreateCylinder(10.7, -2, 0, 4, 2, 45, 0.3, 0.3);
-        var Cylinder23 = CreateCylinder(11.8, 5.3, 0, 0.3, -3, 20);
-        var Cylinder24 = CreateCylinder(13.8, 4.2, 0, 1.5, 1, 20, 0.3, 0.3);
-        var Cylinder25 = CreateCylinder(13.9, -2.4, 0, -1.5, 1, 20, 0.3, 0.3);
-        var Cylinder26 = CreateCylinder(15, 6.5, 0, -1, 1.5, 20);
-        var Cylinder27 = CreateCylinder(17, 6.5, 0, 1.2, 1.5, 20);
-        var Cylinder28 = CreateCylinder(16.2, 4.2, 0.4, -1.2, 2, -20);
-        var Cylinder29 = CreateCylinder(17, -2, 0.4, 1.2, 2, -20);
-        var Cylinder30 = CreateCylinder(15.4, -4.5, 0.4, -1.2, -2, -20);
-        var Cylinder31 = CreateCylinder(17, -4, -0.2, -1.2, 2, -20);
-
-        var group = new THREE.Group();
-        group.add(atom);
-        group.add(atom2);
-        group.add(atom3);
-        group.add(atom4);
-        group.add(atom5);
-        group.add(atom6);
-        group.add(atom7);
-        group.add(atom9);
-        group.add(atom8);
-        group.add(atom10);
-        group.add(atom11);
-        group.add(atom12);
-        group.add(atom13);
-        group.add(atom14);
-        group.add(atom15);
-        group.add(atom16);
-        group.add(atom17);
-        group.add(atom18);
-        group.add(atom19);
-        group.add(atom20);
-        group.add(atom21);
-        group.add(atom22);
-        group.add(atom23);
-        group.add(atom24);
-        group.add(atom25);
-        group.add(atom26);
-        group.add(atom27)
-        group.add(atom28)
-        group.add(atom29)
-        group.add(Cylinder);
-        group.add(Cylinder1);
-        group.add(Cylinder2);
-        group.add(Cylinder3);
-        group.add(Cylinder4);
-        group.add(Cylinder8);
-        group.add(Cylinder9);
-        group.add(Cylinder5);
-        group.add(Cylinder6);
-        group.add(Cylinder7);
-        group.add(Cylinder10);
-        group.add(Cylinder11);
-        group.add(Cylinder12);
-        group.add(Cylinder13);
-        group.add(Cylinder14);
-        group.add(Cylinder15);
-        group.add(Cylinder16);
-        group.add(Cylinder17);
-        group.add(Cylinder18);
-        group.add(Cylinder19);
-        group.add(Cylinder20);
-        group.add(Cylinder21);
-        group.add(Cylinder22);
-        group.add(Cylinder23);
-        group.add(Cylinder24);
-        group.add(Cylinder25);
-        group.add(Cylinder26);
-        group.add(Cylinder27);
-        group.add(Cylinder28);
-        group.add(Cylinder29);
-        group.add(Cylinder30);
-        group.add(Cylinder31);
-        //scene.add(group);
-        camera.position.z = 100;
+        camera.position.z = 20;
         //-3, -1.2, 0
         var CreateGroup = function(x, y, z) {
             var atom = CreateSphere(x, y, z);
@@ -235,8 +54,11 @@
             var atom3 = CreateSphere(x - 4, y - 1.5, z);
             var atom4 = CreateSphere(x - 4, y + 6, z);
             var atom5 = CreateSphere(x - 6.6, y + 2.3, z);
-            var atom6 = CreateSphere(x - 9.5, y + 3.7, z, 0.8, 6, 6);
-            var atom7 = CreateSphere(x - 9, y + 0.6, z, 0.8, 6, 6);
+
+            //leftmost two
+            var atom6 = CreateSphere(x - 9.2, y + 2.8, z + 3.2, 0.8, 6, 6);
+            var atom7 = CreateSphere(x - 9, y + 2.8, z - 3.2, 0.8, 6, 6);
+
             var atom8 = CreateSphere(x + 3.8, y + 6.2, z);
             var atom9 = CreateSphere(x + 3.8, y - 1.8, z);
             var atom10 = CreateSphere(x + 3.8, y + 10.2, z, 0.8, 6, 6);
@@ -245,14 +67,21 @@
             var atom13 = CreateSphere(x + 7.8, y, z);
             var atom14 = CreateSphere(x + 11.4, y + 6, z);
             var atom15 = CreateSphere(x + 10.4, y - 1.8, z, 0.8, 6, 6);
-            var atom16 = CreateSphere(x + 9.3, y + 9.5, z, 0.8, 6, 6);
-            var atom17 = CreateSphere(x + 13, y + 9.7, z + 0.8, 0.8, 6, 6);
+
+            //third hexagon top
+            var atom16 = CreateSphere(x + 11.3, y + 8.8, z + 2.7, 0.8, 6, 6);
+            var atom17 = CreateSphere(x + 11.3, y + 8.8, z - 2.7, 0.8, 6, 6);
+
             var atom18 = CreateSphere(x + 14.8, y + 4.5, z);
             var atom19 = CreateSphere(x + 15, y + 0.2, z);
-            var atom20 = CreateSphere(x + 12.5, y - 1.8, z, 0.8, 6, 6);
+
+            var atom20 = CreateSphere(x + 15, y - 1, z - 3, 0.8, 6, 6);
+
             var atom21 = CreateSphere(x + 14.8, y + 8.2, z, 0.8, 6, 6);
             var atom22 = CreateSphere(x + 18.8, y + 6.6, z);
-            var atom23 = CreateSphere(x + 19, y - 2.1, z);
+
+            var atom23 = CreateSphere(x + 15, y - 1, z + 3);
+
             var atom24 = CreateSphere(x + 17, y + 9.2, z, 0.8, 6, 6);
             var atom25 = CreateSphere(x + 21, y + 9.2, z, 0.8, 6, 6);
             var atom26 = CreateSphere(x + 20, y + 4.2, z, 0.8, 6, 6);
@@ -264,8 +93,11 @@
             var Cylinder3 = CreateCylinder(x - 1.55, y + 5.4, z, -4, 2, 45, 0.3, 0.3);
             var Cylinder4 = CreateCylinder(x - 5.5, y + 4.2, z, 2.7, 4, 200, 0.3, 0.3);
             var Cylinder5 = CreateCylinder(x - 5.5, y + 0.3, z, -0.8, 1, 20, 0.3, 0.3);
-            var Cylinder6 = CreateCylinder(x - 8.3, y + 3.1, z + 0.35, -1.5, 0.8, 20);
-            var Cylinder7 = CreateCylinder(x - 8.3, y + 1.4, z, 1, 1, 10);
+
+            //leftmost two
+            var Cylinder6 = CreateCylinder(x - 8, y + 2.5, z + 2, -1.5, 0.2, -1);
+            var Cylinder7 = CreateCylinder(x - 8, y + 2.5, z - 2, -1.5, 0.2, 1);
+
             var Cylinder8 = CreateCylinder(x + 2.1, y - 0.9, z, -1.5, 1, 20, 0.3, 0.3);
             var Cylinder9 = CreateCylinder(x + 2.03, y + 5.4, z, 1.5, 1, 20, 0.3, 0.3);
             var Cylinder12 = CreateCylinder(x + 6.1, y + 5.9, z, -4, 2, 45);
@@ -273,13 +105,18 @@
             var Cylinder15 = CreateCylinder(x + 6, y - 0.8, z, 4, 2, 45, 0.3, 0.3);
             var Cylinder16 = CreateCylinder(x + 8.8, y - 0.8, z, -1.5, 1, 20, 0.3, 0.3);
             var Cylinder17 = CreateCylinder(x + 9.8, y + 5.5, z, 1.5, 1, 20, 0.3, 0.3);
-            var Cylinder18 = CreateCylinder(x + 10.2, y + 8, z, -0.6, 1, -20);
-            var Cylinder19 = CreateCylinder(x + 12, y + 8, z + 0.6, 0.5, 1, 50);
+
+            //third hexagon top
+            var Cylinder18 = CreateCylinder(x + 11.5, y + 7.7, z + 1.5, 0, 0.5, -0.5);
+            var Cylinder19 = CreateCylinder(x + 11.5, y + 7.7, z - 1.5, 0, 0.5, 0.5);
+
             var Cylinder20 = CreateCylinder(x + 13.5, y + 5.2, z, -3, 2, 45, 0.3, 0.3);
-            var Cylinder22 = CreateCylinder(x + 13.7, y - 0.8, z, 4, 2, 45, 0.3, 0.3);
+
+            var Cylinder22 = CreateCylinder(x + 15, y - 0.3, z - 2, 0, -0.1, 0.05, 0.3);
+
             var Cylinder23 = CreateCylinder(x + 14.8, y + 6.5, z, 0.3, -3, 20);
             var Cylinder24 = CreateCylinder(x + 16.8, y + 5.4, z, 1.5, 1, 20, 0.3, 0.3);
-            var Cylinder25 = CreateCylinder(x + 16.9, y - 1.2, z, -1.5, 1, 20, 0.3, 0.3);
+            var Cylinder25 = CreateCylinder(x + 15, y - 0.3, z + 2, 0, -0.1, -0.05, 0.3, 0.3);
             var Cylinder26 = CreateCylinder(x + 18, y + 7.7, z, -1, 1.5, 20);
             var Cylinder27 = CreateCylinder(x + 20, y + 7.7, z, 1.2, 1.5, 20);
             var Cylinder28 = CreateCylinder(x + 19.2, y + 5.4, z + 0.4, -1.2, 2, -20);
@@ -312,8 +149,11 @@
             group.add(atom3);
             group.add(atom4);
             group.add(atom5);
+
+            //leftmost two
             group.add(atom6);
             group.add(atom7);
+
             group.add(atom9);
             group.add(atom8);
             group.add(atom10);
@@ -322,14 +162,21 @@
             group.add(atom13);
             group.add(atom14);
             group.add(atom15);
+
+            //third hexagon top
             group.add(atom16);
             group.add(atom17);
+
             group.add(atom18);
             group.add(atom19);
-            group.add(atom20);
+
+            group.add(atom20); // c 22 || a 23
+
             group.add(atom21);
             group.add(atom22);
-            group.add(atom23);
+
+            group.add(atom23); // c 25 || a 20
+
             group.add(atom24);
             group.add(atom25);
             group.add(atom26);
@@ -344,8 +191,11 @@
             group.add(Cylinder8);
             group.add(Cylinder9);
             group.add(Cylinder5);
+
+            //leftmost two
             group.add(Cylinder6);
             group.add(Cylinder7);
+
             group.add(Cylinder10);
             group.add(Cylinder11);
             group.add(Cylinder12);
@@ -354,14 +204,19 @@
             group.add(Cylinder15);
             group.add(Cylinder16);
             group.add(Cylinder17);
+
+            //third hexagon top
             group.add(Cylinder18);
             group.add(Cylinder19);
+
             group.add(Cylinder20);
             group.add(Cylinder21);
-            group.add(Cylinder22);
+            group.add(Cylinder22); // a 20 || c 25
             group.add(Cylinder23);
             group.add(Cylinder24);
-            group.add(Cylinder25);
+
+            group.add(Cylinder25); // a 23 || c 22
+
             group.add(Cylinder26);
             group.add(Cylinder27);
             group.add(Cylinder28);
@@ -372,67 +227,64 @@
             return group;
         }
 
+        // var group1 = CreateGroup(0, 0, 0);
+        // scene.add(group1);
 
-        var group1 = CreateGroup(0, 0, 0);
-        scene.add(group1);
-
-
-        var group2 = CreateGroup(20, -2, 40);
+        var group2 = CreateGroup(-10, 0, 0);
         scene.add(group2);
 
+      }
 
-        //        var group3 = CreateGroup(x, y, z);
-        //        scene.add(group3);
-        //
-        //
-        //        var group4 = CreateGroup(x, y, z);
-        //        scene.add(group4);
-        //
-        //        var group5 = CreateGroup(x, y, z);
-        //        scene.add(group5);
-        //
-        //        var group6 = CreateGroup(x, y, z);
-        //        scene.add(group6);
-        //
-        //
-        //        var group7 = CreateGroup(x, y, z);
-        //        scene.add(group8);
-        //
-        //
-        //        var group8 = CreateGroup(x, y, z);
-        //        scene.add(group8);
+      function CreateSphere(x, y, z, n = 1.5, k = 8, j = 8) {
+          var neheTexture = new THREE.ImageUtils.loadTexture("images.png");
+          var geometry = new THREE.SphereGeometry(n, k, j);
+          var material = new THREE.MeshLambertMaterial({
+              //color: 0xFFFF01
+              map: neheTexture,
+              //side:THREE.DoubleSide
+          });
+          neheTexture.offset.x = Math.random(); // 0.0 - 1.0
+          neheTexture.offset.y = 0;
+          //            neheTexture.repeat.set(1, 2);
+          //            neheTexture.wrapS = THREE.RepeatWrapping;
+          //            neheTexture.wrapT = THREE.RepeatWrapping;
+          var sphere = new THREE.Mesh(geometry, material);
+          sphere.position.set(x, y, z);
+          return sphere;
+      }
 
-//        document.addEventListener('mousemove', onDocumentMouseMove, false);
-//        var mouseX = 0, mouseY = 0,
+      function CreateCylinder(x, y, z, vx, vy, vz, n = 0.15, k = 0.2) {
+          var geometry1 = new THREE.CylinderGeometry(n, k, 3, 3);
+          var material = new THREE.MeshLambertMaterial({
+              color: 0xFFFF01
+          });
+          var Cylinder1 = new THREE.Mesh(geometry1, material);
+          Cylinder1.position.set(x, y, z);
+          var vector = new THREE.Vector3(vx, vy, vz);
 
+          var focalPoint = new THREE.Vector3(
+              Cylinder1.position.x + vector.x,
+              Cylinder1.position.y + vector.y,
+              Cylinder1.position.z + vector.z
+          );
+          Cylinder1.up = new THREE.Vector3(0, 0, 1); //Z axis up
+          Cylinder1.lookAt(focalPoint);
 
-//        function onDocumentMouseMove(event) {
-//            mouseX = event.clientX - windowHalfX;
-//            mouseY = event.clientY - windowHalfY;
-//        }
-        var render = function() {
-            requestAnimationFrame(render);
-            group1.rotation.x += 0.01;
-            group1.rotation.y += 0.01;
-            group1.rotation.z += 0.01;
-            var x = Math.random()/50;
-            var y = Math.random()/50;
-            var z = Math.random()/50;
-            group2.rotation.x += x;
-            group2.rotation.y += y;
-            group2.rotation.z += z;
+          return Cylinder1;
+      }
 
-//            camera.position.x += (mouseX - camera.position.x) * .05;
-//            camera.position.y += (-mouseY + 200 - camera.position.y) * .05;
+      function animate() {
 
+        requestAnimationFrame( animate );
+        controls.update();
 
+      }
 
-            renderer.render(scene, camera);
-        };
+      function render() {
+        renderer.render( scene, camera );
+      }
 
-
-        render();
-    </script> ---!>
+    </script>
 </body>
 
 </html>
