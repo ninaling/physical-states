@@ -14,7 +14,7 @@ function init() {
 
 var scene,
 		camera, fieldOfView, aspectRatio, nearPlane, farPlane, HEIGHT, WIDTH,
-		renderer, container;
+		renderer, container, background;
 
 function createScene() {
 	HEIGHT = window.innerHeight;
@@ -55,6 +55,35 @@ function createScene() {
 	container.appendChild(renderer.domElement);
 
 	window.addEventListener('resize', handleWindowResize, false);
+
+	//CREATE MDMA BACKGROUND!
+
+	var sampleTexture = new THREE.TextureLoader().load('/assets/mdma2.jpg');
+	sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+	var noiseTexture = new THREE.TextureLoader().load('/assets/cloud.png');
+	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+	var customUniforms = {
+		baseTexture: 	{ type: "t", value: sampleTexture },
+		baseSpeed: 		{ type: "f", value: 0.01 },
+		noiseTexture: 	{ type: "t", value: noiseTexture },
+		noiseScale:		{ type: "f", value: 0.5 },
+		alpha: 			{ type: "f", value: 1.0 },
+		time: 			{ type: "f", value: 1.0 }
+	};
+
+	var mat = new THREE.ShaderMaterial({
+		uniforms: customUniforms,
+		vertexShader: document.getElementById('vertexShader').textContent,
+		fragmentShader: document.getElementById('fragmentShader').textContent,
+		// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+	});
+
+	background = new THREE.Mesh(new THREE.SphereGeometry(WIDTH*2, 50, 50), mat);
+	background.material.side = THREE.BackSide;
+	background.position.set(0, 0, 0);
+	scene.add(background);
 }
 
 function handleWindowResize() {
@@ -128,6 +157,8 @@ var MDMALattice = function(n){
 			}
 			this.layers[i].position.z += speed;
 		}
+		// this.mesh.rotation.y += speed*.01;
+		this.mesh.rotation.z += speed*.01;
 	}
 };
 
@@ -150,6 +181,10 @@ function handleMouseMove(event) {
 
 function loop(){
 	lattice.update();
+
+	background.material.uniforms.time.value += .015;
+	background.rotation.y += .0006;
+	background.rotation.x += .0006;
 	renderer.render(scene, camera);
 	requestAnimationFrame(loop);
 }

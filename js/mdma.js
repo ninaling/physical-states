@@ -1,7 +1,7 @@
 var temp;
 var sphere; var cylinder; //globals to save memory
 
-var neheTexture = new THREE.ImageUtils.loadTexture("assets/image.png");
+var neheTexture = new THREE.TextureLoader().load("assets/image.png");
 var SphereGeometry = new THREE.SphereGeometry(1.2, 8, 8);
 var SphereMaterial = new THREE.MeshLambertMaterial({
         map: neheTexture
