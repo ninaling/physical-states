@@ -102,78 +102,71 @@ class WORLD{
 
 	populate(){
 
-		if (!coreSet){
-			var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/meth.jpg');
-			sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+		// if (!coreSet){
+		// 	var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/meth.jpg');
+		// 	sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-			var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/cloud.png');
-			noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+		// 	var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/cloud.png');
+		// 	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
-			customUniforms = {
-			baseTexture: 	{ type: "t", value: sampleTexture },
-			baseSpeed: 		{ type: "f", value: 0.05 },
-			noiseTexture: 	{ type: "t", value: noiseTexture },
-			noiseScale:		{ type: "f", value: 0.5337 },
-			alpha: 			{ type: "f", value: 1.0 },
-			time: 			{ type: "f", value: 1.0 }
-			};
+		// 	customUniforms = {
+		// 	baseTexture: 	{ type: "t", value: sampleTexture },
+		// 	baseSpeed: 		{ type: "f", value: 0.05 },
+		// 	noiseTexture: 	{ type: "t", value: noiseTexture },
+		// 	noiseScale:		{ type: "f", value: 0.5337 },
+		// 	alpha: 			{ type: "f", value: 1.0 },
+		// 	time: 			{ type: "f", value: 1.0 }
+		// 	};
 
-			var mat = new THREE.ShaderMaterial({
-				uniforms: customUniforms,
-				vertexShader: document.getElementById('vertexShader').textContent,
-				fragmentShader: document.getElementById('fragmentShader').textContent,
-				// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
-			});
+		// 	var mat = new THREE.ShaderMaterial({
+		// 		uniforms: customUniforms,
+		// 		vertexShader: document.getElementById('vertexShader').textContent,
+		// 		fragmentShader: document.getElementById('fragmentShader').textContent,
+		// 		// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+		// 	});
 
-			core = new THREE.Mesh(new THREE.SphereGeometry(50, 40, 40), mat);
-			core.position.set(0, 0, -4925);
-			this.scene.add(core);
-			coreSet = true;
-		}
+		// 	core = new THREE.Mesh(new THREE.SphereGeometry(50, 40, 40), mat);
+		// 	core.position.set(0, 0, -4925);
+		// 	this.scene.add(core);
+		// 	coreSet = true;
+		// }
 
 		//POPULATE ELECTRONS
 
 		var ionSize = 16;
-		var dis = 20*ionSize/3;
+		var dis = 20*ionSize/1.3;
 		ionSize *= 1.5;
 
 		var i, j, k;
 		var x, y, z;
 		var m;
-		var n = 3;
+		var n = 4;
 		var numKLayers = (n*2)-3;
 
 		var egeo = new THREE.SphereGeometry(ionSize/15, 10, 10);
 		var emat = new THREE.MeshPhongMaterial({
-			color: COLORS.White,
-			reflectivity: .3,
-			metal: true,
-			shininess: 50
+			shininess: 25,
+			ambient: 0x050505,
+			specular: 0xffffff,
+			emissive: COLORS.Ice,
+			color: COLORS.Blue
 		});
 
-
-		for(k=0; k<numKLayers*2; k++){
-
-		this.layers[k] = new THREE.Group();
-		this.electrons[k] = new THREE.Group();
-
 		i=j=0;
-		for(j=0; j<(n*2-1)+1; j++){
-			for(i=0; i<(n*2-1)+1; i++){
-				for (var m=0;m<2;m++){
-					var electron = new THREE.Mesh(egeo, emat);
-					electron.position.x += i*dis + (Math.random()-0.5)*dis;
-					electron.position.y -= j*dis + (Math.random()-0.5)*dis;
-					electron.position.z = 0;
-					this.electrons[k].add(electron);
+		for (var k=0; k<5; k++){
+			this.electrons[k] = new THREE.Group();
+			for(j=-4; j<4; j++){
+				for(i=-4; i<4; i++){
+						var electron = new THREE.Mesh(egeo, emat);
+						electron.position.x = i*dis + (Math.random()*dis);
+						electron.position.y = j*dis + (Math.random()*dis);
+						electron.position.z = 0;
+						this.electrons[k].add(electron);
 				}
 			}
+			this.electrons[k].position.z -= k*dis;
+			this.scene.add(this.electrons[k]);
 		}
-
-		console.log(this.electrons[k]);
-		this.electrons[k].position.z -=k*dis;
-		this.scene.add(this.electrons[k]);
-	}
 	}
 
 	fillScene(molecule){
@@ -183,7 +176,7 @@ class WORLD{
 
 
 	update(){
-		if(this.objects.length < 10) {
+		if(this.objects.length < 4) {
 			this.fillScene(new IceTube(0, 0, 0, 0, 1));
 		}
 
@@ -191,8 +184,16 @@ class WORLD{
 			this.objects[i].update();
 		}
 
-		core.material.uniforms.time.value += .005;
-		core.rotation.y += .003;
+		// core.material.uniforms.time.value += .005;
+		// core.rotation.y += .003;
+
+		var speed = 5;
+		for (var i = 0; i < this.electrons.length; i++) {
+			if (this.electrons[i].position.z >= 1000){
+				this.electrons[i].position.z = 0;
+			}
+			this.electrons[i].position.z += speed*5;
+		}
 	}
 
 	collectTrash(){
@@ -834,7 +835,7 @@ class IceTube extends Item{
 		super(mesh, x, y, z);
 		this.mesh = mesh;
 		this.layers = layers;
-		this.speed = 3.5 + Math.random() * 3;
+		this.speed = 3 + Math.random() * 3;
 		this.private_x = 0 + Math.random() * 100;
 		if(Math.random() > 0.5) {
 			this.private_x *= -1;
