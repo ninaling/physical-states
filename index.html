@@ -72,22 +72,24 @@
             var atom16 = CreateSphere(x + 11.3, y + 8.8, z + 2.7, 0.8, 6, 6);
             var atom17 = CreateSphere(x + 11.3, y + 8.8, z - 2.7, 0.8, 6, 6);
 
-            var atom18 = CreateSphere(x + 14.8, y + 4.5, z);
-            var atom19 = CreateSphere(x + 15, y + 0.2, z);
+            var atom18 = CreateSphere(x + 18.3, y + 6, z);
+            var atom19 = CreateSphere(x + 15, y + 3.5, z);
 
-            var atom20 = CreateSphere(x + 15, y - 1, z - 3, 0.8, 6, 6);
+            var atom20 = CreateSphere(x + 15, y + 2, z - 3, 0.8, 6, 6);
 
-            var atom21 = CreateSphere(x + 14.8, y + 8.2, z, 0.8, 6, 6);
-            var atom22 = CreateSphere(x + 18.8, y + 6.6, z);
+            var atom21 = CreateSphere(x + 18.3, y + 8.8, z - 2.7, 0.8, 6, 6);
+            var atom22 = CreateSphere(x + 24.8, y + 6.6, z);
 
-            var atom23 = CreateSphere(x + 15, y - 1, z + 3);
+            var atom23 = CreateSphere(x + 15, y + 2, z + 3);
 
-            var atom24 = CreateSphere(x + 17, y + 9.2, z, 0.8, 6, 6);
-            var atom25 = CreateSphere(x + 21, y + 9.2, z, 0.8, 6, 6);
-            var atom26 = CreateSphere(x + 20, y + 4.2, z, 0.8, 6, 6);
-            var atom27 = CreateSphere(x + 20.6, y + 0.2, z + 0.2, 0.8, 6, 6);
-            var atom28 = CreateSphere(x + 20.5, y - 4.4, z, 0.8, 6, 6);
-            var atom29 = CreateSphere(x + 18, y - 4.8, z + 0.2, 0.8, 6, 6);
+            var atom24 = CreateSphere(x + 23, y + 9.2, z, 0.8, 6, 6);
+            var atom25 = CreateSphere(x + 27, y + 9.2, z, 0.8, 6, 6);
+            var atom26 = CreateSphere(x + 26, y + 4.2, z, 0.8, 6, 6);
+
+            //bottom, closest three
+            var atom27 = CreateSphere(x + 15, y + 4.3, z + 6, 0.8, 6, 6);
+            var atom28 = CreateSphere(x + 12.5, y + 0.5, z + 6, 0.8, 6, 6);
+            var atom29 = CreateSphere(x + 17.5, y + 0.5, z + 6, 0.8, 6, 6);
             //-3, -1.2, 0
             var Cylinder1 = CreateCylinder(x - 2.1, y - 0.8, z, 4, 2, 45, 0.3, 0.3);
             var Cylinder3 = CreateCylinder(x - 1.55, y + 5.4, z, -4, 2, 45, 0.3, 0.3);
@@ -108,21 +110,26 @@
 
             //third hexagon top
             var Cylinder18 = CreateCylinder(x + 11.5, y + 7.7, z + 1.5, 0, 0.5, -0.5);
-            var Cylinder19 = CreateCylinder(x + 11.5, y + 7.7, z - 1.5, 0, 0.5, 0.5);
+            var Cylinder19 = CreateCylinder(x + 11.5, y + 8, z - 1.5, 0, 0.5, 0.5);
 
             var Cylinder20 = CreateCylinder(x + 13.5, y + 5.2, z, -3, 2, 45, 0.3, 0.3);
 
-            var Cylinder22 = CreateCylinder(x + 15, y - 0.3, z - 2, 0, -0.1, 0.05, 0.3);
+            var Cylinder22 = CreateCylinder(x + 15, y + 2.7, z - 2, 0, -0.1, 0.05, 0.3);
 
-            var Cylinder23 = CreateCylinder(x + 14.8, y + 6.5, z, 0.3, -3, 20);
-            var Cylinder24 = CreateCylinder(x + 16.8, y + 5.4, z, 1.5, 1, 20, 0.3, 0.3);
-            var Cylinder25 = CreateCylinder(x + 15, y - 0.3, z + 2, 0, -0.1, -0.05, 0.3, 0.3);
-            var Cylinder26 = CreateCylinder(x + 18, y + 7.7, z, -1, 1.5, 20);
-            var Cylinder27 = CreateCylinder(x + 20, y + 7.7, z, 1.2, 1.5, 20);
-            var Cylinder28 = CreateCylinder(x + 19.2, y + 5.4, z + 0.4, -1.2, 2, -20);
-            var Cylinder29 = CreateCylinder(x + 20, y - 0.8, z + 0.4, 1.2, 2, -20);
-            var Cylinder30 = CreateCylinder(x + 18.4, y - 3.3, z + 0.4, -1.2, -2, -20);
-            var Cylinder31 = CreateCylinder(x + 20, y - 2.8, z - 0.2, -1.2, 2, -20);
+            //right top
+            var Cylinder23 = CreateCylinder(x + 18.3, y + 7.2, z - 1.2, 0, 0.5, 0.5);
+            var Cylinder32 = CreateCylinder(x + 16.3, y + 5.2, z + 0.5, -0.4, -0.3, -10, 0.3, 0.3);
+
+            var Cylinder24 = CreateCylinder(x + 22.8, y + 5.4, z, 1.5, 1, 20, 0.3, 0.3);
+            var Cylinder25 = CreateCylinder(x + 15, y + 2.7, z + 2, 0, -0.1, -0.05, 0.3, 0.3);
+            var Cylinder26 = CreateCylinder(x + 24, y + 7.7, z, -1, 1.5, 20);
+            var Cylinder27 = CreateCylinder(x + 26, y + 7.7, z, 1.2, 1.5, 20);
+            var Cylinder28 = CreateCylinder(x + 25.2, y + 5.4, z + 0.4, -1.2, 2, -20);
+
+            //bottom three
+            var Cylinder29 = CreateCylinder(x + 15, y + 3.2, z + 5, 0, 0.4, -0.5);
+            var Cylinder30 = CreateCylinder(x + 16.5, y + 1.2, z + 5, -0.5, 0.3, 1);
+            var Cylinder31 = CreateCylinder(x + 13.5, y + 1.2, z + 5, 0.5, 0.3, 1);
 
             var geometry1 = new THREE.CylinderGeometry(0.15, 0.2, 3, 3);
             var geometry3 = new THREE.CylinderGeometry(0.15, 0.2, 2, 3);
@@ -167,12 +174,12 @@
             group.add(atom16);
             group.add(atom17);
 
-            group.add(atom18);
+            group.add(atom18); //right top c 20
             group.add(atom19);
 
             group.add(atom20); // c 22 || a 23
 
-            group.add(atom21);
+            group.add(atom21); //right top c 23
             group.add(atom22);
 
             group.add(atom23); // c 25 || a 20
@@ -180,9 +187,12 @@
             group.add(atom24);
             group.add(atom25);
             group.add(atom26);
-            group.add(atom27)
-            group.add(atom28)
-            group.add(atom29)
+
+            //bottom, closest three
+            group.add(atom27) // c 29
+            group.add(atom28) // c 31
+            group.add(atom29) // c 30
+
             group.add(Cylinder);
             group.add(Cylinder1);
             group.add(Cylinder2);
@@ -210,9 +220,12 @@
             group.add(Cylinder19);
 
             group.add(Cylinder20);
-            group.add(Cylinder21);
+            // group.add(Cylinder21);//dont use
             group.add(Cylinder22); // a 20 || c 25
-            group.add(Cylinder23);
+
+            group.add(Cylinder23); // a 21
+            group.add(Cylinder32); // a 18
+
             group.add(Cylinder24);
 
             group.add(Cylinder25); // a 23 || c 22
@@ -220,9 +233,11 @@
             group.add(Cylinder26);
             group.add(Cylinder27);
             group.add(Cylinder28);
-            group.add(Cylinder29);
-            group.add(Cylinder30);
-            group.add(Cylinder31);
+
+            //bottom, closest three
+            group.add(Cylinder29); // a 27
+            group.add(Cylinder30); // a 29
+            group.add(Cylinder31); // a 28
 
             return group;
         }
@@ -235,7 +250,7 @@
 
       }
 
-      function CreateSphere(x, y, z, n = 1.5, k = 8, j = 8) {
+      function CreateSphere(x, y, z, n = 1.2, k = 8, j = 8) {
           var neheTexture = new THREE.ImageUtils.loadTexture("images.png");
           var geometry = new THREE.SphereGeometry(n, k, j);
           var material = new THREE.MeshLambertMaterial({
