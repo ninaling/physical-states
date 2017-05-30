@@ -48,5 +48,12 @@ void main()
 
 <script src="regl.min.js"></script>
 <script src="bower_components/tween.js/src/Tween.js"></script>
+<script>
+	var worker = new Worker('worker.js');
+	worker.onmessage = function(e){
+		console.log(e.data);
+		console.log('received message from worker');
+	}
+</script>
 <script src="script.js"></script>
 </html>

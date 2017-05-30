@@ -60,9 +60,9 @@ class WORLD{
 		camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, near, far);
 		camera.position.set(0, 0, 1000);
 
-		cubeCamera = new THREE.CubeCamera(100, 0, 256); //by default, set cubeCamera in same position as regular camera w/ same near/far
+		cubeCamera = new THREE.CubeCamera(.1, 5000, 256); //by default, set cubeCamera in same position as regular camera w/ same near/far
 		cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
-		cubeCamera.position.set(0, 0, 100);
+		cubeCamera.position.set(0, 0, 1000);
 		scene.add(cubeCamera);
 
 		renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
@@ -71,6 +71,8 @@ class WORLD{
 		renderer.shadowMapEnabled = true;
 		document.body.appendChild(renderer.domElement);
 		this.objects = [];
+		this.layers = [];
+		this.electrons = [];
 		this.zPositions = [];
 		this.lights = [];
 		this.scene = scene;
@@ -101,7 +103,7 @@ class WORLD{
 	populate(){
 
 		if (!coreSet){
-			var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/blue.jpg');
+			var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/meth.jpg');
 			sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
 			var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/cloud.png');
@@ -124,26 +126,65 @@ class WORLD{
 			});
 
 			core = new THREE.Mesh(new THREE.SphereGeometry(50, 40, 40), mat);
-			core.position.set(0, 0, 0);
+			core.position.set(0, 0, -4925);
 			this.scene.add(core);
 			coreSet = true;
 		}
 
-		for (var i=0; i< 1; i++){
-			temp = new IceTube(0, 0, 0, i*Math.PI/2, 1);
-			this.scene.add(temp.mesh);
-			this.objects.push(temp);
+		//POPULATE ELECTRONS
+
+		var ionSize = 16;
+		var dis = 20*ionSize/3;
+		ionSize *= 1.5;
+
+		var i, j, k;
+		var x, y, z;
+		var m;
+		var n = 3;
+		var numKLayers = (n*2)-3;
+
+		var egeo = new THREE.SphereGeometry(ionSize/15, 10, 10);
+		var emat = new THREE.MeshPhongMaterial({
+			color: COLORS.White,
+			reflectivity: .3,
+			metal: true,
+			shininess: 50
+		});
+
+
+		for(k=0; k<numKLayers*2; k++){
+
+		this.layers[k] = new THREE.Group();
+		this.electrons[k] = new THREE.Group();
+
+		i=j=0;
+		for(j=0; j<(n*2-1)+1; j++){
+			for(i=0; i<(n*2-1)+1; i++){
+				for (var m=0;m<2;m++){
+					var electron = new THREE.Mesh(egeo, emat);
+					electron.position.x += i*dis + (Math.random()-0.5)*dis;
+					electron.position.y -= j*dis + (Math.random()-0.5)*dis;
+					electron.position.z = 0;
+					this.electrons[k].add(electron);
+				}
+			}
 		}
 
-		// temp = new IceCube(0, 0, 900);
-		// // temp.mesh.rotation.x = Math.PI/2;
-		// this.scene.add(temp.mesh);
-
+		console.log(this.electrons[k]);
+		this.electrons[k].position.z -=k*dis;
+		this.scene.add(this.electrons[k]);
+	}
 	}
 
+	fillScene(molecule){
+		this.scene.add(molecule.mesh);
+		this.objects.push(molecule);
+	}
+
+
 	update(){
-		if(this.objects.length < 7) {
-			this.populate();
+		if(this.objects.length < 10) {
+			this.fillScene(new IceTube(0, 0, 0, 0, 1));
 		}
 
 		for (var i=0; i<this.objects.length; i++){
@@ -580,7 +621,7 @@ class MetalNode extends Atom{ //construct them with radius 1
 	}
 
 	mapToCube(cubeCamera){
-		for(var i=0; i<this.mesh.children.length; i++){
+		for(var i=0; i<1; i++){
 			this.mesh.children[i].material.envMap = cubeCamera.renderTarget;
 		}
 	}
