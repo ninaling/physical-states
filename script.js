@@ -93,53 +93,40 @@ class WORLD{
 		this.lights.push(directionalLight);
 	}
 
-	populate(){
-
-		var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg');
-		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
-
-		var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/cloud.png');
-		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
-
-		customUniforms = {
-		baseTexture: 	{ type: "t", value: sampleTexture },
-		baseSpeed: 		{ type: "f", value: 0.05 },
-		noiseTexture: 	{ type: "t", value: noiseTexture },
-		noiseScale:		{ type: "f", value: 0.5337 },
-		alpha: 			{ type: "f", value: 1.0 },
-		time: 			{ type: "f", value: 1.0 }
-		};
-
-		var mat = new THREE.ShaderMaterial({
-			uniforms: customUniforms,
-			vertexShader: document.getElementById('vertexShader').textContent,
-			fragmentShader: document.getElementById('fragmentShader').textContent,
-			map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+	populate(){	
+		var top, bottom;
+		var group = new THREE.Group();
+		var coneGeom = new THREE.CylinderGeometry(0, 50, 100, 8, 2);
+		var mat = new THREE.MeshPhongMaterial({
+			shininess: 25,
+			ambient: 0x050505,
+			specular: 0xffffff,
+			emissive: COLORS.Ice,
+			color: COLORS.Blue,
+			shading: 0
 		});
 
-		test = new THREE.Mesh(new THREE.SphereGeometry(10, 40, 40), mat);
-		test.position.set(0, 0, 950);
-		this.scene.add(test);
-		console.log(test);
+		top = new THREE.Mesh(coneGeom, mat);
+		top.position.y = 50;
 
-		// var ring = new TorusRing(50, 0, 0, 900);
-		// this.scene.add(ring.mesh);
-		// this.objects.push(ring);
+		bottom = top.clone();
+		bottom.position.y = -50;
+		bottom.rotation.x = Math.PI;
 
+		group.add(top);
+		group.add(bottom);
+		group.position.set(0, 0, 800);
+		temp = group;
 
-		// var tubes = [];
-		// iceTube = new IceTube(0, 0, 800, 0*Math.PI/2, 1);
-		// this.scene.add(iceTube.mesh);
-		// this.objects.push(iceTube);
-
+		this.scene.add(group);
 	}
 
 	update(){
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
-		test.material.uniforms.time.value += .005;
-		test.rotation.y += .003;
+		// test.material.uniforms.time.value += .005;
+		// test.rotation.y += .003;
 	}
 
 	collectTrash(){
@@ -257,6 +244,96 @@ class Molecule extends Item{
 		}
 	}
 }
+
+class Oxygen extends Atom{
+	constructor(radius, x, y, z){
+		var geom, innerGeom, mat, glowMat, mesh;
+
+		mesh = new THREE.Group();
+
+		geom = new THREE.SphereGeometry(radius, 30, 30);
+		innerGeom = new THREE.SphereGeometry(radius/10, 15, 15);
+
+		mat = new THREE.MeshPhongMaterial({
+			shininess: 25,
+			ambient: 0x050505,
+			specular: 0xffffff,
+			emissive: COLORS.Ice,
+			color: COLORS.Blue
+		});
+
+		glowMat = new THREE.ShaderMaterial( 
+		{
+		    uniforms: 
+			{ 
+				"c":   { type: "f", value: 1.0 },
+				"p":   { type: "f", value: 1.4 },
+				glowColor: { type: "c", value: new THREE.Color(COLORS.White) },
+				viewVector: { type: "v3", value: World.camera.position }
+			},
+			vertexShader:   document.getElementById( 'glowVertexShader'   ).textContent,
+			fragmentShader: document.getElementById( 'glowFragmentShader' ).textContent,
+			side: THREE.FrontSide,
+			blending: THREE.AdditiveBlending,
+			transparent: true
+		}  );
+
+		mesh.add(new THREE.Mesh(geom, glowMat));
+		mesh.add(new THREE.Mesh(innerGeom, mat));
+		mesh.position.set(x, y, z);
+		super(mesh, x, y, z);
+		return this;
+	}
+}
+
+class Hydrogen extends Atom{
+	constructor(radius, x, y, z){
+		var geom, mat, glowMat, mesh;
+		geom = new THREE.SphereGeometry(radius, 30, 30);
+
+		mat = new THREE.MeshPhongMaterial({
+			shininess: 25,
+			ambient: 0x050505,
+			specular: 0xffffff,
+			emissive: COLORS.Ice,
+			color: COLORS.Blue
+		});
+
+		mesh = new THREE.Mesh(geom, mat);
+		mesh.position.set(x, y, z);
+		super(mesh, x, y, z);
+		return this;
+	}
+}
+
+class Water extends Molecule{
+	constructor(x, y, z){
+		var oxygen, hydrogen, hydrogen2, mesh;
+		var atoms = [];
+
+		mesh = new THREE.Group();
+
+		oxygen = new Oxygen(30, 0, 0, 0);
+
+		hydrogen = new Hydrogen(15, 0, 0, 0);
+		hydrogen.mesh.position.set(-40, -40, 0);
+		hydrogen2 = new Hydrogen(15, 0, 0, 0);
+		hydrogen2.mesh.position.set(40, -40, 0);
+
+		atoms.push(oxygen);
+		atoms.push(hydrogen);
+		atoms.push(hydrogen2);
+
+		mesh.add(oxygen.mesh);
+		mesh.add(hydrogen.mesh);
+		mesh.add(hydrogen2.mesh);
+
+		mesh.position.set(x, y, z);
+
+		super(mesh, x, y, z, atoms);
+	}
+}
+
 
 class iceNucleus extends Atom{
 	constructor(x, y, z){
