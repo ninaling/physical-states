@@ -48,7 +48,7 @@ function float(){
 
 class WORLD{
 	constructor(){ //initialize scene
-		var scene, camera, cubeCamera, aspectRatio, near, far, fieldOfView, renderer; //cube camera isn't necessary, but use it to test 
+		var scene, camera, cubeCamera, waterCubeCamera, aspectRatio, near, far, fieldOfView, renderer; //cube camera isn't necessary, but use it to test 
 
 		scene = new THREE.Scene();
 		scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
@@ -65,6 +65,11 @@ class WORLD{
 		cubeCamera.position.set(0, 0, 900);
 		scene.add(cubeCamera);
 
+		waterCubeCamera = new THREE.CubeCamera(near, 1000, 256);
+		waterCubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
+		waterCubeCamera.position.set(0, 0, 975);
+		scene.add(waterCubeCamera);
+
 		renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 		renderer.setClearColor(COLORS.DarkBlue);
 		renderer.setSize(WIDTH, HEIGHT);
@@ -76,6 +81,7 @@ class WORLD{
 		this.scene = scene;
 		this.camera = camera;
 		this.cubeCamera = cubeCamera;
+		this.waterCubeCamera = waterCubeCamera;
 		this.renderer = renderer;
 		return this;
 	}
@@ -93,38 +99,30 @@ class WORLD{
 		this.lights.push(directionalLight);
 	}
 
-	populate(){	
-		var top, bottom;
-		var group = new THREE.Group();
-		var coneGeom = new THREE.CylinderGeometry(0, 50, 100, 8, 2);
-		var mat = new THREE.MeshPhongMaterial({
-			shininess: 25,
-			ambient: 0x050505,
-			specular: 0xffffff,
-			emissive: COLORS.Ice,
-			color: COLORS.Blue,
-			shading: 0
-		});
+	populate(){
+		temp = new WaterCrystal(100, 0, 0, 955);
 
-		top = new THREE.Mesh(coneGeom, mat);
-		top.position.y = 50;
+		temp.mapToCube(this.waterCubeCamera);
+		this.scene.add(temp.mesh);
+		this.objects.push(temp);
 
-		bottom = top.clone();
-		bottom.position.y = -50;
-		bottom.rotation.x = Math.PI;
-
-		group.add(top);
-		group.add(bottom);
-		group.position.set(0, 0, 800);
-		temp = group;
-
-		this.scene.add(group);
+		var angle, posX, posY, posZ;
+		for (var i=0; i<50; i++){
+			angle = Math.random() * 2*Math.PI;
+			posX = 30*Math.cos(angle);
+			posY = 2.5*Math.sin(Math.random());
+			posZ = 950 + 30*Math.sin(angle);
+			temp2 = new Water(1, posX, posY, posZ);
+			this.scene.add(temp2.mesh);
+			this.objects.push(temp2);
+		}
 	}
 
 	update(){
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
+		temp.mesh.rotation.y += .005;
 		// test.material.uniforms.time.value += .005;
 		// test.rotation.y += .003;
 	}
@@ -245,6 +243,44 @@ class Molecule extends Item{
 	}
 }
 
+class WaterCrystal extends Molecule{
+	constructor(height, x, y, z){
+		var mesh, top, bottom, coneGeom, mat;
+		var atoms = [];
+
+		mesh = new THREE.Group();
+		coneGeom = new THREE.CylinderGeometry(0, height/4, height/2, 8);
+
+		mat = new THREE.MeshBasicMaterial({transparent: true, opacity: 1});
+
+		top = new THREE.Mesh(coneGeom, mat);
+		top.position.y = height/4;
+
+		bottom = top.clone();
+		bottom.position.y = -height/4;
+		bottom.rotation.x = Math.PI;
+
+		// mesh.add(top);
+		// mesh.add(bottom);
+		mesh.add(new THREE.Mesh(new THREE.SphereGeometry(20, 30, 30), mat));
+		mesh.position.set(x, y, z);
+
+		super(mesh, x, y, z, atoms);
+		this.cubeCamera = World.waterCubeCamera;
+	}
+
+	mapToCube(cubeCamera){
+		for(var i=0; i<this.mesh.children.length; i++){
+			this.mesh.children[i].material.envMap = cubeCamera.renderTarget;
+		}
+	}
+
+	update(){
+		this.mesh.rotation.y += .005;
+		this.cubeCamera.updateCubeMap(World.renderer, World.scene);
+	}
+}
+
 class Oxygen extends Atom{
 	constructor(radius, x, y, z){
 		var geom, innerGeom, mat, glowMat, mesh;
@@ -307,18 +343,18 @@ class Hydrogen extends Atom{
 }
 
 class Water extends Molecule{
-	constructor(x, y, z){
+	constructor(size, x, y, z){
 		var oxygen, hydrogen, hydrogen2, mesh;
 		var atoms = [];
 
 		mesh = new THREE.Group();
 
-		oxygen = new Oxygen(30, 0, 0, 0);
+		oxygen = new Oxygen(size/2, 0, 0, 0);
 
-		hydrogen = new Hydrogen(15, 0, 0, 0);
-		hydrogen.mesh.position.set(-40, -40, 0);
-		hydrogen2 = new Hydrogen(15, 0, 0, 0);
-		hydrogen2.mesh.position.set(40, -40, 0);
+		hydrogen = new Hydrogen(size/4, 0, 0, 0);
+		hydrogen.mesh.position.set(-size/1.5, -size/1.5, 0);
+		hydrogen2 = new Hydrogen(size/4, 0, 0, 0);
+		hydrogen2.mesh.position.set(size/1.5, -size/1.5, 0);
 
 		atoms.push(oxygen);
 		atoms.push(hydrogen);
@@ -331,6 +367,25 @@ class Water extends Molecule{
 		mesh.position.set(x, y, z);
 
 		super(mesh, x, y, z, atoms);
+		this.angle = Math.random()*Math.PI*2;
+		this.speed = Math.random();
+	}
+
+	update(){
+		this.mesh.position.x = 30*Math.cos(this.angle);
+		this.mesh.position.z = 950 + 30*Math.sin(this.angle);
+		this.mesh.position.y += Math.sin(this.angle);
+
+		this.mesh.rotation.z += this.speed*.05;
+		this.mesh.rotation.y += this.speed*.05;
+		// console.log(Math.cos(this.angle));
+		if (this.angle >= Math.PI*2){
+			console.log('angle limit');
+			this.angle = 0;
+		}
+		else{
+			this.angle += this.speed*.005;
+		}
 	}
 }
 
