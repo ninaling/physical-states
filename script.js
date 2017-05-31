@@ -65,9 +65,11 @@ class WORLD{
 		cubeCamera.position.set(0, 0, 900);
 		scene.add(cubeCamera);
 
-		waterCubeCamera = new THREE.CubeCamera(near, 1000, 256);
+		waterCubeCamera = new THREE.CubeCamera(near, far, 256);
 		waterCubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
-		waterCubeCamera.position.set(0, 0, 975);
+		waterCubeCamera.position.set(0, 0, 760);
+		waterCubeCamera.lookAt(new THREE.Vector3(0, 0, 900));
+
 		scene.add(waterCubeCamera);
 
 		renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
@@ -100,25 +102,52 @@ class WORLD{
 	}
 
 	populate(){
-		temp = new WaterCrystal(100, 0, 0, 955);
+		// temp = new WaterCrystal(100, 0, 0, 955);
 
-		temp.mapToCube(this.waterCubeCamera);
-		this.scene.add(temp.mesh);
-		this.objects.push(temp);
+		// temp.mapToCube(this.waterCubeCamera);
+		// this.scene.add(temp.mesh);
+		// this.objects.push(temp);
 
 		var angle, posX, posY, posZ;
-		for (var i=0; i<50; i++){
-			angle = Math.random() * 2*Math.PI;
-			posX = 30*Math.cos(angle);
-			posY = 2.5*Math.sin(Math.random());
-			posZ = 950 + 30*Math.sin(angle);
-			temp2 = new Water(1, posX, posY, posZ);
-			this.scene.add(temp2.mesh);
+		// for (var i=0; i<50; i++){
+		// 	angle = Math.random() * 2*Math.PI;
+		// 	posX = 30*Math.cos(angle);
+		// 	posY = 2.5*Math.sin(Math.random());
+		// 	posZ = 950 + 30*Math.sin(angle);
+		// 	temp2 = new Water(1, posX, posY, posZ);
+		// 	this.scene.add(temp2.mesh);
+		// 	this.objects.push(temp2);
+		// }
+
+		var domeRadius = 50;
+		var birthRadius = domeRadius/10; //match the upper radius of dome
+
+		for (var i=0; i<25; i++){
+			angle = Math.random() *2*Math.PI;
+			posX = Math.random()*birthRadius*Math.cos(angle);
+			posY = Math.random()*birthRadius*Math.sin(angle);
+			temp2 = new Water(1, angle, posX, posY, 750);
 			this.objects.push(temp2);
+			this.scene.add(temp2.mesh);
 		}
+
+		temp = new WaterDome(domeRadius, 500, 0, 0, 1000);
+		temp.mapToCube(this.waterCubeCamera);
+		this.objects.push(temp);
+		this.scene.add(temp.mesh);
 	}
 
 	update(){
+		if(this.objects.length<50){
+			var angle, posX, posY, birthRadius;
+			birthRadius = WIDTH/100;
+			angle = Math.random() *2*Math.PI;
+			posX = Math.random()*birthRadius*Math.cos(angle);
+			posY = Math.random()*birthRadius*Math.sin(angle);
+			temp2 = new Water(1, angle, posX, posY, 900);
+			this.objects.push(temp2);
+			this.scene.add(temp2.mesh);
+		}
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
@@ -243,6 +272,33 @@ class Molecule extends Item{
 	}
 }
 
+class WaterDome extends Item{
+	constructor(radius, height, x, y, z){
+		var mesh, geom, mat;
+
+		geom = new THREE.CylinderGeometry(radius/10, radius, height, 3, 1, true);
+
+		mat = new THREE.MeshBasicMaterial({transparent: true, opacity: 1});
+		mat.side = THREE.DoubleSide; //see inside
+
+		mesh = new THREE.Mesh(geom, mat);
+		mesh.position.set(x, y, z); //place where the camera is
+		mesh.rotation.x = -Math.PI/2;
+
+		super(mesh, x, y, z);
+	}
+
+	mapToCube(cubeCamera){
+		this.mesh.material.envMap = cubeCamera.renderTarget;
+		this.cubeCamera = World.waterCubeCamera;
+	}
+
+	update(){
+		this.mesh.rotation.y += .005;
+		this.cubeCamera.updateCubeMap(World.renderer, World.scene);
+	}
+}
+
 class WaterCrystal extends Molecule{
 	constructor(height, x, y, z){
 		var mesh, top, bottom, coneGeom, mat;
@@ -260,9 +316,9 @@ class WaterCrystal extends Molecule{
 		bottom.position.y = -height/4;
 		bottom.rotation.x = Math.PI;
 
-		// mesh.add(top);
-		// mesh.add(bottom);
-		mesh.add(new THREE.Mesh(new THREE.SphereGeometry(20, 30, 30), mat));
+		mesh.add(top);
+		mesh.add(bottom);
+		// mesh.add(new THREE.Mesh(new THREE.SphereGeometry(20, 30, 30), mat));
 		mesh.position.set(x, y, z);
 
 		super(mesh, x, y, z, atoms);
@@ -343,7 +399,7 @@ class Hydrogen extends Atom{
 }
 
 class Water extends Molecule{
-	constructor(size, x, y, z){
+	constructor(size, angle, x, y, z){
 		var oxygen, hydrogen, hydrogen2, mesh;
 		var atoms = [];
 
@@ -367,25 +423,33 @@ class Water extends Molecule{
 		mesh.position.set(x, y, z);
 
 		super(mesh, x, y, z, atoms);
-		this.angle = Math.random()*Math.PI*2;
+		this.angle = angle;
 		this.speed = Math.random();
 	}
 
 	update(){
-		this.mesh.position.x = 30*Math.cos(this.angle);
-		this.mesh.position.z = 950 + 30*Math.sin(this.angle);
-		this.mesh.position.y += Math.sin(this.angle);
+		// this.mesh.position.x = 30*Math.cos(this.angle);
+		// this.mesh.position.z = 950 + 30*Math.sin(this.angle);
+		// this.mesh.position.y = 20*Math.sin(this.angle);
+
+		// this.mesh.rotation.z += this.speed*.05;
+		// this.mesh.rotation.y += this.speed*.05;
+		// // console.log(Math.cos(this.angle));
+		// if (this.angle >= Math.PI*2){
+		// 	console.log('angle limit');
+		// 	this.angle = 0;
+		// }
+		// else{
+		// 	this.angle += this.speed*.005;
+		// }
+
+		// this.mesh.position.z += .05;
+		// this.mesh.position.y = 20*Math.sin(this.angle);
 
 		this.mesh.rotation.z += this.speed*.05;
 		this.mesh.rotation.y += this.speed*.05;
-		// console.log(Math.cos(this.angle));
-		if (this.angle >= Math.PI*2){
-			console.log('angle limit');
-			this.angle = 0;
-		}
-		else{
-			this.angle += this.speed*.005;
-		}
+
+		this.mesh.position.z += this.speed*.5;
 	}
 }
 
