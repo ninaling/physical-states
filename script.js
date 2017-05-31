@@ -21,6 +21,7 @@ var reflectiveMaterial;
 var canPopulate = true; //use this to control intervals between adding molecules
 var domeRadius = 50;
 var birthRadius = domeRadius/10;
+var TITLE;
 
 //auxillary functions
 function loop(){
@@ -48,7 +49,6 @@ function addWater(){
 var requestId;
 function collapseWorld(){
 	if(World.collapse()){
-		console.log("completed");
 		window.cancelAnimationFrame(requestId);
 		return;
 	}
@@ -78,12 +78,12 @@ class WORLD{
 		camera.position.set(0, 0, 1000);
 
 		cubeCamera = new THREE.CubeCamera(near, far, 256); //by default, set cubeCamera in same position as regular camera w/ same near/far
-		cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
+		cubeCamera.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
 		cubeCamera.position.set(0, 0, 900);
 		scene.add(cubeCamera);
 
 		waterCubeCamera = new THREE.CubeCamera(near, far, 256);
-		waterCubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
+		waterCubeCamera.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
 		waterCubeCamera.position.set(0, 0, 980);
 
 		scene.add(waterCubeCamera);
@@ -91,7 +91,7 @@ class WORLD{
 		renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 		renderer.setClearColor(COLORS.DarkBlue);
 		renderer.setSize(WIDTH, HEIGHT);
-		renderer.shadowMapEnabled = true;
+		renderer.shadowMap.enabled = true;
 		document.body.appendChild(renderer.domElement);
 		this.objects = [];
 		this.zPositions = [];
@@ -119,32 +119,6 @@ class WORLD{
 	}
 
 	populate(){
-		// temp = new WaterCrystal(100, 0, 0, 955);
-
-		// temp.mapToCube(this.waterCubeCamera);
-		// this.scene.add(temp.mesh);
-		// this.objects.push(temp);
-
-		var angle, posX, posY, posZ;
-		// for (var i=0; i<50; i++){
-		// 	angle = Math.random() * 2*Math.PI;
-		// 	posX = 30*Math.cos(angle);
-		// 	posY = 2.5*Math.sin(Math.random());
-		// 	posZ = 950 + 30*Math.sin(angle);
-		// 	temp2 = new Water(1, posX, posY, posZ);
-		// 	this.scene.add(temp2.mesh);
-		// 	this.objects.push(temp2);
-		// }
-
-		// for (var i=0; i<50; i++){
-		// 	angle = Math.random() *2*Math.PI;
-		// 	posX = Math.random()*birthRadius*Math.cos(angle);
-		// 	posY = Math.random()*birthRadius*Math.sin(angle);
-		// 	temp2 = new Water(1, angle, posX, posY, 750);
-		// 	this.objects.push(temp2);
-		// 	this.scene.add(temp2.mesh);
-		// }
-
 		temp = new WaterDome(domeRadius, 500, 0, 0, 1000);
 		temp.mapToCube(this.waterCubeCamera);
 		this.objects.push(temp);
@@ -152,7 +126,7 @@ class WORLD{
 	}
 
 	togglePopulate(){
-		console.log('tog');
+
 		if (this.canPopulate)
 			this.canPopulate = false;
 		else
@@ -165,7 +139,6 @@ class WORLD{
 	}
 
 	update(){
-		console.log(this.canPopulate);
 		if (this.objects.length<25 && this.canPopulate){
 			var angle, posX, posY;
 			angle = Math.random() *2*Math.PI;
@@ -309,6 +282,31 @@ class Molecule extends Item{
 	}
 }
 
+class Title extends Item{
+	constructor(text, x, y, z){
+		var geometry;
+		var loader = new THREE.FontLoader();
+		loader.load('/assets/PressGothic.json', function(font){
+			geometry = new THREE.TextGeometry(text, {
+				font: font,
+				size: 80,
+				height: 3,
+				curveSegments: 12,
+			});
+		});
+		var mat = new THREE.MeshPhongMaterial({
+			shininess: 25,
+			specular: 0xffffff,
+			emissive: COLORS.Ice,
+			color: COLORS.Blue
+		});
+
+		var mesh = new THREE.Mesh(geometry, mat);
+		mesh.position.set(x, y, z);
+		super(mesh, x, y, z);
+	}
+}
+
 class WaterDome extends Item{
 	constructor(radius, height, x, y, z){
 		var mesh, geom, mat;
@@ -385,7 +383,6 @@ class Oxygen extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			color: COLORS.Blue
@@ -422,7 +419,6 @@ class Hydrogen extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			color: COLORS.Blue
@@ -500,7 +496,6 @@ class iceNucleus extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			color: COLORS.Blue
@@ -555,7 +550,6 @@ class Triangle extends Atom{
 
 			mat = new THREE.MeshPhongMaterial({
 				shininess: 25,
-				ambient: 0x050505,
 				specular: 0xffffff,
 				emissive: color,
 				// transparent: true,
@@ -606,7 +600,6 @@ class Torus extends Atom{
 		var geom = new THREE.TorusGeometry( radius, 2, 5, 7);
 		var mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			opacity: .8,
@@ -722,7 +715,6 @@ class Lightning extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 50,
-			ambient: 0x050505,
 			emissive: COLORS.Ice,
 			wireframe: true,
 			wireframeLinecap: "round",
@@ -883,7 +875,6 @@ class LightningCircle extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 50,
-			ambient: 0x050505,
 			emissive: COLORS.Ice,
 			wireframe: true,
 			wireframeLinecap: "round",
@@ -928,7 +919,6 @@ class IceCube extends Atom{
 		var mesh = new THREE.Group();
 		var mat = new THREE.MeshPhongMaterial({ //use this material for the cylinder (inner)
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			color: COLORS.Blue
@@ -971,7 +961,7 @@ class IceTube extends Item{
 		var layers = [];
 
 		var cubeCamera = new THREE.CubeCamera(World.near, World.far, 256);
-		cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
+		cubeCamera.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
 		cubeCamera.position.set(x, y, z+120); //set right in front of the layer
 		// World.scene.add(cubeCamera);
 
