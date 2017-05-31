@@ -18,6 +18,7 @@ var customUniforms;
 var iceTube;
 var meth = []; var temp; var temp2; var temp3; var neg = -1; var fog; var gasherbrum; var torusRing; var metalNode; var metalLayer; var metalLayer2; var background;
 var reflectiveMaterial;
+var canPopulate = true; //use this to control intervals between adding molecules
 var domeRadius = 50;
 var birthRadius = domeRadius/10;
 
@@ -28,6 +29,13 @@ function loop(){
 	// World.camera.position.z -= 1.5;
 	World.renderer.render(World.scene, World.camera);
 	window.requestAnimationFrame(loop);
+}
+
+function togglePopulate(){
+	if (canPopulate)
+		canPopulate = false;
+	else
+		canPopulate = true;
 }
 
 var requestId;
@@ -120,14 +128,14 @@ class WORLD{
 		// 	this.objects.push(temp2);
 		// }
 
-		for (var i=0; i<50; i++){
-			angle = Math.random() *2*Math.PI;
-			posX = Math.random()*birthRadius*Math.cos(angle);
-			posY = Math.random()*birthRadius*Math.sin(angle);
-			temp2 = new Water(1, angle, posX, posY, 750);
-			this.objects.push(temp2);
-			this.scene.add(temp2.mesh);
-		}
+		// for (var i=0; i<50; i++){
+		// 	angle = Math.random() *2*Math.PI;
+		// 	posX = Math.random()*birthRadius*Math.cos(angle);
+		// 	posY = Math.random()*birthRadius*Math.sin(angle);
+		// 	temp2 = new Water(1, angle, posX, posY, 750);
+		// 	this.objects.push(temp2);
+		// 	this.scene.add(temp2.mesh);
+		// }
 
 		temp = new WaterDome(domeRadius, 500, 0, 0, 1000);
 		temp.mapToCube(this.waterCubeCamera);
@@ -136,17 +144,19 @@ class WORLD{
 	}
 
 	update(){
-		if(this.objects.length<50){
+		if(this.objects.length<50 && canPopulate){
 			var angle, posX, posY;
 			angle = Math.random() *2*Math.PI;
 			posX = Math.random()*birthRadius*Math.cos(angle);
 			posY = Math.random()*birthRadius*Math.sin(angle);
-			temp2 = new Water(1, angle, posX, posY, 900);
-			temp3 = new Water(1, angle, posX+5, posY-5, 900);
+			temp2 = new Water(1, angle, posX, posY, 750);
+			temp3 = new Water(1, angle, posX+10*Math.random(), posY+5*Math.random(), 750);
 			this.objects.push(temp2);
 			this.objects.push(temp3);
 			this.scene.add(temp2.mesh);
 			this.scene.add(temp3.mesh);
+			canPopulate = false;
+			setTimeout(togglePopulate, 250);
 		}
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
