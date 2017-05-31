@@ -16,8 +16,10 @@ const ORIGIN = new THREE.Vector3(0, 0, 0);
 var test;
 var customUniforms;
 var iceTube;
-var meth = []; var temp; var temp2; var neg = -1; var fog; var gasherbrum; var torusRing; var metalNode; var metalLayer; var metalLayer2; var background;
+var meth = []; var temp; var temp2; var temp3; var neg = -1; var fog; var gasherbrum; var torusRing; var metalNode; var metalLayer; var metalLayer2; var background;
 var reflectiveMaterial;
+var domeRadius = 50;
+var birthRadius = domeRadius/10;
 
 //auxillary functions
 function loop(){
@@ -67,8 +69,7 @@ class WORLD{
 
 		waterCubeCamera = new THREE.CubeCamera(near, far, 256);
 		waterCubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
-		waterCubeCamera.position.set(0, 0, 760);
-		waterCubeCamera.lookAt(new THREE.Vector3(0, 0, 900));
+		waterCubeCamera.position.set(0, 0, 775);
 
 		scene.add(waterCubeCamera);
 
@@ -119,10 +120,7 @@ class WORLD{
 		// 	this.objects.push(temp2);
 		// }
 
-		var domeRadius = 50;
-		var birthRadius = domeRadius/10; //match the upper radius of dome
-
-		for (var i=0; i<25; i++){
+		for (var i=0; i<50; i++){
 			angle = Math.random() *2*Math.PI;
 			posX = Math.random()*birthRadius*Math.cos(angle);
 			posY = Math.random()*birthRadius*Math.sin(angle);
@@ -139,14 +137,16 @@ class WORLD{
 
 	update(){
 		if(this.objects.length<50){
-			var angle, posX, posY, birthRadius;
-			birthRadius = WIDTH/100;
+			var angle, posX, posY;
 			angle = Math.random() *2*Math.PI;
 			posX = Math.random()*birthRadius*Math.cos(angle);
 			posY = Math.random()*birthRadius*Math.sin(angle);
 			temp2 = new Water(1, angle, posX, posY, 900);
+			temp3 = new Water(1, angle, posX+5, posY-5, 900);
 			this.objects.push(temp2);
+			this.objects.push(temp3);
 			this.scene.add(temp2.mesh);
+			this.scene.add(temp3.mesh);
 		}
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
@@ -276,7 +276,7 @@ class WaterDome extends Item{
 	constructor(radius, height, x, y, z){
 		var mesh, geom, mat;
 
-		geom = new THREE.CylinderGeometry(radius/10, radius, height, 3, 1, true);
+		geom = new THREE.CylinderGeometry(radius/5, radius, height, 3, 1, true);
 
 		mat = new THREE.MeshBasicMaterial({transparent: true, opacity: 1});
 		mat.side = THREE.DoubleSide; //see inside
