@@ -31,11 +31,18 @@ function loop(){
 	window.requestAnimationFrame(loop);
 }
 
-function togglePopulate(){
-	if (canPopulate)
-		canPopulate = false;
-	else
-		canPopulate = true;
+function addWater(){
+	var angle, posX, posY;
+	angle = Math.random() *2*Math.PI;
+	posX = Math.random()*birthRadius*Math.cos(angle);
+	posY = Math.random()*birthRadius*Math.sin(angle);
+	temp2 = new Water(1, angle, posX, posY, 1000);
+
+	World.addMolecule(temp2);
+
+	canPopulate = false;
+
+	setTimeout(World.togglePopulate, 300); //cannot populate for another .3s
 }
 
 var requestId;
@@ -77,7 +84,7 @@ class WORLD{
 
 		waterCubeCamera = new THREE.CubeCamera(near, far, 256);
 		waterCubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
-		waterCubeCamera.position.set(0, 0, 775);
+		waterCubeCamera.position.set(0, 0, 980);
 
 		scene.add(waterCubeCamera);
 
@@ -94,6 +101,7 @@ class WORLD{
 		this.cubeCamera = cubeCamera;
 		this.waterCubeCamera = waterCubeCamera;
 		this.renderer = renderer;
+		this.canPopulate = true;
 		return this;
 	}
 
@@ -143,21 +151,36 @@ class WORLD{
 		this.scene.add(temp.mesh);
 	}
 
+	togglePopulate(){
+		console.log('tog');
+		if (this.canPopulate)
+			this.canPopulate = false;
+		else
+			this.canPopulate = true;
+	}
+
+	addMolecule(molecule){
+		this.objects.push(molecule);
+		this.scene.add(molecule.mesh);
+	}
+
 	update(){
-		if(this.objects.length<50 && canPopulate){
+		console.log(this.canPopulate);
+		if (this.objects.length<25 && this.canPopulate){
 			var angle, posX, posY;
 			angle = Math.random() *2*Math.PI;
 			posX = Math.random()*birthRadius*Math.cos(angle);
 			posY = Math.random()*birthRadius*Math.sin(angle);
-			temp2 = new Water(1, angle, posX, posY, 750);
-			temp3 = new Water(1, angle, posX+10*Math.random(), posY+5*Math.random(), 750);
+			temp2 = new Water(1, angle, posX, posY, 1000);
 			this.objects.push(temp2);
-			this.objects.push(temp3);
 			this.scene.add(temp2.mesh);
-			this.scene.add(temp3.mesh);
-			canPopulate = false;
-			setTimeout(togglePopulate, 250);
+			this.canPopulate = false;
+			var _this = this;
+			setTimeout(function(){
+				_this.togglePopulate();
+			}, 900);
 		}
+
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
@@ -168,7 +191,7 @@ class WORLD{
 
 	collectTrash(){
 		for (var i=0; i<this.objects.length; i++){ //if past camera, remove from scene and delete from array
-			if (this.objects[i].pastCamera()){
+			if (this.objects[i].pastCamera() || this.objects[i].outOfRange()){
 				this.scene.remove(this.objects[i].mesh);
 				this.objects.splice(i, 1);
 			}
@@ -256,6 +279,10 @@ class Item{
 
 	pastCamera(){
 		return this.mesh.position.z > World.camera.position.z;
+	}
+
+	outOfRange(){
+		return this.mesh.position.z < -700; //set max far to -1000
 	}
 
 	update(){ //default update
@@ -459,7 +486,7 @@ class Water extends Molecule{
 		this.mesh.rotation.z += this.speed*.05;
 		this.mesh.rotation.y += this.speed*.05;
 
-		this.mesh.position.z += this.speed*.5;
+		this.mesh.position.z -= this.speed*.5;
 	}
 }
 
@@ -1007,6 +1034,8 @@ function handleMouseMove(e){
     mouse.x = e.clientX;
     mouse.y = e.clientY;
 }
+
+window.addEventListener('mousedown', addWater);
 
 // window.addEventListener('mousemove', handleMouseMove);
 
