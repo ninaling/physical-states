@@ -453,12 +453,12 @@ class Water extends Molecule{
 		hydrogen2.mesh.position.set(size/1.5, -size/1.5, 0);
 
 		atoms.push(oxygen);
-		// atoms.push(hydrogen);
-		// atoms.push(hydrogen2);
+		atoms.push(hydrogen);
+		atoms.push(hydrogen2);
 
 		mesh.add(oxygen.mesh);
-		// mesh.add(hydrogen.mesh);
-		// mesh.add(hydrogen2.mesh);
+		mesh.add(hydrogen.mesh);
+		mesh.add(hydrogen2.mesh);
 
 		mesh.position.set(x, y, z);
 
