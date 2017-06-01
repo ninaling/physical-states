@@ -58,7 +58,8 @@ var spawnIce = function(e){
 	}
 
 	var radius = .5;
-	temp = new IceRing(radius, x, y, 980);
+	z = 900 + Math.random()*80;
+	temp = new IceRing(radius, 15, 5, z);
 	World.scene.add(temp.mesh);
 	World.objects.push(temp);
 }
@@ -146,18 +147,22 @@ class WORLD{
 	}
 
 	populate(){
-		globalIceSphere = new GlobalIceSphere(50, 0, 0, 1000);
+		globalIceSphere = new GlobalIceSphere(50, 0, 0, 950);
 		globalIceSphere.mapToCube(this.cubeCamera);
 		this.scene.add(globalIceSphere.mesh);
 		this.objects.push(globalIceSphere);
 
-		temp = new IceRing(.5, 0, 0, 980);
-		this.scene.add(temp.mesh);
-		this.objects.push(temp);
+		// temp = new IceRing(.5, 0, 0, 980);
+		// this.scene.add(temp.mesh);
+		// this.objects.push(temp);
 
-		temp2 = new IceCube(1, 0, 0, 990);
-		this.scene.add(temp2.mesh);
-		this.objects.push(temp2);
+		// temp2 = new IceCube(5, 0, 0, 950);
+		// this.scene.add(temp2.mesh);
+		// this.objects.push(temp2);
+
+		// temp = new THREE.Mesh(new THREE.SphereGeometry(5, 30, 30), new THREE.MeshBasicMaterial({color: 0xff0000}));
+		// temp.position.set(0, 0, 980);
+		// this.scene.add(temp);
 	}
 
 	togglePopulate(){
@@ -176,7 +181,7 @@ class WORLD{
 		for(var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
-		this.camera.position.z -= .5;
+		// this.camera.position.z -= .5;
 	}
 
 	collectTrash(){
@@ -365,10 +370,31 @@ class IceRing extends Molecule{
 class GlobalIceSphere extends Item{
 	constructor(radius, x, y, z){
 		var mesh, geom, mat;
+		var sampleTexture = new THREE.TextureLoader().load('/assets/images/graphite.jpg');
+		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
+		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+		var customUniforms = {
+			baseTexture: 	{ type: "t", value: sampleTexture },
+			baseSpeed: 		{ type: "f", value: 0.01 },
+			noiseTexture: 	{ type: "t", value: noiseTexture },
+			noiseScale:		{ type: "f", value: 0.5 },
+			alpha: 			{ type: "f", value: 1.0 },
+			time: 			{ type: "f", value: 1.0 }
+		};
+
+		var mat = new THREE.ShaderMaterial({
+			uniforms: customUniforms,
+			vertexShader: document.getElementById('vertexShader').textContent,
+			fragmentShader: document.getElementById('fragmentShader').textContent,
+			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+		});
 
 		geom = new THREE.SphereGeometry(radius, 30, 30);
 
-		mat = new THREE.MeshBasicMaterial({transparent: true, opacity: 1});
+		// mat = new THREE.MeshBasicMaterial({transparent: true, opacity: 1});
 		mat.side = THREE.DoubleSide; //see inside
 
 		mesh = new THREE.Mesh(geom, mat);
@@ -384,36 +410,37 @@ class GlobalIceSphere extends Item{
 	}
 
 	distort(){
-		// var i=0;
-		// var _this = this;
-		// var interval = setInterval(function(){
-		// 	if (i > 150){
-		// 		clearInterval(interval);
-		// 		return;
-		// 	}
-		// 	if (i<110){
-		// 		_this.mesh.material.uniforms.time.value += .15;
-		// 	}
-		// 	else if (i<120){
-		// 		_this.mesh.material.uniforms.time.value += .05;
-		// 	}
-		// 	else if (i<130){
-		// 		_this.mesh.material.uniforms.time.value += .02;
-		// 	}
-		// 	else if (i<140){
-		// 		_this.mesh.material.uniforms.time.value += .01;
-		// 	}
-		// 	else{
-		// 		_this.mesh.material.uniforms.time.value += .005;
-		// 	}
-		// 	i++;
-		// }, 5);
+		var i=0;
+		var _this = this;
+		var interval = setInterval(function(){
+			if (i > 200){
+				clearInterval(interval);
+				return;
+			}
+			if (i<150){
+				_this.mesh.material.uniforms.time.value += .35;
+			}
+			else if (i<160){
+				_this.mesh.material.uniforms.time.value += .05;
+			}
+			else if (i<180){
+				_this.mesh.material.uniforms.time.value += .02;
+			}
+			else if (i<190){
+				_this.mesh.material.uniforms.time.value += .01;
+			}
+			else{
+				_this.mesh.material.uniforms.time.value += .005;
+			}
+			i++;
+		}, 5);
 	}
 
 	update(){
-		this.mesh.rotation.y += .005;
+		this.mesh.rotation.y += .0015;
+		this.mesh.rotation.z += .015;
 		// this.mesh.material.uniforms.time.value += .025;
-		this.cubeCamera.updateCubeMap(World.renderer, World.scene);
+		// this.cubeCamera.updateCubeMap(World.renderer, World.scene);
 	}
 }
 
