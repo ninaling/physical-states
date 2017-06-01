@@ -40,7 +40,7 @@ function addWater(){
 	angle = Math.random() *2*Math.PI;
 	posX = Math.random()*birthRadius*Math.cos(angle);
 	posY = Math.random()*birthRadius*Math.sin(angle);
-	temp2 = new Water(1, angle, posX, posY, 1000);
+	temp2 = new Water(1, angle, 1, posX, posY, 1000);
 
 	World.addMolecule(temp2);
 
@@ -51,15 +51,27 @@ function addWater(){
 
 var spawnIce = function(e){
 	var x, y, z;
+	z = 900;
+	var vector = new THREE.Vector3();
 
-	if(World.mouse_x && World.mouse_y) {
-		x = World.mouse_x - window.innerWidth/2;	
-		y = World.mouse_y - window.innerHeight/2;
-	}
+	vector.set(
+	    ( e.clientX / window.innerWidth ) * 2 - 1,
+	    - ( e.clientY / window.innerHeight ) * 2 + 1,
+	    0.5 );
 
-	var radius = .5;
-	z = 900 + Math.random()*80;
-	temp = new IceRing(radius, 15, 5, z);
+	vector.unproject( World.camera );
+
+	var dir = vector.sub( World.camera.position ).normalize();
+	console.log(dir);
+
+	var distance = (z - World.camera.position.z) / dir.z;
+
+	var pos = World.camera.position.clone().add( dir.multiplyScalar( distance ) );
+
+	x = pos.x; y = pos.y;
+	var size = 1 + Math.random()*5;
+
+	temp = new Water(size, Math.random()*2*Math.PI, 1, x, y, z);
 	World.scene.add(temp.mesh);
 	World.objects.push(temp);
 }
@@ -162,7 +174,14 @@ class WORLD{
 
 		// temp = new THREE.Mesh(new THREE.SphereGeometry(5, 30, 30), new THREE.MeshBasicMaterial({color: 0xff0000}));
 		// temp.position.set(0, 0, 980);
-		// this.scene.add(temp);
+		// this.scene.add(temp);	
+		
+		var x, y, z;
+		x = Math.random()*WIDTH/2;
+		y = Math.random()*HEIGHT/2;
+		temp2 = new Water(5, Math.PI*2*Math.random(), 1, x, y, 980);
+		this.scene.add(temp2.mesh);
+		this.objects.push(temp2);
 	}
 
 	togglePopulate(){
@@ -370,7 +389,7 @@ class IceRing extends Molecule{
 class GlobalIceSphere extends Item{
 	constructor(radius, x, y, z){
 		var mesh, geom, mat;
-		var sampleTexture = new THREE.TextureLoader().load('/assets/images/graphite.jpg');
+		var sampleTexture = new THREE.TextureLoader().load('/assets/images/ocean.png');
 		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
 		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
@@ -439,7 +458,7 @@ class GlobalIceSphere extends Item{
 	update(){
 		this.mesh.rotation.y += .0015;
 		this.mesh.rotation.z += .015;
-		// this.mesh.material.uniforms.time.value += .025;
+		this.mesh.material.uniforms.time.value += .025;
 		// this.cubeCamera.updateCubeMap(World.renderer, World.scene);
 	}
 }
@@ -605,7 +624,7 @@ class Hydrogen extends Atom{
 }
 
 class Water extends Molecule{
-	constructor(size, angle, x, y, z){
+	constructor(size, angle, dir, x, y, z){
 		var oxygen, hydrogen, hydrogen2, mesh;
 		var atoms = [];
 
@@ -630,7 +649,8 @@ class Water extends Molecule{
 
 		super(mesh, x, y, z, atoms);
 		this.angle = angle;
-		this.speed = Math.random();
+		this.speed = .1 + Math.random();
+		this.dir = dir;
 	}
 
 	update(){
@@ -655,7 +675,7 @@ class Water extends Molecule{
 		this.mesh.rotation.z += this.speed*.05;
 		this.mesh.rotation.y += this.speed*.05;
 
-		this.mesh.position.z -= this.speed*.5;
+		this.mesh.position.z += this.dir*this.speed*.5;
 	}
 }
 
