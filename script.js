@@ -23,6 +23,7 @@ var reflectiveMaterial;
 var canPopulate = true; //use this to control intervals between adding molecules
 var domeRadius = 50;
 var birthRadius = domeRadius/10;
+birthRadiusIce = 50;
 var TITLE;
 var globalIceSphere;
 
@@ -200,7 +201,20 @@ class WORLD{
 		for(var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
-		// this.camera.position.z -= .5;
+		if (this.objects.length<25 && this.canPopulate){
+			var angle, posX, posY;
+			angle = Math.random() *2*Math.PI;
+			posX = Math.random()*birthRadiusIce*Math.cos(angle);
+			posY = Math.random()*birthRadiusIce*Math.sin(angle);
+			temp2 = new Water(1 + Math.random()*5, angle, 1, posX, posY, 900);
+			this.objects.push(temp2);
+			this.scene.add(temp2.mesh);
+			this.canPopulate = false;
+			var _this = this;
+			setTimeout(function(){
+				_this.togglePopulate();
+			}, 900);
+		}
 	}
 
 	collectTrash(){
