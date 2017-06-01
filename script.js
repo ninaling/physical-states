@@ -21,6 +21,7 @@ var reflectiveMaterial;
 var canPopulate = true; //use this to control intervals between adding molecules
 var domeRadius = 50;
 var birthRadius = domeRadius/10;
+var TITLE;
 
 //auxillary functions
 function loop(){
@@ -145,10 +146,13 @@ class WORLD{
 		// 	this.scene.add(temp2.mesh);
 		// }
 
-		temp = new WaterDome(domeRadius, 500, 0, 0, 1000);
-		temp.mapToCube(this.waterCubeCamera);
-		this.objects.push(temp);
-		this.scene.add(temp.mesh);
+		// temp = new WaterDome(domeRadius, 500, 0, 0, 1000);
+		// temp.mapToCube(this.waterCubeCamera);
+		// this.objects.push(temp);
+		// this.scene.add(temp.mesh);
+
+		TITLE = new Title('STATES', 0, 0, 900);
+		this.scene.add(TITLE.mesh);
 	}
 
 	togglePopulate(){
@@ -165,28 +169,28 @@ class WORLD{
 	}
 
 	update(){
-		console.log(this.canPopulate);
-		if (this.objects.length<25 && this.canPopulate){
-			var angle, posX, posY;
-			angle = Math.random() *2*Math.PI;
-			posX = Math.random()*birthRadius*Math.cos(angle);
-			posY = Math.random()*birthRadius*Math.sin(angle);
-			temp2 = new Water(1, angle, posX, posY, 1000);
-			this.objects.push(temp2);
-			this.scene.add(temp2.mesh);
-			this.canPopulate = false;
-			var _this = this;
-			setTimeout(function(){
-				_this.togglePopulate();
-			}, 900);
-		}
+		// console.log(this.canPopulate);
+		// if (this.objects.length<15 && this.canPopulate){
+		// 	var angle, posX, posY;
+		// 	angle = Math.random() *2*Math.PI;
+		// 	posX = Math.random()*birthRadius*Math.cos(angle);
+		// 	posY = Math.random()*birthRadius*Math.sin(angle);
+		// 	temp2 = new Water(1, angle, posX, posY, 1000);
+		// 	this.objects.push(temp2);
+		// 	this.scene.add(temp2.mesh);
+		// 	this.canPopulate = false;
+		// 	var _this = this;
+		// 	setTimeout(function(){
+		// 		_this.togglePopulate();
+		// 	}, 900);
+		// }
 
-		for (var i=0; i<this.objects.length; i++){
-			this.objects[i].update();
-		}
-		temp.mesh.rotation.y += .005;
-		// test.material.uniforms.time.value += .005;
-		// test.rotation.y += .003;
+		// for (var i=0; i<this.objects.length; i++){
+		// 	this.objects[i].update();
+		// }
+		// temp.mesh.rotation.y += .005;
+		// // test.material.uniforms.time.value += .005;
+		// // test.rotation.y += .003;
 	}
 
 	collectTrash(){
@@ -306,6 +310,34 @@ class Molecule extends Item{
 		for (var i=0; i<this.atoms.length; i++){
 			this.atoms[i].update();
 		}
+	}
+}
+
+class Title extends Item{
+	constructor(text, x, y, z){
+		var loader, geometry, mat, mesh;
+		loader = new THREE.FontLoader();
+		loader.load('/assets/helvetiker_regular.typeface.json', function(font){
+			console.log(font);
+			geometry = new THREE.TextGeometry('three.js', {
+				font: font,
+				size: 50,
+				height: 5,
+				curveSegments:12,
+				bevelThickness: 5,
+				bevelSize: 1,
+				bevelEnabled: false,
+			});
+		});
+
+		mat = new THREE.MeshPhongMaterial({
+			color: 0xff0000,
+			shading: THREE.FlatShading
+		});
+		mesh = new THREE.Mesh(geometry, mat);
+		console.log(mesh);
+		mesh.position.set(x, y, z);
+		super(mesh, x, y, z);
 	}
 }
 
