@@ -76,7 +76,7 @@ Tunnel.prototype.createMesh = function() {
     side: THREE.BackSide,
     map: textures.stone.texture,
     bumpMap: textures.stoneBump.texture,
-    bumpScale: 0.0003
+    bumpScale: 0.003
   });
 
   // Add two lights in the scene
@@ -109,12 +109,6 @@ this.scene.add( directionalLight );
 Tunnel.prototype.handleEvents = function() {
   // When user resize window
   window.addEventListener("resize", this.onResize.bind(this), false);
-  // When user move the mouse
-  // document.body.addEventListener(
-  //   "mousemove",
-  //   this.onMouseMove.bind(this),
-  //   false
-  // );
 };
 
 Tunnel.prototype.onResize = function() {
@@ -208,10 +202,10 @@ Tunnel.prototype.render = function() {
 // All needed textures
 var textures = {
   "stone": {
-    url: "img/demo1/carbon_hexagon_gray.png"
+    url: "img/carbon_hexagon_shiny.jpg"
   },
   "stoneBump": {
-    url: "img/demo1/carbon_hexagon_gray.png"
+    url: "img/carbon_hexagon_shiny.jpg"
   }
 };
 // Create a new loader
