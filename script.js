@@ -5,7 +5,9 @@ const COLORS = {
 	Red: 0xff0000,
 	White: 0xffffff,
 	Gray: 0xe1e1e1,
-	DarkBlue: 0x070a19
+	DarkBlue: 0x070a19,
+	Gold: 0xFFD700,
+	Emerald: 0x50c878
 };
 
 var HEIGHT = window.innerHeight;
@@ -48,34 +50,17 @@ function addWater(){
 }
 
 var spawnIce = function(e){
-	var vector = new THREE.Vector3();
-
-	vector.set(
-	    ( e.clientX / window.innerWidth ) * 2 - 1,
-	    - ( e.clientY / window.innerHeight ) * 2 + 1,
-	    0.5 );
-
-	vector.unproject( World.camera );
-
-	var dir = vector.sub( World.camera.position ).normalize();
-	console.log(dir);
-
-	var distance = -World.camera.position.z / dir.z;
-
-	var pos = World.camera.position.clone().add( dir.multiplyScalar( distance ) );
 	var x, y, z;
-	x = pos.x; y = pos.y; z = 900;
 
-	console.log(pos);
+	if(World.mouse_x && World.mouse_y) {
+		x = World.mouse_x - window.innerWidth/2;	
+		y = World.mouse_y - window.innerHeight/2;
+	}
 
-	var radius = 30;
-	// temp = new IceRing(radius, x, y, 500);
-	// console.log(temp.mesh.position);
-	// World.scene.add(temp.mesh);
-	// World.objects.push(temp);
-	temp = new THREE.Mesh(new THREE.SphereGeometry(15, 30, 30), new THREE.MeshBasicMaterial());
-	temp.position.set(x, y, 500);
-	World.scene.add(temp);
+	var radius = .5;
+	temp = new IceRing(radius, x, y, 980);
+	World.scene.add(temp.mesh);
+	World.objects.push(temp);
 }
 
 function distortIceBackground(){
@@ -116,7 +101,8 @@ class WORLD{
 
 		cubeCamera = new THREE.CubeCamera(near, far, 256); //by default, set cubeCamera in same position as regular camera w/ same near/far
 		cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
-		cubeCamera.position.set(0, 0, 900);
+		cubeCamera.position.set(0, 0, 1000);
+
 		scene.add(cubeCamera);
 
 		waterCubeCamera = new THREE.CubeCamera(near, far, 256);
@@ -139,6 +125,10 @@ class WORLD{
 		this.waterCubeCamera = waterCubeCamera;
 		this.renderer = renderer;
 		this.canPopulate = true;
+		this.mouse_x = 0;
+		this.mouse_y = 0;
+
+		document.body.addEventListener('mousemove', this.onMouseMove.bind(this), false);
 		return this;
 	}
 
@@ -156,13 +146,18 @@ class WORLD{
 	}
 
 	populate(){
-		globalIceSphere = new GlobalIceSphere(0, 0, 900);
+		globalIceSphere = new GlobalIceSphere(50, 0, 0, 1000);
+		globalIceSphere.mapToCube(this.cubeCamera);
 		this.scene.add(globalIceSphere.mesh);
 		this.objects.push(globalIceSphere);
 
-		temp = new IceRing(25, 0, 0, 500);
+		temp = new IceRing(.5, 0, 0, 980);
 		this.scene.add(temp.mesh);
 		this.objects.push(temp);
+
+		temp2 = new IceCube(1, 0, 0, 990);
+		this.scene.add(temp2.mesh);
+		this.objects.push(temp2);
 	}
 
 	togglePopulate(){
@@ -181,6 +176,7 @@ class WORLD{
 		for(var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
+		this.camera.position.z -= .5;
 	}
 
 	collectTrash(){
@@ -225,6 +221,16 @@ class WORLD{
 			this.scene.remove(this.objects[i].mesh); //remove the mesh
 		}
 		this.objects = []; //clear objects array
+	}
+
+	onMouseMove(e) {
+		if (e.type === "mousemove"){
+		  this.mouse_x = e.clientX;
+		  this.mouse_y = e.clientY;
+		} else {
+		  this.mouse_x = e.touches[0].clientX;
+		  this.mouse_y = e.touches[0].clientY;
+		}
 	}
 }
 
@@ -276,7 +282,7 @@ class Item{
 	}
 
 	outOfRange(){
-		return this.mesh.position.z < -700; //set max far to -1000
+		return this.mesh.position.z < -700 || this.mesh.position.z > World.camera.position.z; //set max far to -1000
 	}
 
 	update(){ //default update
@@ -308,83 +314,106 @@ class IceRing extends Molecule{
 		var temp, angle, posX, posY;
 		var atoms = [];
 		var mesh = new THREE.Group();
-		for (var i=0; i<6; i++){
-			angle = i*2*Math.PI/6;
+		var color, randomFactor;
+
+		for (var i=0; i<12; i++){
+			randomFactor = Math.random();
+			if (randomFactor < .75){
+				color = COLORS.Ice;
+			}
+			else{
+				color = COLORS.Gold;
+			}
+			angle = i*2*Math.PI/12;
 			posX = Math.cos(angle) * radius;
 			posY = Math.sin(angle) * radius;
-			temp = new WaterCrystal(20, posX, posY, 0);
+			temp = new WaterCrystal(2, color, posX, posY, 0);
 			temp.mesh.rotation.y = Math.random()*10;
 			temp.mesh.rotation.x = Math.random()*10;
 			temp.mesh.rotation.z = Math.random()*10;
 			mesh.add(temp.mesh);
 			atoms.push(temp);
 		}
+
 		mesh.position.set(x, y, z);
 		super(mesh, x, y, z, atoms);
+		this.radius = radius;
+		if (Math.random()>.5)
+			this.direction = 1;
+		else
+			this.direction = -1;
+	}
+
+	outOfRange(){
+		return this.mesh.position.z > World.camera.position.z || this.radius > WIDTH/2;
+	}
+
+	update(){
+		var atoms = this.mesh.children;
+		var angle;
+		for (var i=0; i<atoms.length; i++){
+			angle = i*2*Math.PI/atoms.length;
+			atoms[i].position.x = this.radius*Math.cos(angle);
+			atoms[i].position.y = this.radius*Math.sin(angle);
+		}
+		this.radius += .2;
+		this.mesh.position.z += .01;
+		this.mesh.rotation.z += this.direction*.075;
 	}
 }
 
 class GlobalIceSphere extends Item{
-	constructor(x, y, z){
-		var mesh;
-		var sampleTexture = new THREE.TextureLoader().load('/assets/images/icetexture.jpg');
-		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+	constructor(radius, x, y, z){
+		var mesh, geom, mat;
 
-		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
-		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+		geom = new THREE.SphereGeometry(radius, 30, 30);
 
-		var customUniforms = {
-			baseTexture: 	{ type: "t", value: sampleTexture },
-			baseSpeed: 		{ type: "f", value: 0.01 },
-			noiseTexture: 	{ type: "t", value: noiseTexture },
-			noiseScale:		{ type: "f", value: 0.5 },
-			alpha: 			{ type: "f", value: 1.0 },
-			time: 			{ type: "f", value: 1.0 }
-		};
+		mat = new THREE.MeshBasicMaterial({transparent: true, opacity: 1});
+		mat.side = THREE.DoubleSide; //see inside
 
-		var mat = new THREE.ShaderMaterial({
-			uniforms: customUniforms,
-			vertexShader: document.getElementById('vertexShader').textContent,
-			fragmentShader: document.getElementById('fragmentShader').textContent,
-			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
-		});
+		mesh = new THREE.Mesh(geom, mat);
+		mesh.position.set(x, y, z); //place where the camera is
+		mesh.rotation.x = -Math.PI/2;
 
-		mesh = new THREE.Mesh(new THREE.SphereGeometry(WIDTH*2, 50, 50), mat);
-		mesh.material.side = THREE.BackSide;
-		mesh.position.set(x, y, z);
 		super(mesh, x, y, z);
 	}
 
+	mapToCube(cubeCamera){
+		this.mesh.material.envMap = cubeCamera.renderTarget.texture;
+		this.cubeCamera = cubeCamera;
+	}
+
 	distort(){
-		var i=0;
-		var _this = this;
-		var interval = setInterval(function(){
-			if (i > 150){
-				clearInterval(interval);
-				return;
-			}
-			if (i<110){
-				_this.mesh.material.uniforms.time.value += .15;
-			}
-			else if (i<120){
-				_this.mesh.material.uniforms.time.value += .05;
-			}
-			else if (i<130){
-				_this.mesh.material.uniforms.time.value += .02;
-			}
-			else if (i<140){
-				_this.mesh.material.uniforms.time.value += .01;
-			}
-			else{
-				_this.mesh.material.uniforms.time.value += .005;
-			}
-			i++;
-		}, 5);
+		// var i=0;
+		// var _this = this;
+		// var interval = setInterval(function(){
+		// 	if (i > 150){
+		// 		clearInterval(interval);
+		// 		return;
+		// 	}
+		// 	if (i<110){
+		// 		_this.mesh.material.uniforms.time.value += .15;
+		// 	}
+		// 	else if (i<120){
+		// 		_this.mesh.material.uniforms.time.value += .05;
+		// 	}
+		// 	else if (i<130){
+		// 		_this.mesh.material.uniforms.time.value += .02;
+		// 	}
+		// 	else if (i<140){
+		// 		_this.mesh.material.uniforms.time.value += .01;
+		// 	}
+		// 	else{
+		// 		_this.mesh.material.uniforms.time.value += .005;
+		// 	}
+		// 	i++;
+		// }, 5);
 	}
 
 	update(){
 		this.mesh.rotation.y += .005;
-		this.mesh.material.uniforms.time.value += .025;
+		// this.mesh.material.uniforms.time.value += .025;
+		this.cubeCamera.updateCubeMap(World.renderer, World.scene);
 	}
 }
 
@@ -434,7 +463,7 @@ class WaterDome extends Item{
 
 	mapToCube(cubeCamera){
 		this.mesh.material.envMap = cubeCamera.renderTarget;
-		this.cubeCamera = World.waterCubeCamera;
+		this.cubeCamera = cubeCamera;
 	}
 
 	update(){
@@ -444,7 +473,7 @@ class WaterDome extends Item{
 }
 
 class WaterCrystal extends Molecule{
-	constructor(height, x, y, z){
+	constructor(height, color, x, y, z){
 		var mesh, top, bottom, coneGeom, mat;
 		var atoms = [];
 
@@ -454,8 +483,8 @@ class WaterCrystal extends Molecule{
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
 			specular: 0xffffff,
-			emissive: COLORS.Ice,
-			color: COLORS.Blue
+			emissive: color,
+			color: COLORS.White
 		});
 
 		top = new THREE.Mesh(coneGeom, mat);
