@@ -47,6 +47,41 @@ function addWater(){
 	setTimeout(World.togglePopulate, 300); //cannot populate for another .3s
 }
 
+var spawnIce = function(e){
+	var vector = new THREE.Vector3();
+
+	vector.set(
+	    ( e.clientX / window.innerWidth ) * 2 - 1,
+	    - ( e.clientY / window.innerHeight ) * 2 + 1,
+	    0.5 );
+
+	vector.unproject( World.camera );
+
+	var dir = vector.sub( World.camera.position ).normalize();
+	console.log(dir);
+
+	var distance = -World.camera.position.z / dir.z;
+
+	var pos = World.camera.position.clone().add( dir.multiplyScalar( distance ) );
+	var x, y, z;
+	x = pos.x; y = pos.y; z = 900;
+
+	console.log(pos);
+
+	var radius = 30;
+	// temp = new IceRing(radius, x, y, 500);
+	// console.log(temp.mesh.position);
+	// World.scene.add(temp.mesh);
+	// World.objects.push(temp);
+	temp = new THREE.Mesh(new THREE.SphereGeometry(15, 30, 30), new THREE.MeshBasicMaterial());
+	temp.position.set(x, y, 500);
+	World.scene.add(temp);
+}
+
+function distortIceBackground(){
+	globalIceSphere.distort();
+}
+
 var requestId;
 function collapseWorld(){
 	if(World.collapse()){
@@ -121,43 +156,16 @@ class WORLD{
 	}
 
 	populate(){
-		// temp = new WaterCrystal(100, 0, 0, 955);
+		globalIceSphere = new GlobalIceSphere(0, 0, 900);
+		this.scene.add(globalIceSphere.mesh);
+		this.objects.push(globalIceSphere);
 
-		// temp.mapToCube(this.waterCubeCamera);
-		// this.scene.add(temp.mesh);
-		// this.objects.push(temp);
-
-		var angle, posX, posY, posZ;
-		// for (var i=0; i<50; i++){
-		// 	angle = Math.random() * 2*Math.PI;
-		// 	posX = 30*Math.cos(angle);
-		// 	posY = 2.5*Math.sin(Math.random());
-		// 	posZ = 950 + 30*Math.sin(angle);
-		// 	temp2 = new Water(1, posX, posY, posZ);
-		// 	this.scene.add(temp2.mesh);
-		// 	this.objects.push(temp2);
-		// }
-
-		// for (var i=0; i<50; i++){
-		// 	angle = Math.random() *2*Math.PI;
-		// 	posX = Math.random()*birthRadius*Math.cos(angle);
-		// 	posY = Math.random()*birthRadius*Math.sin(angle);
-		// 	temp2 = new Water(1, angle, posX, posY, 750);
-		// 	this.objects.push(temp2);
-		// 	this.scene.add(temp2.mesh);
-		// }
-
-		// temp = new WaterDome(domeRadius, 500, 0, 0, 1000);
-		// temp.mapToCube(this.waterCubeCamera);
-		// this.objects.push(temp);
-		// this.scene.add(temp.mesh);
-
-		TITLE = new Title('STATES', 0, 0, 900);
-		this.scene.add(TITLE.mesh);
+		temp = new IceRing(25, 0, 0, 500);
+		this.scene.add(temp.mesh);
+		this.objects.push(temp);
 	}
 
 	togglePopulate(){
-		console.log('tog');
 		if (this.canPopulate)
 			this.canPopulate = false;
 		else
@@ -170,7 +178,9 @@ class WORLD{
 	}
 
 	update(){
-
+		for(var i=0; i<this.objects.length; i++){
+			this.objects[i].update();
+		}
 	}
 
 	collectTrash(){
@@ -293,6 +303,91 @@ class Molecule extends Item{
 	}
 }
 
+class IceRing extends Molecule{
+	constructor(radius, x, y, z){
+		var temp, angle, posX, posY;
+		var atoms = [];
+		var mesh = new THREE.Group();
+		for (var i=0; i<6; i++){
+			angle = i*2*Math.PI/6;
+			posX = Math.cos(angle) * radius;
+			posY = Math.sin(angle) * radius;
+			temp = new WaterCrystal(20, posX, posY, 0);
+			temp.mesh.rotation.y = Math.random()*10;
+			temp.mesh.rotation.x = Math.random()*10;
+			temp.mesh.rotation.z = Math.random()*10;
+			mesh.add(temp.mesh);
+			atoms.push(temp);
+		}
+		mesh.position.set(x, y, z);
+		super(mesh, x, y, z, atoms);
+	}
+}
+
+class GlobalIceSphere extends Item{
+	constructor(x, y, z){
+		var mesh;
+		var sampleTexture = new THREE.TextureLoader().load('/assets/images/icetexture.jpg');
+		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
+		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+		var customUniforms = {
+			baseTexture: 	{ type: "t", value: sampleTexture },
+			baseSpeed: 		{ type: "f", value: 0.01 },
+			noiseTexture: 	{ type: "t", value: noiseTexture },
+			noiseScale:		{ type: "f", value: 0.5 },
+			alpha: 			{ type: "f", value: 1.0 },
+			time: 			{ type: "f", value: 1.0 }
+		};
+
+		var mat = new THREE.ShaderMaterial({
+			uniforms: customUniforms,
+			vertexShader: document.getElementById('vertexShader').textContent,
+			fragmentShader: document.getElementById('fragmentShader').textContent,
+			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+		});
+
+		mesh = new THREE.Mesh(new THREE.SphereGeometry(WIDTH*2, 50, 50), mat);
+		mesh.material.side = THREE.BackSide;
+		mesh.position.set(x, y, z);
+		super(mesh, x, y, z);
+	}
+
+	distort(){
+		var i=0;
+		var _this = this;
+		var interval = setInterval(function(){
+			if (i > 150){
+				clearInterval(interval);
+				return;
+			}
+			if (i<110){
+				_this.mesh.material.uniforms.time.value += .15;
+			}
+			else if (i<120){
+				_this.mesh.material.uniforms.time.value += .05;
+			}
+			else if (i<130){
+				_this.mesh.material.uniforms.time.value += .02;
+			}
+			else if (i<140){
+				_this.mesh.material.uniforms.time.value += .01;
+			}
+			else{
+				_this.mesh.material.uniforms.time.value += .005;
+			}
+			i++;
+		}, 5);
+	}
+
+	update(){
+		this.mesh.rotation.y += .005;
+		this.mesh.material.uniforms.time.value += .025;
+	}
+}
+
 class Title extends Item{
 	constructor(text, x, y, z){
 		var loader, geometry, mat, mesh;
@@ -356,7 +451,12 @@ class WaterCrystal extends Molecule{
 		mesh = new THREE.Group();
 		coneGeom = new THREE.CylinderGeometry(0, height/4, height/2, 8);
 
-		mat = new THREE.MeshBasicMaterial({transparent: true, opacity: 1});
+		mat = new THREE.MeshPhongMaterial({
+			shininess: 25,
+			specular: 0xffffff,
+			emissive: COLORS.Ice,
+			color: COLORS.Blue
+		});
 
 		top = new THREE.Mesh(coneGeom, mat);
 		top.position.y = height/4;
@@ -382,7 +482,10 @@ class WaterCrystal extends Molecule{
 
 	update(){
 		this.mesh.rotation.y += .005;
-		this.cubeCamera.updateCubeMap(World.renderer, World.scene);
+		this.mesh.rotation.z += .005;
+		this.mesh.rotation.x += .005;
+
+		// this.cubeCamera.updateCubeMap(World.renderer, World.scene);
 	}
 }
 
@@ -397,7 +500,6 @@ class Oxygen extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			color: COLORS.Blue
@@ -434,7 +536,6 @@ class Hydrogen extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			color: COLORS.Blue
@@ -512,7 +613,6 @@ class iceNucleus extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			color: COLORS.Blue
@@ -567,7 +667,7 @@ class Triangle extends Atom{
 
 			mat = new THREE.MeshPhongMaterial({
 				shininess: 25,
-				ambient: 0x050505,
+
 				specular: 0xffffff,
 				emissive: color,
 				// transparent: true,
@@ -618,7 +718,6 @@ class Torus extends Atom{
 		var geom = new THREE.TorusGeometry( radius, 2, 5, 7);
 		var mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			opacity: .8,
@@ -734,12 +833,10 @@ class Lightning extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 50,
-			ambient: 0x050505,
 			emissive: COLORS.Ice,
 			wireframe: true,
 			wireframeLinecap: "round",
-			wireframeLinejoin: "round",
-			wireFrameLinewidth: .1
+			wireframeLinejoin: "round"
 		});
 
 		cylinder = new THREE.Mesh(geom, mat);
@@ -895,12 +992,10 @@ class LightningCircle extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 50,
-			ambient: 0x050505,
 			emissive: COLORS.Ice,
 			wireframe: true,
 			wireframeLinecap: "round",
-			wireframeLinejoin: "round",
-			wireFrameLinewidth: .1
+			wireframeLinejoin: "round"
 		});
 
 		circle = new THREE.Mesh(geom, mat);
@@ -940,7 +1035,6 @@ class IceCube extends Atom{
 		var mesh = new THREE.Group();
 		var mat = new THREE.MeshPhongMaterial({ //use this material for the cylinder (inner)
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			color: COLORS.Blue
@@ -954,13 +1048,13 @@ class IceCube extends Atom{
 		var lightningCircles = [];
 		var temp;
 
-		for (var i=1; i>-2; i--){
-			temp = new LightningCircle(15, 0, 0, 0);
-			temp.mesh.rotation.x = Math.PI/2;
-			temp.mesh.position.y = i*8;
-			mesh.add(temp.mesh);
-			lightningCircles.push(temp);
-		}
+		// for (var i=1; i>-2; i--){
+		// 	temp = new LightningCircle(15, 0, 0, 0);
+		// 	temp.mesh.rotation.x = Math.PI/2;
+		// 	temp.mesh.position.y = i*8;
+		// 	mesh.add(temp.mesh);
+		// 	lightningCircles.push(temp);
+		// }
 
 		mesh.position.set(x, y, z);
 		super(mesh, x, y, z);
@@ -1047,7 +1141,11 @@ function handleMouseMove(e){
     mouse.y = e.clientY;
 }
 
-window.addEventListener('mousedown', addWater);
+window.addEventListener('mousedown', distortIceBackground);
+
+window.addEventListener('mousedown', spawnIce);
+
+// window.addEventListener('mousedown', addWater);
 
 // window.addEventListener('mousemove', handleMouseMove);
 
