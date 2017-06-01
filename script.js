@@ -379,6 +379,13 @@ class Oxygen extends Atom{
 		mesh = new THREE.Group();
 
 		geom = new THREE.SphereGeometry(radius, 30, 30);
+		var vertices = geom.vertices;
+
+		for (var i=0; i<vertices.length; i++){
+			vertices[i].x += Math.sin(Math.random())*.1;
+			vertices[i].y += Math.sin(Math.random())*.1;
+			vertices[i].z += Math.sin(Math.random())*.1;
+		}
 		innerGeom = new THREE.SphereGeometry(radius/10, 15, 15);
 
 		mat = new THREE.MeshPhongMaterial({
@@ -446,12 +453,12 @@ class Water extends Molecule{
 		hydrogen2.mesh.position.set(size/1.5, -size/1.5, 0);
 
 		atoms.push(oxygen);
-		atoms.push(hydrogen);
-		atoms.push(hydrogen2);
+		// atoms.push(hydrogen);
+		// atoms.push(hydrogen2);
 
 		mesh.add(oxygen.mesh);
-		mesh.add(hydrogen.mesh);
-		mesh.add(hydrogen2.mesh);
+		// mesh.add(hydrogen.mesh);
+		// mesh.add(hydrogen2.mesh);
 
 		mesh.position.set(x, y, z);
 
