@@ -551,20 +551,29 @@ function selectScene(e){ //select scene from title using raycasting
 		console.log(intersects[i].object.parent);
 		for (var k=0; k<World.titleIcons.length; k++){
 			if (intersects[i].object == World.titleIcons[k]){
+				distortTitleBackground();
 				if (intersects[i].object == iron){
-					World.changeScene('iron');
+					setTimeout(function(){
+						World.changeScene('iron');
+					}, 1000);
 				} 
 				else if (intersects[i].object == metal){
-					World.changeScene('metal');
+					setTimeout(function(){
+						World.changeScene('metal');
+					}, 1000);
 				}
 			}
 			else if (intersects[i].object.parent.parent == World.titleIcons[k]){
-				
+				distortTitleBackground();
 				if (intersects[i].object.parent.parent == water){
-					World.changeScene('water');
+					setTimeout(function(){
+						World.changeScene('water');
+					}, 1000);
 				} 
 				else if (intersects[i].object.parent.parent == ice){
-					World.changeScene('ice');
+					setTimeout(function(){
+						World.changeScene('ice');
+					}, 1000);
 				}
 			}
 		}
