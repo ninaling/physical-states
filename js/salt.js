@@ -164,66 +164,49 @@ function createLights() {
 	scene.add(shadowLight);
 }
 
-Sodium = function(size){
-	//size *= 2;
-	var sodium = new THREE.BoxGeometry(size, size, size, 100, 100, 100);
-	var geo = new THREE.EdgesGeometry(sodium);
-	//var sodium = new THREE.SphereGeometry(size, 100, 100);
-
-	var namat = new THREE.MeshPhongMaterial({
-		color: Colors.red,
-		transparent: true,
-		opacity: 1,
-		shading: THREE.FlatShading,
-	});
-	var mat = new THREE.LineBasicMaterial({color: Colors.red, linewidth: 100});
-	var wireframe = new THREE.LineSegments(geo, mat);
-
-	var group = new THREE.Group();
-
-	return wireframe;
-}
 var time = 0;
 Salt = function(n){
 	var na = 4;
 	var cl = 2*na;
 	var dis = 16*(na+cl)/3;
-	var connectsmall = new THREE.CylinderGeometry(.2*na, .2*na, .1*dis, 30, 30);
+	var connectsmall = new THREE.CylinderGeometry(.2*na, .2*na, .1*dis);
 	na *= 2;
 	cl *= 1.5;
 	this.mesh = new THREE.Object3D();
 
 	//var sodium = new THREE.SphereGeometry(na, 100, 100);
-	var sodium = new THREE.BoxGeometry(na, na, na, 20, 20, 20);
+	//var sodium = new THREE.BoxGeometry(na, na, na, 20, 20, 20);
+	var sodium = new THREE.BoxGeometry(na, na, na);
 	//var chloride = new THREE.SphereGeometry(cl, 100, 100);
-	var chloride = new THREE.BoxGeometry(cl, cl, cl, 20, 20, 20);
+	//var chloride = new THREE.BoxGeometry(cl, cl, cl, 20, 20, 20);
+	var chloride = new THREE.BoxGeometry(cl, cl, cl);
 	//var connect = new THREE.CylinderGeometry(.2*na, .2*na, dis, 100, 100);
 
 	var sampleTexture = THREE.ImageUtils.loadTexture('../salt.jpg');
-			sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+	sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-			var noiseTexture = THREE.ImageUtils.loadTexture('../crate.jpg');
-			noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+	var noiseTexture = THREE.ImageUtils.loadTexture('../crate.jpg');
+	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
-			customUniforms = {
-			baseTexture: 	{ type: "t", value: sampleTexture },
-			baseSpeed: 		{ type: "f", value: 0.05 },
-			noiseTexture: 	{ type: "t", value: noiseTexture },
-			noiseScale:		{ type: "f", value: 0.5337 },
-			alpha: 			{ type: "f", value: 1.0 },
-			time: 			{ type: "f", value: 1.0 },				
-		    fogColor:    { type: "c", value: scene.fog.color },
-    		fogNear:     { type: "f", value: scene.fog.near },
-    		fogFar:      { type: "f", value: scene.fog.far }
-			};
+	customUniforms = {
+		baseTexture: 	{ type: "t", value: sampleTexture },
+		baseSpeed: 		{ type: "f", value: 0.05 },
+		noiseTexture: 	{ type: "t", value: noiseTexture },
+		noiseScale:		{ type: "f", value: 0.5337 },
+		alpha: 			{ type: "f", value: 1.0 },
+		time: 			{ type: "f", value: 1.0 },				
+	    fogColor:    { type: "c", value: scene.fog.color },
+   		fogNear:     { type: "f", value: scene.fog.near },
+    	fogFar:      { type: "f", value: scene.fog.far }
+	};
 
-			var namat = new THREE.ShaderMaterial({
-				uniforms: customUniforms,
-				vertexShader: document.getElementById('vertexShader').textContent,
-				fragmentShader: document.getElementById('fragmentShader').textContent,
-				fog: true,
+	var namat = new THREE.ShaderMaterial({
+		uniforms: customUniforms,
+		vertexShader: document.getElementById('vertexShader').textContent,
+		fragmentShader: document.getElementById('fragmentShader').textContent,
+		fog: true,
 				// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
-			});
+	});
 
 	/*var namat = new THREE.MeshPhongMaterial({
 		color: Colors.blue,
@@ -242,16 +225,16 @@ Salt = function(n){
 	var sampleTexture2 = THREE.ImageUtils.loadTexture('../salt2.jpg');
 	sampleTexture2.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 	customUniforms2 = {
-			baseTexture: 	{ type: "t", value: sampleTexture2 },
-			baseSpeed: 		{ type: "f", value: 0.05 },
-			noiseTexture: 	{ type: "t", value: noiseTexture },
-			noiseScale:		{ type: "f", value: 0.5337 },
-			alpha: 			{ type: "f", value: 1.0 },
-			time: 			{ type: "f", value: 1.0 },				
-		    fogColor:    { type: "c", value: scene.fog.color },
-    		fogNear:     { type: "f", value: scene.fog.near },
-    		fogFar:      { type: "f", value: scene.fog.far }
-			};
+		baseTexture: 	{ type: "t", value: sampleTexture2 },
+		baseSpeed: 		{ type: "f", value: 0.05 },
+		noiseTexture: 	{ type: "t", value: noiseTexture },
+		noiseScale:		{ type: "f", value: 0.5337 },
+		alpha: 			{ type: "f", value: 1.0 },
+		time: 			{ type: "f", value: 1.0 },				
+		fogColor:    { type: "c", value: scene.fog.color },
+    	fogNear:     { type: "f", value: scene.fog.near },
+   		fogFar:      { type: "f", value: scene.fog.far }
+	};
 	var clmat = new THREE.ShaderMaterial({
 				uniforms: customUniforms2,
 				vertexShader: document.getElementById('vertexShader').textContent,
@@ -284,25 +267,23 @@ Salt = function(n){
 
 		this.layers[k] = new THREE.Group();
 
-		for(j=0; j<(n*2-1)-1; j++){
-			for(i=0; i<(n*2-1)+1; i++){
+		for(j=0; j<(n*2-2); j++){
+			for(i=0; i<(n*2); i++){
 				if((i+j+k)%2==0){
 					cl1 = new THREE.Mesh(chloride, clmat);
-					//cl1 = new Sodium(na);
 					cl1.position.x += i*dis;
 					cl1.position.y -= j*dis;
-					cl1.position.z = 0;
-					// this.mesh.add(cl1);
+					//cl1.position.z = 0;
 					this.layers[k].add(cl1);
 					atom = cl1;
-					x = i*dis;
+					/*x = i*dis;
 					y = -j*dis;
-					z = -k*dis;
+					z = -k*dis;*/
 				}else{
 					na1 = new THREE.Mesh(sodium, namat);
 					na1.position.x += i*dis;
 					na1.position.y -= j*dis;
-					cl1.position.z = 0;
+					//cl1.position.z = 0;
 					// this.mesh.add(na1);
 					this.layers[k].add(na1);
 					atom = na1;
@@ -314,7 +295,7 @@ Salt = function(n){
 					connect1.rotation.z = Math.PI/2;
 					connect1.position.z = 0;
 					connect1.position.y = atom.position.y;
-					connect1.position.x = atom.position.x + (-1*(-.40*m*dis/2 - .20*dis/2 - time))%dis;
+					connect1.position.x = atom.position.x + (.1*dis*(2*m + 1))%dis;
 					// this.mesh.add(connect1);
 					this.layers[k].add(connect1);
 					}
@@ -323,7 +304,7 @@ Salt = function(n){
 					//connect2 = new THREE.Mesh(connect, connectormat);
 					for(m=0; m<5; m++){
 					connect2 = new THREE.Mesh(connectsmall, connectormat);
-					connect2.position.y = atom.position.y + .40*m*dis/2 + .20*dis/2;
+					connect2.position.y = atom.position.y + (.1*dis)*(2*m + 1);
 					connect2.position.x = atom.position.x;
 					connect2.position.z = 0;
 					// this.mesh.add(connect2);
@@ -337,7 +318,8 @@ Salt = function(n){
 					connect1.rotation.x = Math.PI/2;
 					connect1.position.x = atom.position.x;
 					connect1.position.y = atom.position.y;
-					connect1.position.z = .40*m*dis/2 - .20*dis/2;
+					//connect1.position.z = .40*m*dis/2 - .20*dis/2;
+					connect1.position.z = (.1*dis)*(2*m - 1);
 					// this.mesh.add(connect1);
 					this.layers[k].add(connect1);
 					}
@@ -372,7 +354,7 @@ function createSalt(){
 	var move = (n-1)*16*(4+4*2)/3;
 	salt.mesh.position.y = 1.3*move;
 	salt.mesh.position.x = -1.1*move;
-	salt.mesh.position.z = 00;
+	//salt.mesh.position.z = 00;
 	scene.add(salt.mesh);
 }
 
@@ -411,14 +393,3 @@ function loop(){
 	requestAnimationFrame(loop);
 }
 
-
-function normalize(v,vmin,vmax,tmin, tmax){
-
-	var nv = Math.max(Math.min(v,vmax), vmin);
-	var dv = vmax-vmin;
-	var pc = (nv-vmin)/dv;
-	var dt = tmax-tmin;
-	var tv = tmin + (pc*dt);
-	return tv;
-
-}
