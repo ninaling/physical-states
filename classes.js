@@ -221,6 +221,84 @@ class Ice extends Molecule{
   }
 }
 
+
+class GlobalIceSphere extends Item{
+	constructor(radius, x, y, z){
+		var mesh, geom, mat;
+		var sampleTexture = new THREE.TextureLoader().load('/assets/images/ocean.png');
+		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
+		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+		var customUniforms = {
+			baseTexture: 	{ type: "t", value: sampleTexture },
+			baseSpeed: 		{ type: "f", value: 0.01 },
+			noiseTexture: 	{ type: "t", value: noiseTexture },
+			noiseScale:		{ type: "f", value: 0.5 },
+			alpha: 			{ type: "f", value: 1.0 },
+			time: 			{ type: "f", value: 1.0 }
+		};
+
+		var mat = new THREE.ShaderMaterial({
+			uniforms: customUniforms,
+			vertexShader: document.getElementById('vertexShader').textContent,
+			fragmentShader: document.getElementById('fragmentShader').textContent,
+			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+		});
+
+		geom = new THREE.SphereGeometry(radius, 30, 30);
+
+		// mat = new THREE.MeshBasicMaterial({transparent: true, opacity: 1});
+		mat.side = THREE.DoubleSide; //see inside
+
+		mesh = new THREE.Mesh(geom, mat);
+		mesh.position.set(x, y, z); //place where the camera is
+		mesh.rotation.x = -Math.PI/2;
+
+		super(mesh, x, y, z);
+	}
+
+	mapToCube(cubeCamera){
+		this.mesh.material.envMap = cubeCamera.renderTarget.texture;
+		this.cubeCamera = cubeCamera;
+	}
+
+	distort(){
+		var i=0;
+		var _this = this;
+		var interval = setInterval(function(){
+			if (i > 200){
+				clearInterval(interval);
+				return;
+			}
+			if (i<150){
+				_this.mesh.material.uniforms.time.value += .35;
+			}
+			else if (i<160){
+				_this.mesh.material.uniforms.time.value += .05;
+			}
+			else if (i<180){
+				_this.mesh.material.uniforms.time.value += .02;
+			}
+			else if (i<190){
+				_this.mesh.material.uniforms.time.value += .01;
+			}
+			else{
+				_this.mesh.material.uniforms.time.value += .005;
+			}
+			i++;
+		}, 5);
+	}
+
+	update(){
+		this.mesh.rotation.y += .0015;
+		this.mesh.rotation.z += .015;
+		this.mesh.material.uniforms.time.value += .025;
+		// this.cubeCamera.updateCubeMap(World.renderer, World.scene);
+	}
+}
+
 class WaterDome extends Item{
 	constructor(radius, height, x, y, z){
 		var mesh, geom, mat;

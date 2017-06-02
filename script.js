@@ -23,6 +23,8 @@ var domeRadius = 50;
 var birthRadius = domeRadius/10;
 var TITLE;
 var titleGlobe;
+var globalIceSphere;
+var birthRadiusIce = 5;
 
 //auxillary functions
 function loop(){
@@ -45,6 +47,38 @@ function addWater(){
 	canPopulate = false;
 
 	setTimeout(World.togglePopulate, 300); //cannot populate for another .3s
+}
+
+
+var spawnIce = function(e){
+	var x, y, z;
+	z = 900;
+	var vector = new THREE.Vector3();
+
+	vector.set(
+	    ( e.clientX / window.innerWidth ) * 2 - 1,
+	    - ( e.clientY / window.innerHeight ) * 2 + 1,
+	    0.5 );
+
+	vector.unproject( World.camera );
+
+	var dir = vector.sub( World.camera.position ).normalize();
+	console.log(dir);
+
+	var distance = (z - World.camera.position.z) / dir.z;
+
+	var pos = World.camera.position.clone().add( dir.multiplyScalar( distance ) );
+
+	x = pos.x; y = pos.y;
+	var size = 1 + Math.random()*5;
+
+	temp = new Water(size, Math.random()*2*Math.PI, 1, x, y, z);
+	World.scene.add(temp.mesh);
+	World.objects.push(temp);
+}
+
+function distortIceBackground(){
+	globalIceSphere.distort();
 }
 
 var requestId;
@@ -122,7 +156,29 @@ class WORLD{
 	}
 
 	populate(){
-		return;
+		globalIceSphere = new GlobalIceSphere(50, 0, 0, 950);
+	    globalIceSphere.mapToCube(this.cubeCamera);
+	    this.scene.add(globalIceSphere.mesh);
+	    this.objects.push(globalIceSphere);
+
+	    // temp = new IceRing(.5, 0, 0, 980);
+	    // this.scene.add(temp.mesh);
+	    // this.objects.push(temp);
+
+	    // temp2 = new IceCube(5, 0, 0, 950);
+	    // this.scene.add(temp2.mesh);
+	    // this.objects.push(temp2);
+
+	    // temp = new THREE.Mesh(new THREE.SphereGeometry(5, 30, 30), new THREE.MeshBasicMaterial({color: 0xff0000}));
+	    // temp.position.set(0, 0, 980);
+	    // this.scene.add(temp);  
+	    
+	    var x, y, z;
+	    x = Math.random()*WIDTH/2;
+	    y = Math.random()*HEIGHT/2;
+	    temp2 = new Water(5, Math.PI*2*Math.random(), 1, x, y, 980);
+	    this.scene.add(temp2.mesh);
+	    this.objects.push(temp2);
 	}
 
 	populateIce(){
@@ -146,7 +202,23 @@ class WORLD{
 	}
 
 	update(){
-		return;
+		for(var i=0; i<this.objects.length; i++){
+	      this.objects[i].update();
+	    }
+	    if (this.objects.length<25 && this.canPopulate){
+	      var angle, posX, posY;
+	      angle = Math.random() *2*Math.PI;
+	      posX = Math.random()*birthRadiusIce*Math.cos(angle);
+	      posY = Math.random()*birthRadiusIce*Math.sin(angle);
+	      temp2 = new Water(1 + Math.random()*5, angle, 1, posX, posY, 900);
+	      this.objects.push(temp2);
+	      this.scene.add(temp2.mesh);
+	      this.canPopulate = false;
+	      var _this = this;
+	      setTimeout(function(){
+	        _this.togglePopulate();
+	      }, 900);
+	    }
 	}
 
 	updateIce(){
@@ -243,6 +315,6 @@ var World = new WORLD();
 //ICE
 
 World.createLights();
-World.populateIce();
+World.populate();
 
 loop();
