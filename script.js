@@ -22,6 +22,7 @@ var canPopulate = true; //use this to control intervals between adding molecules
 var domeRadius = 50;
 var birthRadius = domeRadius/10;
 var TITLE;
+var titleGlobe;
 
 //auxillary functions
 function loop(){
@@ -80,7 +81,7 @@ class WORLD{
 
 		cubeCamera = new THREE.CubeCamera(near, far, 256); //by default, set cubeCamera in same position as regular camera w/ same near/far
 		cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
-		cubeCamera.position.set(0, 0, 900);
+		cubeCamera.position.set(0, 0, 1000);
 		scene.add(cubeCamera);
 
 		waterCubeCamera = new THREE.CubeCamera(near, far, 256);
@@ -120,39 +121,50 @@ class WORLD{
 	}
 
 	populate(){
-		// temp = new WaterCrystal(100, 0, 0, 955);
+		var loader;
+		var _this = this;
+		loader = new THREE.FontLoader();
+		loader.load('/assets/ultra.json', function(font){
+			var geometry, mat, mesh;
+			geometry = new THREE.TextGeometry('STATES', {
+				font: font,
+				size: 1,
+				height: .1,
+				curveSegments:12,
+				bevelThickness: 0,
+				bevelSize: .005,
+				bevelEnabled: false
+			});
 
-		// temp.mapToCube(this.waterCubeCamera);
-		// this.scene.add(temp.mesh);
-		// this.objects.push(temp);
+			THREE.GeometryUtils.center( geometry ).
 
-		var angle, posX, posY, posZ;
-		// for (var i=0; i<50; i++){
-		// 	angle = Math.random() * 2*Math.PI;
-		// 	posX = 30*Math.cos(angle);
-		// 	posY = 2.5*Math.sin(Math.random());
-		// 	posZ = 950 + 30*Math.sin(angle);
-		// 	temp2 = new Water(1, posX, posY, posZ);
-		// 	this.scene.add(temp2.mesh);
-		// 	this.objects.push(temp2);
+			mat = new THREE.MeshBasicMaterial({
+				color: 0xff0000
+			});
+
+			mesh = new THREE.Mesh(geometry, mat);
+			mesh.position.set(0, 0, 995);
+			TITLE = new Title(mesh, 0, 0, 995);
+			TITLE.mapToCube(_this.cubeCamera);
+			TITLE.mesh.material.color = new THREE.Color(COLORS.Ice);
+			_this.scene.add(mesh);
+			_this.objects.push(TITLE);
+		});
+
+		titleGlobe = new TitleGlobe(25, 0, 0, 980);
+		this.scene.add(titleGlobe.mesh);
+		this.objects.push(titleGlobe);
+
+		// for (var i=0; i<5; i++){
+		// 	temp = new Water(Math.random()*5 + 1, Math.random()*2*Math.PI, -1, 0, 0, 1000);
+		// 	this.scene.add(temp.mesh);
+		// 	this.objects.push(temp);
 		// }
-
-		// for (var i=0; i<50; i++){
-		// 	angle = Math.random() *2*Math.PI;
-		// 	posX = Math.random()*birthRadius*Math.cos(angle);
-		// 	posY = Math.random()*birthRadius*Math.sin(angle);
-		// 	temp2 = new Water(1, angle, posX, posY, 750);
-		// 	this.objects.push(temp2);
-		// 	this.scene.add(temp2.mesh);
+		// for (var i=0; i<5; i++){
+		// 	temp = new Water(.25, Math.PI, 0, -2 + Math.random()*4, -.75 + Math.random()*1.5, 993 + Math.random()*5);
+		// 	this.scene.add(temp.mesh);
+		// 	this.objects.push(temp);
 		// }
-
-		// temp = new WaterDome(domeRadius, 500, 0, 0, 1000);
-		// temp.mapToCube(this.waterCubeCamera);
-		// this.objects.push(temp);
-		// this.scene.add(temp.mesh);
-
-		TITLE = new Title('STATES', 0, 0, 900);
-		this.scene.add(TITLE.mesh);
 	}
 
 	togglePopulate(){
@@ -191,6 +203,9 @@ class WORLD{
 		// temp.mesh.rotation.y += .005;
 		// // test.material.uniforms.time.value += .005;
 		// // test.rotation.y += .003;
+		for (var i=0; i<this.objects.length; i++){
+			this.objects[i].update();
+		}
 	}
 
 	collectTrash(){
@@ -314,30 +329,60 @@ class Molecule extends Item{
 }
 
 class Title extends Item{
-	constructor(text, x, y, z){
-		var loader, geometry, mat, mesh;
-		loader = new THREE.FontLoader();
-		loader.load('/assets/helvetiker_regular.typeface.json', function(font){
-			console.log(font);
-			geometry = new THREE.TextGeometry('three.js', {
-				font: font,
-				size: 50,
-				height: 5,
-				curveSegments:12,
-				bevelThickness: 5,
-				bevelSize: 1,
-				bevelEnabled: false,
-			});
+	constructor(mesh, x, y, z){
+		super(mesh, x, y, z)
+	}
+
+	mapToCube(cubeCamera){
+		this.mesh.material.envMap = cubeCamera.renderTarget;
+		this.cubeCamera = cubeCamera;
+	}
+
+	update(){
+		// this.mesh.rotation.y += .005;
+		this.cubeCamera.updateCubeMap(World.renderer, World.scene);
+	}
+}
+
+class TitleGlobe extends Item{
+	constructor(radius, x, y, z){
+		var mesh, geom, mat;
+		var sampleTexture = new THREE.TextureLoader().load('/assets/images/microscopy2.jpg');
+		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
+		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+		var customUniforms = {
+			baseTexture: 	{ type: "t", value: sampleTexture },
+			baseSpeed: 		{ type: "f", value: 0.01 },
+			noiseTexture: 	{ type: "t", value: noiseTexture },
+			noiseScale:		{ type: "f", value: 0.5 },
+			alpha: 			{ type: "f", value: 1.0 },
+			time: 			{ type: "f", value: 1.0 }
+		};
+
+		mat = new THREE.ShaderMaterial({
+			uniforms: customUniforms,
+			vertexShader: document.getElementById('vertexShader').textContent,
+			fragmentShader: document.getElementById('fragmentShader').textContent,
+			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
 		});
 
-		mat = new THREE.MeshPhongMaterial({
-			color: 0xff0000,
-			shading: THREE.FlatShading
-		});
-		mesh = new THREE.Mesh(geometry, mat);
-		console.log(mesh);
+		// mat = new THREE.MeshBasicMaterial({color: COLORS.Blue});
+
+		mat.side = THREE.DoubleSide;
+
+		geom = new THREE.SphereGeometry(radius, 30, 30);
+		mesh = new THREE.Mesh(geom, mat);
 		mesh.position.set(x, y, z);
 		super(mesh, x, y, z);
+	}
+
+	update(){
+		this.mesh.rotation.y += .005;
+		this.mesh.rotation.x += .005;
+		this.mesh.material.uniforms.time.value += .015;
 	}
 }
 
@@ -359,7 +404,7 @@ class WaterDome extends Item{
 
 	mapToCube(cubeCamera){
 		this.mesh.material.envMap = cubeCamera.renderTarget;
-		this.cubeCamera = World.waterCubeCamera;
+		this.cubeCamera = cubeCamera;
 	}
 
 	update(){
@@ -468,7 +513,7 @@ class Hydrogen extends Atom{
 }
 
 class Water extends Molecule{
-	constructor(size, angle, x, y, z){
+	constructor(size, angle, dir, x, y, z){
 		var oxygen, hydrogen, hydrogen2, mesh;
 		var atoms = [];
 
@@ -494,6 +539,7 @@ class Water extends Molecule{
 		super(mesh, x, y, z, atoms);
 		this.angle = angle;
 		this.speed = Math.random();
+		this.dir = dir;
 	}
 
 	update(){
@@ -518,7 +564,7 @@ class Water extends Molecule{
 		this.mesh.rotation.z += this.speed*.05;
 		this.mesh.rotation.y += this.speed*.05;
 
-		this.mesh.position.z -= this.speed*.5;
+		this.mesh.position.z += this.dir*this.speed*.5;
 	}
 }
 
