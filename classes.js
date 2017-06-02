@@ -1722,6 +1722,7 @@ class Sodium extends Atom{
 	}
 }
 
+var cl1, na1, connect1, connect2, time = 0;
 class Salt extends Molecule{
 	constructor(n, x, y, z){
 		  var mesh, layers;
@@ -1741,30 +1742,30 @@ class Salt extends Molecule{
 		  //var connect = new THREE.CylinderGeometry(.2*na, .2*na, dis, 100, 100);
 
 		  var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/salt.jpg');
-		      sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+	      sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-		      var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/crate.jpg');
-		      noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+	      var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/crate.jpg');
+	      noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
-		      customUniforms = {
-		      baseTexture:  { type: "t", value: sampleTexture },
-		      baseSpeed:    { type: "f", value: 0.05 },
-		      noiseTexture:   { type: "t", value: noiseTexture },
-		      noiseScale:   { type: "f", value: 0.5337 },
-		      alpha:      { type: "f", value: 1.0 },
-		      time:       { type: "f", value: 1.0 },        
-		        fogColor:    { type: "c", value: World.scene.fog.color },
-		        fogNear:     { type: "f", value: World.scene.fog.near },
-		        fogFar:      { type: "f", value: World.scene.fog.far }
-		      };
+	      customUniforms = {
+	      baseTexture:  { type: "t", value: sampleTexture },
+	      baseSpeed:    { type: "f", value: 0.05 },
+	      noiseTexture:   { type: "t", value: noiseTexture },
+	      noiseScale:   { type: "f", value: 0.5337 },
+	      alpha:      { type: "f", value: 1.0 },
+	      time:       { type: "f", value: 1.0 },        
+	        fogColor:    { type: "c", value: World.scene.fog.color },
+	        fogNear:     { type: "f", value: World.scene.fog.near },
+	        fogFar:      { type: "f", value: World.scene.fog.far }
+	      };
 
-		      var namat = new THREE.ShaderMaterial({
-		        uniforms: customUniforms,
-		        vertexShader: document.getElementById('vertexShader').textContent,
-		        fragmentShader: document.getElementById('fragmentShader').textContent,
-		        fog: true,
-		        // map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
-		      });
+	      var namat = new THREE.ShaderMaterial({
+	        uniforms: customUniforms,
+	        vertexShader: document.getElementById('vertexShader').textContent,
+	        fragmentShader: document.getElementById('fragmentShader').textContent,
+	        fog: true,
+	        // map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+	      });
 
 		  /*var namat = new THREE.MeshPhongMaterial({
 		    color: Colors.blue,
@@ -1894,5 +1895,60 @@ class Salt extends Molecule{
 		  super(mesh, x, y, z, atoms);
 		  this.mesh = mesh;
 		  this.layers = layers;
+		  this.numKLayers = numKLayers;
+		  this.dis = dis;
+	}
+
+	update(){
+		var speed = 2;
+		for (var i = 0; i < this.numKLayers; i++) {
+			// console.log(this.layers[i].position.z);
+			if (this.layers[i].position.z >= 225) {
+				this.layers[i].position.z -= this.numKLayers*this.dis + speed;
+			}
+			this.layers[i].position.z += speed;
+		}
+		//na1.material.uniforms.time.value += .005;
+		//na1.rotation.y += .003;
+	}
+}
+
+class SaltCube extends Atom{
+	constructor(size, x, y, z){
+		var geom, mat, mesh;
+		geom = new THREE.BoxGeometry(size, size, size);
+
+		var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/salt2.jpg');
+	      sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+	      var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/crate.jpg');
+	      noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+	      customUniforms = {
+	      baseTexture:  { type: "t", value: sampleTexture },
+	      baseSpeed:    { type: "f", value: 0.05 },
+	      noiseTexture:   { type: "t", value: noiseTexture },
+	      noiseScale:   { type: "f", value: 0.5337 },
+	      alpha:      { type: "f", value: 1.0 },
+	      time:       { type: "f", value: 1.0 },
+	      };
+
+	      mat = new THREE.ShaderMaterial({
+	        uniforms: customUniforms,
+	        vertexShader: document.getElementById('vertexShader').textContent,
+	        fragmentShader: document.getElementById('fragmentShader').textContent
+	        // map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+	      });
+
+	      mesh = new THREE.Mesh(geom, mat);
+	      mesh.position.set(x, y, z);
+	      super(mesh, x, y, z);
+	      this.speed = Math.random();
+	}
+
+	update(){
+		this.mesh.rotation.y += this.speed*.05;
+		this.mesh.rotation.x += this.speed*.05;
+
 	}
 }

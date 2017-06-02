@@ -18,10 +18,11 @@ var globalWaterSphere;
 var birthRadiusWater = 20;
 var lattice;
 var MDMAMol;
+var salt;
 
 //auxillary functions
 var loop = function(){
-	World.update(); //update positions of all objects in scene
+	World.updateTitle(); //update positions of all objects in scene
 	World.collectTrash();
 	// World.camera.position.z -= 1.5;
 	World.renderer.render(World.scene, World.camera);
@@ -220,9 +221,16 @@ class WORLD{
 		}
 	}
 
-	populate(){
+	populateSalt(){
+		this.scene.fog = new THREE.Fog(0x1e1d1b, -50, 800);
+
 		var n = 4;
-		var salt = new Salt(0, 0, 900);
+		var move = (n-1)*16*(4+4*2)/3;
+		salt = new Salt(n, 0, 0, 900);
+		var y = 1.3*move;
+		var x = -1.1*move;
+		var z = 900;
+		salt.mesh.position.set(x, y, z);
 		this.scene.add(salt.mesh);
 		this.objects.push(salt);
 	}
@@ -354,6 +362,12 @@ class WORLD{
 	    icons.push(smiley.mesh);
 	    this.titleIconObjects.push(smiley);
 
+	    var salt = new SaltCube(.2, 3, -1.25, 995);
+	    this.scene.add(salt.mesh);
+	    this.objects.push(salt);
+	    icons.push(salt.mesh);
+	    this.titleIconObjects.push(salt);
+
 	    this.titleIcons = icons;
 
 	    window.addEventListener('mousedown', selectScene);
@@ -427,8 +441,10 @@ class WORLD{
 	  this.objects.push(molecule);
 	}
 
-	update(){
-		return;
+	updateSalt(){
+		for(var i=0; i<this.objects.length; i++){
+	      this.objects[i].update();
+	    }
 	}
 
 	updateIron(){
@@ -561,6 +577,7 @@ function selectScene(e){ //select scene from title using raycasting
 	var metal = World.titleIcons[2];
 	var water = World.titleIcons[3];
 	var mdma = World.titleIcons[4];
+	var salt = World.titleIcons[5];
 
 	mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
 	mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
@@ -590,6 +607,12 @@ function selectScene(e){ //select scene from title using raycasting
 						World.changeScene('mdma');
 					}, 1000);
 				}
+				else if (intersects[i].object == salt){
+					World.titleIconObjects[5].spinWildly();
+					setTimeout(function(){
+						World.changeScene('salt');
+					}, 1000);
+				}
 			}
 			else if (intersects[i].object.parent.parent == World.titleIcons[k]){
 				distortTitleBackground();
@@ -617,6 +640,6 @@ function selectScene(e){ //select scene from title using raycasting
 var World = new WORLD();
 
 World.createLights();
-World.populate();
+World.populateTitle();
 
 loop();
