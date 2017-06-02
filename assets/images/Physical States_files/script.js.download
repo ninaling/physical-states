@@ -157,7 +157,7 @@ class WORLD{
 
 		// temp = new MDMA(Math.PI*2*Math.random(), 0, 0, 950);
 		// this.scene.add(temp.mesh);
-
+		
 		// for (var i=0; i<5; i++){
 		// 	temp = new Water(Math.random()*5 + 1, Math.random()*2*Math.PI, -1, 0, 0, 1000);
 		// 	this.scene.add(temp.mesh);
@@ -168,14 +168,6 @@ class WORLD{
 		// 	this.scene.add(temp.mesh);
 		// 	this.objects.push(temp);
 		// }
-
-		// temp = new THREE.Mesh(new THREE.SphereGeometry(5, 30, 30), new THREE.MeshBasicMaterial({color: 0xff0000}));
-		// temp.position.set(0, 0, 950);
-		// this.scene.add(temp);
-
-		temp2 = new MDMA(Math.random()*2*Math.PI, 0, 0, 950);
-		this.scene.add(temp2.mesh);
-		this.objects.push(temp2);
 	}
 
 	togglePopulate(){

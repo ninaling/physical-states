@@ -847,45 +847,11 @@ class Background extends Item{
 
 var neheTexture = new THREE.TextureLoader().load("assets/images/image.png");
 
-var SphereGeometry = new THREE.SphereGeometry(1.2, 8, 8);
-var SphereMaterial = new THREE.MeshBasicMaterial({
-        color: 0xff0000
-});
-
-var CylinderGeometry = new THREE.CylinderGeometry(.15, .2, 3, 3);
-var CylinderMaterial = new THREE.MeshLambertMaterial({
-        color: 0xFFFF01
-});
-
-function CreateMDMAAtom(x, y, z, n = 1.2, k = 8, j = 8) {
-    neheTexture.offset.x = Math.random(); // 0.0 - 1.0
-    neheTexture.offset.y = 0;
-    sphere = new THREE.Mesh(SphereGeometry, SphereMaterial);
-    sphere.position.set(x, y, z);
-    return sphere;
-}
-
-function CreateMDMABond(x, y, z, vx, vy, vz, n = 0.15, k = 0.2) {
-    cylinder = new THREE.Mesh(CylinderGeometry, CylinderMaterial);
-    cylinder.position.set(x, y, z);
-    var vector = new THREE.Vector3(vx, vy, vz);
-
-    var focalPoint = new THREE.Vector3(
-        cylinder.position.x + vector.x,
-        cylinder.position.y + vector.y,
-        cylinder.position.z + vector.z
-    );
-    cylinder.up = new THREE.Vector3(0, 0, 1); //Z axis up
-    cylinder.lookAt(focalPoint);
-
-    return cylinder;
-}
-
 class MDMA extends Molecule{
 	constructor(randomAngle, x, y, z){
-	  var atoms = [];
-	  var temp;
-	  var sphere; var cylinder; //globals to save memory
+		var atoms = [];
+		var temp;
+		var sphere; var cylinder; //globals to save memory
 
 	  var group = new THREE.Group();
 
@@ -1071,14 +1037,48 @@ class MDMA extends Molecule{
 	  temp.position.set(x + 15, y + 2.2, z);
 	  group.add(temp);
 
-	  // if (randomAngle) {
-	  //   console.log("hai");
-	  //   group.rotation.x += Math.random()*3;
-	  //   group.rotation.y += Math.random()*3;
-	  //   group.rotation.z += Math.random()*3;
-	  // }
+	  if (randomAngle) {
+	    console.log("hai");
+	    group.rotation.x += Math.random()*3;
+	    group.rotation.y += Math.random()*3;
+	    group.rotation.z += Math.random()*3;
+	  }
 
 	  group.position.set(x, y, z);
 	  super(group, x, y, z, atoms);
 	}
+}
+
+var SphereGeometry = new THREE.SphereGeometry(1.2, 8, 8);
+		var SphereMaterial = new THREE.MeshLambertMaterial({
+		        map: neheTexture
+		});
+
+		var CylinderGeometry = new THREE.CylinderGeometry(.15, .2, 3, 3);
+		var CylinderMaterial = new THREE.MeshLambertMaterial({
+		        color: 0xFFFF01
+		});
+
+function CreateMDMAAtom(x, y, z, n = 1.2, k = 8, j = 8) {
+    neheTexture.offset.x = Math.random(); // 0.0 - 1.0
+    neheTexture.offset.y = 0;
+    sphere = new THREE.Mesh(SphereGeometry, SphereMaterial);
+    sphere.position.set(x, y, z);
+    return sphere;
+}
+
+function CreateMDMABond(x, y, z, vx, vy, vz, n = 0.15, k = 0.2) {
+    cylinder = new THREE.Mesh(CylinderGeometry, CylinderMaterial);
+    cylinder.position.set(x, y, z);
+    var vector = new THREE.Vector3(vx, vy, vz);
+
+    var focalPoint = new THREE.Vector3(
+        cylinder.position.x + vector.x,
+        cylinder.position.y + vector.y,
+        cylinder.position.z + vector.z
+    );
+    cylinder.up = new THREE.Vector3(0, 0, 1); //Z axis up
+    cylinder.lookAt(focalPoint);
+
+    return cylinder;
 }
