@@ -40,7 +40,6 @@ var loop = function(){
 }
 
 function addIce(){
-	console.log('called');
 	var angle, posX, posY;
 	angle = Math.random() *2*Math.PI;
 	posX = Math.random()*birthRadius*Math.cos(angle);
@@ -73,7 +72,7 @@ var spawnWater = function(e){
 	x = pos.x; y = pos.y;
 	var size = 1 + Math.random()*5;
 
-	temp = new Water(size, Math.random()*2*Math.PI, 1, x, y, z);
+	temp = new Water(size, Math.random()*2*Math.PI, 1.2, x, y, z);
 	World.scene.add(temp.mesh);
 	World.objects.push(temp);
 }
@@ -89,7 +88,6 @@ function distortTitleBackground(){
 var requestId;
 function collapseWorld(){
 	if(World.collapse()){
-		console.log("completed");
 		window.cancelAnimationFrame(requestId);
 		return;
 	}
@@ -165,6 +163,7 @@ class WORLD{
 
 	changeScene(scene){
 		this.clearScene();
+		this.removeEventListeners();
 		if (scene == 'ice'){
 			this.populateIce();
 			loop = function(){
@@ -185,6 +184,7 @@ class WORLD{
 		}
 		else if (scene == 'iron'){
 			this.populateIron();
+			World.scene.fog = new THREE.Fog(0x1e1d1b, 100, -1000);
 			loop = function(){
 				World.updateIron();
 				World.collectTrash();
@@ -369,7 +369,6 @@ class WORLD{
 	}
 
 	togglePopulate(){
-		console.log('tog');
 		if (this.canPopulate)
 			this.canPopulate = false;
 		else
@@ -449,7 +448,7 @@ class WORLD{
 			angle = Math.random() *2*Math.PI;
 			posX = Math.random()*birthRadius*Math.cos(angle);
 			posY = Math.random()*birthRadius*Math.sin(angle);
-			temp2 = new Ice(1, angle, posX, posY, 1000);
+			temp2 = new Ice(1, angle, -1, posX, posY, 1000);
 			this.objects.push(temp2);
 			this.scene.add(temp2.mesh);
 			this.canPopulate = false;
@@ -513,7 +512,7 @@ class WORLD{
 
 	removeEventListeners(){
 		window.removeEventListener('mousedown', addIce);
-		window.removeEventListener('mousedown', spawnIce);
+		window.removeEventListener('mousedown', spawnWater);
 		window.removeEventListener('mousedown', distortWaterBackground);
 		window.removeEventListener('mousedown', selectScene);
 	}
@@ -548,7 +547,6 @@ function selectScene(e){ //select scene from title using raycasting
 	var intersects = raycaster.intersectObjects(World.titleIcons, true);
 
 	for (var i=0; i<intersects.length; i++){
-		console.log(intersects[i].object.parent);
 		for (var k=0; k<World.titleIcons.length; k++){
 			if (intersects[i].object == World.titleIcons[k]){
 				distortTitleBackground();
