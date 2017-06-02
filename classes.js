@@ -819,12 +819,12 @@ class MetalLayer extends Molecule{
 			// mesh.add(lightning.mesh);
 		}
 
-		if (hasNucleus){
-			var nucleus = new IceCube(0, 0, 0);
-			nucleus.mesh.rotation.x = Math.PI/2;
-			mesh.add(nucleus.mesh);
-			atoms.push(nucleus);
-		}
+		// if (hasNucleus){
+		// 	var nucleus = new IceCube(0, 0, 0);
+		// 	nucleus.mesh.rotation.x = Math.PI/2;
+		// 	mesh.add(nucleus.mesh);
+		// 	atoms.push(nucleus);
+		// }
 
 		mesh.position.set(x, y, z);
 		atoms = atoms.slice();

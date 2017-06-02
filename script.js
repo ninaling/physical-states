@@ -135,6 +135,8 @@ class WORLD{
 		this.objects = [];
 		this.zPositions = [];
 		this.lights = [];
+		this.electrons = [];
+		this.layers = [];
 		this.scene = scene;
 		this.camera = camera;
 		this.cubeCamera = cubeCamera;
@@ -159,7 +161,40 @@ class WORLD{
 	}
 
 	populate(){
-		return;
+		var ionSize = 16;
+	    var dis = 20*ionSize/1.3;
+	    ionSize *= 1.5;
+
+	    var i, j, k;
+	    var x, y, z;
+	    var m;
+	    var n = 4;
+	    var numKLayers = (n*2)-3;
+
+	    var egeo = new THREE.SphereGeometry(ionSize/15, 10, 10);
+	    var emat = new THREE.MeshPhongMaterial({
+	      shininess: 25,
+	      ambient: 0x050505,
+	      specular: 0xffffff,
+	      emissive: COLORS.Ice,
+	      color: COLORS.Blue
+	    });
+
+	    i=j=0;
+	    for (var k=0; k<5; k++){
+	      this.electrons[k] = new THREE.Group();
+	      for(j=-4; j<4; j++){
+	        for(i=-4; i<4; i++){
+	            var electron = new THREE.Mesh(egeo, emat);
+	            electron.position.x = i*dis + (Math.random()*dis);
+	            electron.position.y = j*dis + (Math.random()*dis);
+	            electron.position.z = 0;
+	            this.electrons[k].add(electron);
+	        }
+	      }
+	      this.electrons[k].position.z -= k*dis;
+	      this.scene.add(this.electrons[k]);
+	    }
 	}
 	
 	populateIron(){
@@ -240,7 +275,29 @@ class WORLD{
 	}
 
 	update(){
-		return;
+		if(this.objects.length < 4) {
+	      this.fillScene(new IceTube(0, 0, 0, 0, 1));
+	    }
+
+	    for (var i=0; i<this.objects.length; i++){
+	      this.objects[i].update();
+	    }
+
+	    // core.material.uniforms.time.value += .005;
+	    // core.rotation.y += .003;
+
+	    var speed = 5;
+	    for (var i = 0; i < this.electrons.length; i++) {
+	      if (this.electrons[i].position.z >= 1000){
+	        this.electrons[i].position.z = 0;
+	      }
+	      this.electrons[i].position.z += speed*5;
+	    }
+	  }
+
+  fillScene(molecule){
+    this.scene.add(molecule.mesh);
+    this.objects.push(molecule);
 	}
 
 	updateIron(){
