@@ -1250,3 +1250,90 @@ class MDMA extends Molecule{
 	  super(group, x, y, z, atoms);
 	}
 }
+
+class Lattice extends Molecule{
+	constructor(n){
+	  var mesh, layers, electrons,
+	  var ionSize = 16;
+	  var dis = 20*ionSize/3;
+	  ionSize *= 1.5;
+	  mesh = new THREE.Object3D();
+
+	  var iongeo = new THREE.SphereGeometry(ionSize, 30, 30);
+	  var ionmat = new THREE.MeshPhongMaterial({
+	    color: Colors.iron,
+	    reflectivity: .3,
+	    metal: true,
+	    shininess: 50
+	  });
+
+	  var egeo = new THREE.SphereGeometry(ionSize/15, 10, 10);
+	  var emat = new THREE.MeshPhongMaterial({
+	    color: Colors.electron,
+	    reflectivity: .3,
+	    metal: true,
+	    shininess: 50
+	  });
+
+	  var i, j, k;
+	  var x, y, z;
+	  var m;
+
+	  var numKLayers = (n*2)-3;
+
+	  layers = [];
+	  electrons = [];
+
+	  for(k=0; k<numKLayers*2; k++){
+
+	    layers[k] = new THREE.Group();
+	    electrons[k] = new THREE.Group();
+
+	    if (k%2 == 0) {
+	      for(j=0; j<(n*2-1)+1; j++){
+	        for(i=0; i<(n*2-1)+1; i++){
+	          var ion = new THREE.Mesh(iongeo, ionmat);
+	          ion.position.x += i*dis;
+	          ion.position.y -= j*dis;
+	          ion.position.z = 0;
+	          layers[k].add(ion);
+	        }
+	      }
+	    }
+	    else {
+	      for(j=0; j<(n*2-1); j++){
+	        for(i=0; i<(n*2-1); i++){
+	          var ion = new THREE.Mesh(iongeo, ionmat);
+	          ion.geometry.computeVertexNormals();
+	          ion.position.x += (i + 0.5)*dis;
+	          ion.position.y -= (j + 0.5)*dis;
+	          ion.position.z = 0;
+	          layers[k].add(ion);
+	        }
+	      }
+	    }
+
+	    i=j=0;
+	    for(j=0; j<(n*2-1)+1; j++){
+	      for(i=0; i<(n*2-1)+1; i++){
+	        for (var m=0;m<2;m++){
+	          var electron = new THREE.Mesh(egeo, emat);
+	          electron.position.x += i*dis + (Math.random()-0.5)*dis;
+	          electron.position.y -= j*dis + (Math.random()-0.5)*dis;
+	          electron.position.z = 0;
+	          electrons[k].add(electron);
+	        }
+	      }
+	    }
+	    electrons[k].position.z -=k*dis;
+	    mesh.add(electrons[k]);
+
+	    layers[k].position.z -= k*dis;
+	    mesh.add(layers[k]);
+	  }
+
+	  mesh.receiveShadow = true;
+	  super(mesh, 0, 0, 0);
+
+	}
+}
