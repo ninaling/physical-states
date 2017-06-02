@@ -1,15 +1,3 @@
-const COLORS = {
-	Blue: 0x66b7ff,
-	Ice: 0xadf6ff,
-	LightBlue: 0xeaf2ff,
-	Red: 0xff0000,
-	White: 0xffffff,
-	Gray: 0xe1e1e1,
-	DarkBlue: 0x070a19,
-	iron: 0x6b6e72,
-	electron: 0xffffff
-};
-
 var HEIGHT = window.innerHeight;
 var WIDTH = window.innerWidth;
 const ORIGIN = new THREE.Vector3(0, 0, 0);
@@ -33,7 +21,7 @@ var MDMAMol;
 
 //auxillary functions
 var loop = function(){
-	World.updateTitle(); //update positions of all objects in scene
+	World.update(); //update positions of all objects in scene
 	World.collectTrash();
 	// World.camera.position.z -= 1.5;
 	World.renderer.render(World.scene, World.camera);
@@ -230,6 +218,13 @@ class WORLD{
 				window.requestAnimationFrame(loop);
 			}
 		}
+	}
+
+	populate(){
+		var n = 4;
+		salt = new Salt(0, 0, 900);
+		this.scene.add(salt.mesh);
+		this.objects.push(salt);
 	}
 
 	populateMDMA(){
@@ -432,6 +427,10 @@ class WORLD{
 	  this.objects.push(molecule);
 	}
 
+	update(){
+		return;
+	}
+
 	updateIron(){
 		for(var i=0; i<this.objects.length; i++){
 	      this.objects[i].update();
@@ -618,6 +617,6 @@ function selectScene(e){ //select scene from title using raycasting
 var World = new WORLD();
 
 World.createLights();
-World.populateTitle();
+World.populate();
 
 loop();
