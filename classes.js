@@ -1181,9 +1181,30 @@ class Background extends Item{
 
 var neheTexture = new THREE.TextureLoader().load("assets/images/image.png");
 
+class Smiley extends Atom{
+	constructor(radius, x, y, z){
+		var geom, mat, mesh;
+		geom = new THREE.SphereGeometry(radius, 30, 30);
+		mat = new THREE.MeshBasicMaterial({
+			map: neheTexture
+		});
+
+		mesh = new THREE.Mesh(geom, mat);
+		mesh.position.set(x, y, z);
+
+		super(mesh, x, y, z);
+		this.speed = 1 + Math.random()*5; 
+	}
+
+	update(){
+		this.mesh.rotation.y += this.speed*.005;
+		this.mesh.rotation.x += this.speed*.005;
+	}
+}
+
 var SphereGeometry = new THREE.SphereGeometry(1.2, 8, 8);
 var SphereMaterial = new THREE.MeshBasicMaterial({
-        color: 0xff0000
+        map: neheTexture
 });
 
 var CylinderGeometry = new THREE.CylinderGeometry(.15, .2, 3, 3);
@@ -1215,205 +1236,289 @@ function CreateMDMABond(x, y, z, vx, vy, vz, n = 0.15, k = 0.2) {
     return cylinder;
 }
 
-class MDMA extends Molecule{
-	constructor(randomAngle, x, y, z){
-	  var atoms = [];
-	  var temp;
-	  var sphere; var cylinder; //globals to save memory
+function CreateMDMA(x, y, z, randomAngle) {
+  var group = new THREE.Group();
 
-	  var group = new THREE.Group();
+  temp = CreateMDMAAtom(x, y, z);
+  group.add(temp);
 
-	  temp = CreateMDMAAtom(x, y, z);
-	  group.add(temp);
+  temp = CreateMDMAAtom(x, y + 4.2, z);
+  group.add(temp);
 
-	  temp = CreateMDMAAtom(x, y + 4.2, z);
-	  group.add(temp);
+  temp = CreateMDMAAtom(x - 4, y - 1.5, z);
+  group.add(temp);
 
-	  temp = CreateMDMAAtom(x - 4, y - 1.5, z);
-	  group.add(temp);
+  temp = CreateMDMAAtom(x - 4, y + 6, z);
+  group.add(temp);
 
-	  temp = CreateMDMAAtom(x - 4, y + 6, z);
-	  group.add(temp);
+  temp = CreateMDMAAtom(x - 6.6, y + 2.3, z);
+  group.add(temp);
 
-	  temp = CreateMDMAAtom(x - 6.6, y + 2.3, z);
-	  group.add(temp);
+  //leftmost two
+  temp = CreateMDMAAtom(x - 9.2, y + 2.8, z + 3.2, 0.8, 6, 6);
+  group.add(temp);
 
-	  //leftmost two
-	  temp = CreateMDMAAtom(x - 9.2, y + 2.8, z + 3.2, 0.8, 6, 6);
-	  group.add(temp);
+  temp = CreateMDMAAtom(x - 9, y + 2.8, z - 3.2, 0.8, 6, 6);
+  group.add(temp);
 
-	  temp = CreateMDMAAtom(x - 9, y + 2.8, z - 3.2, 0.8, 6, 6);
-	  group.add(temp);
+  temp = CreateMDMAAtom(x + 3.8, y + 6.2, z);
+  group.add(temp);
 
-	  temp = CreateMDMAAtom(x + 3.8, y + 6.2, z);
-	  group.add(temp);
+  temp = CreateMDMAAtom(x + 3.8, y - 1.8, z);
+  group.add(temp);
 
-	  temp = CreateMDMAAtom(x + 3.8, y - 1.8, z);
-	  group.add(temp);
+  temp = CreateMDMAAtom(x + 3.8, y + 10.2, z, 0.8, 6, 6);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 3.8, y - 5.8, z, 0.8, 6, 6);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 7.8, y + 4.7, z);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 7.8, y, z);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 11.4, y + 6, z);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 10.4, y - 1.8, z, 0.8, 6, 6);
+  group.add(temp);
 
-	  temp = CreateMDMAAtom(x + 3.8, y + 10.2, z, 0.8, 6, 6);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 3.8, y - 5.8, z, 0.8, 6, 6);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 7.8, y + 4.7, z);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 7.8, y, z);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 11.4, y + 6, z);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 10.4, y - 1.8, z, 0.8, 6, 6);
-	  group.add(temp);
+  //third hexagon top
+  temp = CreateMDMAAtom(x + 11.3, y + 8.8, z + 2.7, 0.8, 6, 6);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 11.3, y + 8.8, z - 2.7, 0.8, 6, 6);
+  group.add(temp);
 
-	  //third hexagon top
-	  temp = CreateMDMAAtom(x + 11.3, y + 8.8, z + 2.7, 0.8, 6, 6);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 11.3, y + 8.8, z - 2.7, 0.8, 6, 6);
-	  group.add(temp);
+  temp = CreateMDMAAtom(x + 18.3, y + 6, z);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 15, y + 3.5, z);
+  group.add(temp);
 
-	  temp = CreateMDMAAtom(x + 18.3, y + 6, z);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 15, y + 3.5, z);
-	  group.add(temp);
+  temp = CreateMDMAAtom(x + 15, y + 2, z - 3, 0.8, 6, 6);
+  group.add(temp);
 
-	  temp = CreateMDMAAtom(x + 15, y + 2, z - 3, 0.8, 6, 6);
-	  group.add(temp);
+  temp = CreateMDMAAtom(x + 18.3, y + 8.8, z - 2.7, 0.8, 6, 6);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 15, y + 2, z + 3);
+  group.add(temp);
 
-	  temp = CreateMDMAAtom(x + 18.3, y + 8.8, z - 2.7, 0.8, 6, 6);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 15, y + 2, z + 3);
-	  group.add(temp);
+  //bottom, closest three
+  temp = CreateMDMAAtom(x + 15, y + 4.3, z + 5.5, 0.8, 6, 6);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 12.5, y + 0.5, z + 5.5, 0.8, 6, 6);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 17.5, y + 0.5, z + 5.5, 0.8, 6, 6);
+  group.add(temp);
 
-	  //bottom, closest three
-	  temp = CreateMDMAAtom(x + 15, y + 4.3, z + 5.5, 0.8, 6, 6);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 12.5, y + 0.5, z + 5.5, 0.8, 6, 6);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 17.5, y + 0.5, z + 5.5, 0.8, 6, 6);
-	  group.add(temp);
-
-	  //righmost four
-	  temp = CreateMDMAAtom(x + 22.3, y + 3.6, z);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 24, y + 1.8, z + 3, 0.8, 6, 6);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 24.5, y + 6.2, z, 0.8, 6, 6);
-	  group.add(temp);
-	  temp = CreateMDMAAtom(x + 24.5, y + 1.8, z - 3, 0.8, 6, 6);
-	  group.add(temp);
+  //righmost four
+  temp = CreateMDMAAtom(x + 22.3, y + 3.6, z);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 24, y + 1.8, z + 3, 0.8, 6, 6);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 24.5, y + 6.2, z, 0.8, 6, 6);
+  group.add(temp);
+  temp = CreateMDMAAtom(x + 24.5, y + 1.8, z - 3, 0.8, 6, 6);
+  group.add(temp);
 
 
-	  //-3, -1.2, 0
-	  temp = CreateMDMABond(x - 2.1, y - 0.8, z, 4, 2, 45, 0.3, 0.3);
-	  group.add(temp);
-	  temp = CreateMDMABond(x - 1.55, y + 5.4, z, -4, 1.2, 45, 0.3, 0.3);
-	  group.add(temp);
-	  temp = CreateMDMABond(x - 5.5, y + 4.2, z, 2.7, 4, 200, 0.3, 0.3);
-	  group.add(temp);
-	  temp = CreateMDMABond(x - 5.5, y + 0.3, z, -0.8, 1, 20, 0.3, 0.3);
-	  group.add(temp);
+  //-3, -1.2, 0
+  temp = CreateMDMABond(x - 2.1, y - 0.8, z, 4, 2, 45, 0.3, 0.3);
+  group.add(temp);
+  temp = CreateMDMABond(x - 1.55, y + 5.4, z, -4, 1.2, 45, 0.3, 0.3);
+  group.add(temp);
+  temp = CreateMDMABond(x - 5.5, y + 4.2, z, 2.7, 4, 200, 0.3, 0.3);
+  group.add(temp);
+  temp = CreateMDMABond(x - 5.5, y + 0.3, z, -0.8, 1, 20, 0.3, 0.3);
+  group.add(temp);
 
-	  //leftmost two
-	  temp = CreateMDMABond(x - 8, y + 2.5, z + 2, -1.5, 0.2, -1);
-	  group.add(temp);
-	  temp = CreateMDMABond(x - 8, y + 2.5, z - 2, -1.5, 0.2, 1);
-	  group.add(temp);
+  //leftmost two
+  temp = CreateMDMABond(x - 8, y + 2.5, z + 2, -1.5, 0.2, -1);
+  group.add(temp);
+  temp = CreateMDMABond(x - 8, y + 2.5, z - 2, -1.5, 0.2, 1);
+  group.add(temp);
 
-	  temp = CreateMDMABond(x + 2.1, y - 0.9, z, -1.5, 1, 20, 0.3, 0.3);
-	  group.add(temp);
+  temp = CreateMDMABond(x + 2.1, y - 0.9, z, -1.5, 1, 20, 0.3, 0.3);
+  group.add(temp);
 
-	  temp = CreateMDMABond(x + 2.03, y + 5.4, z, 1.5, 1, 20, 0.3, 0.3);
-	  group.add(temp);
+  temp = CreateMDMABond(x + 2.03, y + 5.4, z, 1.5, 1, 20, 0.3, 0.3);
+  group.add(temp);
 
-	  temp = CreateMDMABond(x + 6.1, y + 5.9, z, -4, 2, 45);
-	  group.add(temp);
-	  temp = CreateMDMABond(x + 6.2, y + 5.4, z, -4, 2, 45);
-	  group.add(temp);
-	  temp = CreateMDMABond(x + 6, y - 0.8, z, 4, 2, 45, 0.3, 0.3);
-	  group.add(temp);
-	  temp = CreateMDMABond(x + 8.8, y - 0.8, z, -1.5, 1, 20, 0.3, 0.3);
-	  group.add(temp);
-	  temp = CreateMDMABond(x + 9.8, y + 5.5, z, 1.5, 1, 20, 0.3, 0.3);
-	  group.add(temp);
+  temp = CreateMDMABond(x + 6.1, y + 5.9, z, -4, 2, 45);
+  group.add(temp);
+  temp = CreateMDMABond(x + 6.2, y + 5.4, z, -4, 2, 45);
+  group.add(temp);
+  temp = CreateMDMABond(x + 6, y - 0.8, z, 4, 2, 45, 0.3, 0.3);
+  group.add(temp);
+  temp = CreateMDMABond(x + 8.8, y - 0.8, z, -1.5, 1, 20, 0.3, 0.3);
+  group.add(temp);
+  temp = CreateMDMABond(x + 9.8, y + 5.5, z, 1.5, 1, 20, 0.3, 0.3);
+  group.add(temp);
 
-	  //third hexagon top
-	  temp = CreateMDMABond(x + 11.5, y + 7.7, z + 1.5, 0, 0.5, -0.5);
-	  group.add(temp);
-	  temp = CreateMDMABond(x + 11.5, y + 8, z - 1.5, 0, 0.5, 0.5);
-	  group.add(temp);
+  //third hexagon top
+  temp = CreateMDMABond(x + 11.5, y + 7.7, z + 1.5, 0, 0.5, -0.5);
+  group.add(temp);
+  temp = CreateMDMABond(x + 11.5, y + 8, z - 1.5, 0, 0.5, 0.5);
+  group.add(temp);
 
-	  temp = CreateMDMABond(x + 13.5, y + 5.2, z, -3, 2, 45, 0.3, 0.3);
-	  group.add(temp);
+  temp = CreateMDMABond(x + 13.5, y + 5.2, z, -3, 2, 45, 0.3, 0.3);
+  group.add(temp);
 
-	  temp = CreateMDMABond(x + 15, y + 2.7, z - 2, 0, -0.1, 0.05, 0.3);
-	  group.add(temp);
+  temp = CreateMDMABond(x + 15, y + 2.7, z - 2, 0, -0.1, 0.05, 0.3);
+  group.add(temp);
 
-	  //right top
-	  temp = CreateMDMABond(x + 18.3, y + 7.2, z - 1.2, 0, 0.5, 0.5);
-	  group.add(temp);
-	  temp = CreateMDMABond(x + 16.3, y + 5.2, z + 0.5, -0.4, -0.3, -10, 0.3, 0.3);
-	  group.add(temp);
+  //right top
+  temp = CreateMDMABond(x + 18.3, y + 7.2, z - 1.2, 0, 0.5, 0.5);
+  group.add(temp);
+  temp = CreateMDMABond(x + 16.3, y + 5.2, z + 0.5, -0.4, -0.3, -10, 0.3, 0.3);
+  group.add(temp);
 
-	  temp = CreateMDMABond(x + 15, y + 2.7, z + 2, 0, -0.1, -0.05, 0.3, 0.3);
-	  group.add(temp);
+  temp = CreateMDMABond(x + 15, y + 2.7, z + 2, 0, -0.1, -0.05, 0.3, 0.3);
+  group.add(temp);
 
-	  //bottom three
-	  temp = CreateMDMABond(x + 15, y + 3.2, z + 4.5, 0, 0.4, -0.5);
-	  group.add(temp);
-	  temp = CreateMDMABond(x + 16.5, y + 1.2, z + 4.5, -0.5, 0.3, 1);
-	  group.add(temp);
-	  temp = CreateMDMABond(x + 13.5, y + 1.2, z + 4.5, 0.5, 0.3, 1);
-	  group.add(temp);
+  //bottom three
+  temp = CreateMDMABond(x + 15, y + 3.2, z + 4.5, 0, 0.4, -0.5);
+  group.add(temp);
+  temp = CreateMDMABond(x + 16.5, y + 1.2, z + 4.5, -0.5, 0.3, 1);
+  group.add(temp);
+  temp = CreateMDMABond(x + 13.5, y + 1.2, z + 4.5, 0.5, 0.3, 1);
+  group.add(temp);
 
-	  //rightmost four
-	  temp = CreateMDMABond(x + 20.3, y + 4.6, z, -0.4, 0.3, 10, 0.3, 0.3);
-	  group.add(temp);
-	  temp = CreateMDMABond(x + 23.3, y + 2.8, z + 1.6, -0.5, 0.5, 0.5);
-	  group.add(temp);
-	  temp = CreateMDMABond(x + 23.5, y + 4.7, z, 1.2, 1.5, 20);
-	  group.add(temp);
-	  temp = CreateMDMABond(x + 23.5, y + 3, z - 1.5, -0.5, 0.5, -0.5);
-	  group.add(temp);
+  //rightmost four
+  temp = CreateMDMABond(x + 20.3, y + 4.6, z, -0.4, 0.3, 10, 0.3, 0.3);
+  group.add(temp);
+  temp = CreateMDMABond(x + 23.3, y + 2.8, z + 1.6, -0.5, 0.5, 0.5);
+  group.add(temp);
+  temp = CreateMDMABond(x + 23.5, y + 4.7, z, 1.2, 1.5, 20);
+  group.add(temp);
+  temp = CreateMDMABond(x + 23.5, y + 3, z - 1.5, -0.5, 0.5, -0.5);
+  group.add(temp);
 
-	  var geometry1 = new THREE.CylinderGeometry(0.15, 0.2, 3, 3);
-	  var geometry3 = new THREE.CylinderGeometry(0.15, 0.2, 2, 3);
-	  var geometry2 = new THREE.CylinderGeometry(0.3, 0.3, 3.1, 3);
-	  var material = new THREE.MeshLambertMaterial({
-	      color: 0xFFFF01,
-	  });
+  var geometry1 = new THREE.CylinderGeometry(0.15, 0.2, 3, 3);
+  var geometry3 = new THREE.CylinderGeometry(0.15, 0.2, 2, 3);
+  var geometry2 = new THREE.CylinderGeometry(0.3, 0.3, 3.1, 3);
+  var material = new THREE.MeshLambertMaterial({
+      color: 0xFFFF01,
+  });
 
-	  temp = new THREE.Mesh(geometry1, material);
-	  temp.position.set(x - 0.3, y + 2.2, z);
-	  group.add(temp);
+  temp = new THREE.Mesh(geometry1, material);
+  temp.position.set(x - 0.3, y + 2.2, z);
+  group.add(temp);
 
-	  temp = new THREE.Mesh(geometry1, material);
-	  temp.position.set(x + 0.3, y + 2.2, z);
-	  group.add(temp);
+  temp = new THREE.Mesh(geometry1, material);
+  temp.position.set(x + 0.3, y + 2.2, z);
+  group.add(temp);
 
-	  temp = new THREE.Mesh(geometry1, material);
-	  temp.position.set(x + 3.8, y + 8.2, z);
-	  group.add(temp);
+  temp = new THREE.Mesh(geometry1, material);
+  temp.position.set(x + 3.8, y + 8.2, z);
+  group.add(temp);
 
-	  temp = new THREE.Mesh(geometry1, material);
-	  temp.position.set(x + 3.8, y - 3.8, z);
-	  group.add(temp);
+  temp = new THREE.Mesh(geometry1, material);
+  temp.position.set(x + 3.8, y - 3.8, z);
+  group.add(temp);
 
-	  temp = new THREE.Mesh(geometry2, material);
-	  temp.position.set(x + 7.8, y + 2.2, z);
-	  group.add(temp);
+  temp = new THREE.Mesh(geometry2, material);
+  temp.position.set(x + 7.8, y + 2.2, z);
+  group.add(temp);
 
-	  temp = new THREE.Mesh(geometry2, material);
-	  temp.position.set(x + 15, y + 2.2, z);
-	  group.add(temp);
+  temp = new THREE.Mesh(geometry2, material);
+  temp.position.set(x + 15, y + 2.2, z);
+  group.add(temp);
 
-	  // if (randomAngle) {
-	  //   console.log("hai");
-	  //   group.rotation.x += Math.random()*3;
-	  //   group.rotation.y += Math.random()*3;
-	  //   group.rotation.z += Math.random()*3;
-	  // }
+  if (randomAngle) {
+    console.log("hai");
+    group.rotation.x += Math.random()*3;
+    group.rotation.y += Math.random()*3;
+    group.rotation.z += Math.random()*3;
+  }
 
-	  group.position.set(x, y, z);
-	  super(group, x, y, z, atoms);
+  return group;
+}
+
+class MDMALattice extends Molecule{
+	constructor(n, x, y, z){
+		var mesh;
+		var layers;
+		var atoms = [];
+
+		mesh = new THREE.Object3D();
+		var dis = 80;
+
+		var i, j, k;
+		var x, y, z;
+		var m;
+
+		var numKLayers = n*2;
+
+		layers = [];
+
+		for(k=0; k<numKLayers; k++){
+
+			layers[k] = new THREE.Group();
+
+			for(j=0; j<n-2; j++){
+				for(i=0; i<n-1; i++){
+					var mdma = CreateMDMA(i*dis + (Math.random()-0.4)*dis*0.8, -j*dis + (Math.random()-0.4)*dis*0.8, 0, true);
+					mdma.scale.set(3,3,3);
+					layers[k].add(mdma);
+				}
+			}
+			layers[k].position.z -= k*dis;
+			mesh.add(layers[k]);
+		}
+		mesh.receiveShadow = true;
+		mesh.position.set(x, y, z);
+
+		super(mesh, 0, 0, 900, atoms);
+		this.mesh = mesh;
+		this.layers = layers;
+		this.numKLayers = numKLayers;
+		this.dis = dis;
+	}
+
+	update(){
+		var speed = 0.5;
+			for (var i = 0; i < this.numKLayers; i++) {
+				if (this.layers[i].position.z >= 200) {
+					this.layers[i].position.z = -(this.numKLayers-1)*this.dis + speed;
+				}
+				this.layers[i].position.z += speed;
+			}
+			// this.mesh.rotation.y += speed*.01;
+		this.mesh.rotation.z += speed*.01;
+	}
+}
+
+class MDMABackground extends Item{
+	constructor(x, y, z){
+		var sampleTexture = new THREE.TextureLoader().load('/assets/images/mdma2.jpg');
+		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
+		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+		var customUniforms = {
+			baseTexture: 	{ type: "t", value: sampleTexture },
+			baseSpeed: 		{ type: "f", value: 0.01 },
+			noiseTexture: 	{ type: "t", value: noiseTexture },
+			noiseScale:		{ type: "f", value: 0.5 },
+			alpha: 			{ type: "f", value: 1.0 },
+			time: 			{ type: "f", value: 1.0 }
+		};
+
+		var mat = new THREE.ShaderMaterial({
+			uniforms: customUniforms,
+			vertexShader: document.getElementById('vertexShader').textContent,
+			fragmentShader: document.getElementById('fragmentShader').textContent,
+			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+		});
+
+		var mesh = new THREE.Mesh(new THREE.SphereGeometry(WIDTH*2, 50, 50), mat);
+		mesh.material.side = THREE.BackSide;
+		mesh.position.set(x, y, z);
+		super(mesh, x, y, z);
+	}
+
+	update(){
+		this.mesh.material.uniforms.time.value += .025;
+		this.mesh.rotation.y += .006;
+		this.mesh.rotation.x += .006;
 	}
 }
 

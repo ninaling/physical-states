@@ -33,7 +33,7 @@ var MDMAMol;
 
 //auxillary functions
 var loop = function(){
-	World.updateMDMA(); //update positions of all objects in scene
+	World.updateTitle(); //update positions of all objects in scene
 	World.collectTrash();
 	// World.camera.position.z -= 1.5;
 	World.renderer.render(World.scene, World.camera);
@@ -232,9 +232,12 @@ class WORLD{
 	}
 
 	populateMDMA(){
-		MDMAMol = new MDMA(Math.PI*2*Math.random(), 0, 0, 950);
+		MDMAMol = new MDMALattice(4, 0, 0, 950);
 		this.scene.add(MDMAMol.mesh);
 		this.objects.push(MDMAMol);
+		var background = new MDMABackground(0, 0, 980);
+		this.scene.add(background.mesh);
+		this.objects.push(background);
 	}
 
 	populateMetal(){
@@ -342,6 +345,11 @@ class WORLD{
 	    this.objects.push(water);	
 	    icons.push(water.mesh);
 
+	    var smiley = new Smiley(.15, 2, -1.25, 995);
+	    this.scene.add(smiley.mesh);
+	    this.objects.push(smiley);	
+	    icons.push(smiley.mesh);
+
 	    this.titleIcons = icons;
 
 	    window.addEventListener('mousedown', selectScene);
@@ -384,7 +392,9 @@ class WORLD{
 	}
 
 	updateMDMA(){
-		return;
+		for(var i=0; i<this.objects.length; i++){
+			this.objects[i].update();
+		}
 	}
 
 	updateMetal(){
@@ -542,6 +552,7 @@ function selectScene(e){ //select scene from title using raycasting
 	var ice = World.titleIcons[1];
 	var metal = World.titleIcons[2];
 	var water = World.titleIcons[3];
+	var mdma = World.titleIcons[4];
 
 	mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
 	mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
@@ -561,6 +572,11 @@ function selectScene(e){ //select scene from title using raycasting
 				else if (intersects[i].object == metal){
 					setTimeout(function(){
 						World.changeScene('metal');
+					}, 1000);
+				}
+				else if (intersects[i].object == mdma){
+					setTimeout(function(){
+						World.changeScene('mdma');
 					}, 1000);
 				}
 			}
@@ -587,10 +603,7 @@ function selectScene(e){ //select scene from title using raycasting
 
 var World = new WORLD();
 
-
-//ICE
-
 World.createLights();
-World.populateMDMA();
+World.populateTitle();
 
 loop();
