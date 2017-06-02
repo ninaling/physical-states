@@ -161,8 +161,12 @@ class WORLD{
 	}
 
 	populate(){
+		return;
+	}
+
+	populateMetal(){
 		var ionSize = 16;
-	    var dis = 20*ionSize/1.3;
+	    var dis = 15*ionSize/1.3;
 	    ionSize *= 1.5;
 
 	    var i, j, k;
@@ -183,8 +187,8 @@ class WORLD{
 	    i=j=0;
 	    for (var k=0; k<5; k++){
 	      this.electrons[k] = new THREE.Group();
-	      for(j=-4; j<4; j++){
-	        for(i=-4; i<4; i++){
+	      for(j=-5; j<5; j++){
+	        for(i=-5; i<5; i++){
 	            var electron = new THREE.Mesh(egeo, emat);
 	            electron.position.x = i*dis + (Math.random()*dis);
 	            electron.position.y = j*dis + (Math.random()*dis);
@@ -275,7 +279,11 @@ class WORLD{
 	}
 
 	update(){
-		if(this.objects.length < 4) {
+		return;
+	}
+
+	updateMetal(){
+		if(this.objects.length < 3) {
 	      this.fillScene(new IceTube(0, 0, 0, 0, 1));
 	    }
 
@@ -295,9 +303,9 @@ class WORLD{
 	    }
 	  }
 
-  fillScene(molecule){
-    this.scene.add(molecule.mesh);
-    this.objects.push(molecule);
+	fillScene(molecule){
+	  this.scene.add(molecule.mesh);
+	  this.objects.push(molecule);
 	}
 
 	updateIron(){

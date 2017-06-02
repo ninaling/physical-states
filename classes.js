@@ -819,12 +819,12 @@ class MetalLayer extends Molecule{
 			// mesh.add(lightning.mesh);
 		}
 
-		// if (hasNucleus){
-		// 	var nucleus = new IceCube(0, 0, 0);
-		// 	nucleus.mesh.rotation.x = Math.PI/2;
-		// 	mesh.add(nucleus.mesh);
-		// 	atoms.push(nucleus);
-		// }
+		if (hasNucleus){
+			var nucleus = new IceCube(0, 0, 0);
+			nucleus.mesh.rotation.x = Math.PI/2;
+			mesh.add(nucleus.mesh);
+			atoms.push(nucleus);
+		}
 
 		mesh.position.set(x, y, z);
 		atoms = atoms.slice();
@@ -933,13 +933,13 @@ class IceCube extends Atom{
 		var lightningCircles = [];
 		var temp;
 
-		for (var i=1; i>-2; i--){
-			temp = new LightningCircle(15, 0, 0, 0);
-			temp.mesh.rotation.x = Math.PI/2;
-			temp.mesh.position.y = i*8;
-			mesh.add(temp.mesh);
-			lightningCircles.push(temp);
-		}
+		// for (var i=1; i>-2; i--){
+		// 	temp = new LightningCircle(15, 0, 0, 0);
+		// 	temp.mesh.rotation.x = Math.PI/2;
+		// 	temp.mesh.position.y = i*8;
+		// 	mesh.add(temp.mesh);
+		// 	lightningCircles.push(temp);
+		// }
 
 		mesh.position.set(x, y, z);
 		super(mesh, x, y, z);
@@ -961,18 +961,16 @@ class IceTube extends Item{
 		var mesh = new THREE.Group();
 		var layers = [];
 
-		var cubeCamera = new THREE.CubeCamera(World.near, World.far, 256);
-		cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
-		cubeCamera.position.set(x, y, z+120); //set right in front of the layer
-		// World.scene.add(cubeCamera);
-
-		mesh.add(cubeCamera);
+		// var cubeCamera = new THREE.CubeCamera(World.near, World.far, 256);
+		// cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
+		// cubeCamera.position.set(x, y, z+120); //set right in front of the layer
+		// mesh.add(cubeCamera);
 
 		for (var i=1; i<length+1; i++){
 			if (i==1)
-				temp = new MetalLayer(50*i, 0, 0, z+100*i, 1, 3*i, i%2, cubeCamera);
+				temp = new MetalLayer(30*i, 0, 0, z+100*i, 1, 3*i, i%2, World.cubeCamera);
 			else{
-				temp = new MetalLayer(50*i, 0, 0, z+100*i, 0, 3*i, i%2, cubeCamera);
+				temp = new MetalLayer(30*i, 0, 0, z+100*i, 0, 3*i, i%2, World.cubeCamera);
 			}
 
 			layers.push(temp);
@@ -984,13 +982,32 @@ class IceTube extends Item{
 		super(mesh, x, y, z);
 		this.mesh = mesh;
 		this.layers = layers;
-		this.cubeCamera = cubeCamera;
+		this.speed = 3 + Math.random() * 6;
+		this.private_x = 0 + Math.random() * 100;
+		if(Math.random() > 0.5) {
+			this.private_x *= -1;
+		}
+		this.mesh.position.x = 0;
+
+		//CONTROL: populate according to mouse position
+		// if(World.mouse_x) {
+		// 	this.mesh.position.x = World.mouse_x - window.innerWidth/2;	
+		// 	console.log(this.mesh.position);
+		// }
+		
+		this.mesh.position.z = 0;
+		this.speed_x = (this.private_x * this.speed / 1000);
+		this.cubeCamera = World.cubeCamera;
 	}
 
 	update(){
 		for(var i=0; i<this.layers.length; i++){
 			this.layers[i].update();
 		}
+
+		this.mesh.position.x += this.speed_x;
+		this.mesh.position.z += this.speed;
+
 		this.cubeCamera.updateCubeMap(World.renderer, World.scene);
 	}
 }
