@@ -794,7 +794,7 @@ class IceTube extends Item{
 		var layers = [];
 
 		var cubeCamera = new THREE.CubeCamera(World.near, World.far, 256);
-		cubeCamera.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
+		cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
 		cubeCamera.position.set(x, y, z+120); //set right in front of the layer
 		// World.scene.add(cubeCamera);
 
