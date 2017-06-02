@@ -129,6 +129,33 @@ class TitleGlobe extends Item{
 		this.mesh.rotation.x += .005;
 		this.mesh.material.uniforms.time.value += .015;
 	}
+
+	distort(){
+		var i=0;
+		var _this = this;
+		var interval = setInterval(function(){
+			if (i > 200){
+				clearInterval(interval);
+				return;
+			}
+			if (i<150){
+				_this.mesh.material.uniforms.time.value += .35;
+			}
+			else if (i<160){
+				_this.mesh.material.uniforms.time.value += .05;
+			}
+			else if (i<180){
+				_this.mesh.material.uniforms.time.value += .02;
+			}
+			else if (i<190){
+				_this.mesh.material.uniforms.time.value += .01;
+			}
+			else{
+				_this.mesh.material.uniforms.time.value += .005;
+			}
+			i++;
+		}, 5);
+	}
 }
 
 class IceDome extends Item{
@@ -165,7 +192,7 @@ class Ice extends Molecule{
 
     mesh = new THREE.Group();
 
-    oxygen = new Oxygen(size/2, 0, 0, 0);
+    oxygen = new Oxygen(size/1.5, 0, 0, 0);
 
     var vertices = oxygen.mesh.children[0].geometry.vertices;
 
@@ -174,6 +201,70 @@ class Ice extends Molecule{
       vertices[i].y += Math.sin(Math.random())*.1;
       vertices[i].z += Math.sin(Math.random())*.1;
     }
+
+    hydrogen = new Hydrogen(size/4, 0, 0, 0);
+    hydrogen.mesh.position.set(-size/1.5, -size/1.5, 0);
+    hydrogen2 = new Hydrogen(size/4, 0, 0, 0);
+    hydrogen2.mesh.position.set(size/1.5, -size/1.5, 0);
+
+    atoms.push(oxygen);
+    atoms.push(hydrogen);
+    atoms.push(hydrogen2);
+
+    mesh.add(oxygen.mesh);
+    mesh.add(hydrogen.mesh);
+    mesh.add(hydrogen2.mesh);
+
+    mesh.position.set(x, y, z);
+
+    super(mesh, x, y, z, atoms);
+    this.angle = angle;
+    this.speed = Math.random();
+  }
+
+  update(){
+    // this.mesh.position.x = 30*Math.cos(this.angle);
+    // this.mesh.position.z = 950 + 30*Math.sin(this.angle);
+    // this.mesh.position.y = 20*Math.sin(this.angle);
+
+    // this.mesh.rotation.z += this.speed*.05;
+    // this.mesh.rotation.y += this.speed*.05;
+    // // console.log(Math.cos(this.angle));
+    // if (this.angle >= Math.PI*2){
+    //  console.log('angle limit');
+    //  this.angle = 0;
+    // }
+    // else{
+    //  this.angle += this.speed*.005;
+    // }
+
+    // this.mesh.position.z += .05;
+    // this.mesh.position.y = 20*Math.sin(this.angle);
+
+    this.mesh.rotation.z += this.speed*.05;
+    this.mesh.rotation.y += this.speed*.05;
+
+    this.mesh.position.z -= this.speed*.5;
+  }
+}
+
+
+class CubicIce extends Molecule{
+  constructor(size, angle, x, y, z){
+    var oxygen, hydrogen, hydrogen2, mesh;
+    var atoms = [];
+
+    mesh = new THREE.Group();
+
+    oxygen = new CubicOxygen(size/1.5, 0, 0, 0);
+
+    // var vertices = oxygen.mesh.children[0].geometry.vertices;
+
+    // for (var i=0; i<vertices.length; i++){
+    //   vertices[i].x += Math.sin(Math.random())*.1;
+    //   vertices[i].y += Math.sin(Math.random())*.1;
+    //   vertices[i].z += Math.sin(Math.random())*.1;
+    // }
 
     hydrogen = new Hydrogen(size/4, 0, 0, 0);
     hydrogen.mesh.position.set(-size/1.5, -size/1.5, 0);
@@ -375,7 +466,47 @@ class Oxygen extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
-			ambient: 0x050505,
+			specular: 0xffffff,
+			emissive: COLORS.Ice,
+			color: COLORS.Blue
+		});
+
+		glowMat = new THREE.ShaderMaterial( 
+		{
+		    uniforms: 
+			{ 
+				"c":   { type: "f", value: 1.0 },
+				"p":   { type: "f", value: 1.4 },
+				glowColor: { type: "c", value: new THREE.Color(COLORS.White) },
+				viewVector: { type: "v3", value: World.camera.position }
+			},
+			vertexShader:   document.getElementById( 'glowVertexShader'   ).textContent,
+			fragmentShader: document.getElementById( 'glowFragmentShader' ).textContent,
+			side: THREE.FrontSide,
+			blending: THREE.AdditiveBlending,
+			transparent: true
+		}  );
+
+		mesh.add(new THREE.Mesh(geom, glowMat));
+		mesh.add(new THREE.Mesh(innerGeom, mat));
+		mesh.position.set(x, y, z);
+		super(mesh, x, y, z);
+		return this;
+	}
+}
+
+
+class CubicOxygen extends Atom{
+	constructor(radius, x, y, z){
+		var geom, innerGeom, mat, glowMat, mesh;
+
+		mesh = new THREE.Group();
+
+		geom = new THREE.BoxGeometry(radius, radius, radius);
+		innerGeom = new THREE.SphereGeometry(radius/10, 15, 15);
+
+		mat = new THREE.MeshPhongMaterial({
+			shininess: 25,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			color: COLORS.Blue
@@ -412,7 +543,6 @@ class Hydrogen extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			color: COLORS.Blue
@@ -491,7 +621,6 @@ class iceNucleus extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			color: COLORS.Blue
@@ -546,7 +675,7 @@ class Triangle extends Atom{
 
 			mat = new THREE.MeshPhongMaterial({
 				shininess: 25,
-				ambient: 0x050505,
+
 				specular: 0xffffff,
 				emissive: color,
 				// transparent: true,
@@ -597,7 +726,6 @@ class Torus extends Atom{
 		var geom = new THREE.TorusGeometry( radius, 2, 5, 7);
 		var mat = new THREE.MeshPhongMaterial({
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			opacity: .8,
@@ -713,7 +841,6 @@ class Lightning extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 50,
-			ambient: 0x050505,
 			emissive: COLORS.Ice,
 			wireframe: true,
 			wireframeLinecap: "round",
@@ -750,6 +877,29 @@ class Lightning extends Atom{
 
 	update(){
 		this.crackle();
+	}
+}
+
+class TitleMetalNode extends Atom{ //construct them with radius 1
+	constructor(radius, x, y, z){
+		var mesh, geom, mat;
+		mat = new THREE.MeshBasicMaterial({transparent: true, opacity: 1, shading: THREE.SmoothShading});
+
+		geom = new THREE.SphereGeometry(radius, 32, 32);
+		mesh = new THREE.Mesh(geom, mat);
+		mesh.position.set(x, y, z);
+
+		super(mesh, x, y, z);
+	}
+
+	mapToCube(cubeCamera){
+		this.mesh.material.envMap = cubeCamera.renderTarget;
+	}
+
+	update(){
+		this.mesh.rotation.x += .01;
+		this.mesh.rotation.y += .01;
+		this.mesh.rotation.z += .01;
 	}
 }
  
@@ -874,7 +1024,6 @@ class LightningCircle extends Atom{
 
 		mat = new THREE.MeshPhongMaterial({
 			shininess: 50,
-			ambient: 0x050505,
 			emissive: COLORS.Ice,
 			wireframe: true,
 			wireframeLinecap: "round",
@@ -919,7 +1068,6 @@ class IceCube extends Atom{
 		var mesh = new THREE.Group();
 		var mat = new THREE.MeshPhongMaterial({ //use this material for the cylinder (inner)
 			shininess: 25,
-			ambient: 0x050505,
 			specular: 0xffffff,
 			emissive: COLORS.Ice,
 			color: COLORS.Blue
@@ -1265,6 +1413,35 @@ class MDMA extends Molecule{
 
 	  group.position.set(x, y, z);
 	  super(group, x, y, z, atoms);
+	}
+}
+
+class Iron extends Atom{
+	constructor(radius, x, y, z){
+		  var iongeo = new THREE.SphereGeometry(radius, 30, 30);
+		  var vertices = iongeo.vertices;
+
+		  for (var i=0; i<vertices.length; i++){
+		  	vertices[i].x += Math.random()*.05;
+		  	vertices[i].y += Math.random()*.05;
+		  	vertices[i].z += Math.random()*.05;
+		  }
+
+		  var ionmat = new THREE.MeshPhongMaterial({
+		    color: COLORS.iron,
+		    reflectivity: .3,
+		    metal: true,
+		    shininess: 50
+		  });
+
+	  	var mesh = new THREE.Mesh(iongeo, ionmat);
+	  	mesh.position.set(x, y, z);
+	  	super(mesh, x, y, z);
+	  	this.speed = Math.random()*.75;
+	}
+	update(){
+		this.mesh.rotation.y += .05*this.speed;
+		this.mesh.rotation.x += .05*this.speed;
 	}
 }
 
