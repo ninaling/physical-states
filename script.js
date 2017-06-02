@@ -29,10 +29,11 @@ var titleGlobe;
 var globalWaterSphere;
 var birthRadiusWater = 20;
 var lattice;
+var MDMAMol;
 
 //auxillary functions
 var loop = function(){
-	World.updateTitle(); //update positions of all objects in scene
+	World.updateMDMA(); //update positions of all objects in scene
 	World.collectTrash();
 	// World.camera.position.z -= 1.5;
 	World.renderer.render(World.scene, World.camera);
@@ -153,8 +154,8 @@ class WORLD{
 		directionalLight.position.set(0, 0, 1).normalize();
 		var ambientLight = new THREE.AmbientLight();
 		ambientLight.position.set(0, 0, 950);
-		var hemLight = new THREE.HemisphereLight(COLORS.Blue, COLORS.LightBlue);
-		// scene.add(hemLight);
+		// var hemLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, 1);
+		// this.scene.add(hemLight);
 		this.scene.add(directionalLight);
 		// this.scene.add(ambientLight);
 		// this.lights.push(ambientLight);
@@ -230,8 +231,10 @@ class WORLD{
 		}
 	}
 
-	populate(){
-		return;
+	populateMDMA(){
+		MDMAMol = new MDMA(Math.PI*2*Math.random(), 0, 0, 950);
+		this.scene.add(MDMAMol.mesh);
+		this.objects.push(MDMAMol);
 	}
 
 	populateMetal(){
@@ -380,7 +383,7 @@ class WORLD{
 		this.scene.add(molecule.mesh);
 	}
 
-	update(){
+	updateMDMA(){
 		return;
 	}
 
@@ -588,6 +591,6 @@ var World = new WORLD();
 //ICE
 
 World.createLights();
-World.populateTitle();
+World.populateMDMA();
 
 loop();
