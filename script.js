@@ -4,7 +4,8 @@ const COLORS = {
 	LightBlue: 0xeaf2ff,
 	Red: 0xff0000,
 	White: 0xffffff,
-	Gray: 0xe1e1e1
+	Gray: 0xe1e1e1,
+	DarkBlue: 0x070a19
 };
 
 var HEIGHT = window.innerHeight;
@@ -12,7 +13,16 @@ var WIDTH = window.innerWidth;
 const ORIGIN = new THREE.Vector3(0, 0, 0);
 
 //global variables for testing
-var meth = []; var temp; var neg = -1; var fog; var gasherbrum; var torusRing;
+var test;
+var customUniforms;
+var iceTube;
+var meth = []; var temp; var temp2; var temp3; var neg = -1; var fog; var gasherbrum; var torusRing; var metalNode; var metalLayer; var metalLayer2; var background;
+var reflectiveMaterial;
+var canPopulate = true; //use this to control intervals between adding molecules
+var domeRadius = 50;
+var birthRadius = domeRadius/10;
+var TITLE;
+var titleGlobe;
 
 //auxillary functions
 function loop(){
@@ -21,6 +31,20 @@ function loop(){
 	// World.camera.position.z -= 1.5;
 	World.renderer.render(World.scene, World.camera);
 	window.requestAnimationFrame(loop);
+}
+
+function addWater(){
+	var angle, posX, posY;
+	angle = Math.random() *2*Math.PI;
+	posX = Math.random()*birthRadius*Math.cos(angle);
+	posY = Math.random()*birthRadius*Math.sin(angle);
+	temp2 = new Water(1, angle, posX, posY, 1000);
+
+	World.addMolecule(temp2);
+
+	canPopulate = false;
+
+	setTimeout(World.togglePopulate, 300); //cannot populate for another .3s
 }
 
 var requestId;
@@ -43,7 +67,7 @@ function float(){
 
 class WORLD{
 	constructor(){ //initialize scene
-		var scene, camera, aspectRatio, near, far, fieldOfView, renderer;
+		var scene, camera, cubeCamera, waterCubeCamera, aspectRatio, near, far, fieldOfView, renderer; //cube camera isn't necessary, but use it to test 
 
 		scene = new THREE.Scene();
 		scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
@@ -55,8 +79,19 @@ class WORLD{
 		camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, near, far);
 		camera.position.set(0, 0, 1000);
 
+		cubeCamera = new THREE.CubeCamera(near, far, 256); //by default, set cubeCamera in same position as regular camera w/ same near/far
+		cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
+		cubeCamera.position.set(0, 0, 1000);
+		scene.add(cubeCamera);
+
+		waterCubeCamera = new THREE.CubeCamera(near, far, 256);
+		waterCubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
+		waterCubeCamera.position.set(0, 0, 980);
+
+		scene.add(waterCubeCamera);
+
 		renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
-		renderer.setClearColor(0x111111);
+		renderer.setClearColor(COLORS.DarkBlue);
 		renderer.setSize(WIDTH, HEIGHT);
 		renderer.shadowMapEnabled = true;
 		document.body.appendChild(renderer.domElement);
@@ -65,36 +100,109 @@ class WORLD{
 		this.lights = [];
 		this.scene = scene;
 		this.camera = camera;
+		this.cubeCamera = cubeCamera;
+		this.waterCubeCamera = waterCubeCamera;
 		this.renderer = renderer;
+		this.canPopulate = true;
 		return this;
 	}
 
 	createLights(){
 		var directionalLight = new THREE.DirectionalLight(COLORS.White, .7);
-		directionalLight.position.set(-1, 1, 0).normalize();
+		directionalLight.position.set(0, 0, 1).normalize();
+		var ambientLight = new THREE.AmbientLight();
+		ambientLight.position.set(0, 0, 950);
 		var hemLight = new THREE.HemisphereLight(COLORS.Blue, COLORS.LightBlue);
 		// scene.add(hemLight);
 		this.scene.add(directionalLight);
+		// this.scene.add(ambientLight);
+		// this.lights.push(ambientLight);
 		this.lights.push(directionalLight);
 	}
 
 	populate(){
-		for (var i=0; i < 30; i++){
-			neg = -1;
-			if (Math.random() <= 0.500000)
-				neg = 1;
-			temp = new TorusRing(50, Math.random()*500*neg, Math.random()*500*neg, Math.random()*500*neg);
-			temp.mesh.scale.multiplyScalar(0.5);
-			this.scene.add(temp.mesh);
-			this.objects.push(temp);
-			this.zPositions.push(temp.mesh.position.z);
-		}
-		// torusRing = new TorusRing(50, 0, 0, 900);
-		// this.scene.add(torusRing.mesh);
-		// this.objects.push(torusRing);
+		var loader;
+		var _this = this;
+		loader = new THREE.FontLoader();
+		loader.load('/assets/ultra.json', function(font){
+			var geometry, mat, mesh;
+			geometry = new THREE.TextGeometry('STATES', {
+				font: font,
+				size: 1,
+				height: .1,
+				curveSegments:12,
+				bevelThickness: 0,
+				bevelSize: .005,
+				bevelEnabled: false
+			});
+
+			THREE.GeometryUtils.center( geometry ).
+
+			mat = new THREE.MeshBasicMaterial({
+				color: 0xff0000
+			});
+
+			mesh = new THREE.Mesh(geometry, mat);
+			mesh.position.set(0, 0, 995);
+			TITLE = new Title(mesh, 0, 0, 995);
+			TITLE.mapToCube(_this.cubeCamera);
+			TITLE.mesh.material.color = new THREE.Color(COLORS.Ice);
+			_this.scene.add(mesh);
+			_this.objects.push(TITLE);
+		});
+
+		titleGlobe = new TitleGlobe(25, 0, 0, 980);
+		this.scene.add(titleGlobe.mesh);
+		this.objects.push(titleGlobe);
+
+		// for (var i=0; i<5; i++){
+		// 	temp = new Water(Math.random()*5 + 1, Math.random()*2*Math.PI, -1, 0, 0, 1000);
+		// 	this.scene.add(temp.mesh);
+		// 	this.objects.push(temp);
+		// }
+		// for (var i=0; i<5; i++){
+		// 	temp = new Water(.25, Math.PI, 0, -2 + Math.random()*4, -.75 + Math.random()*1.5, 993 + Math.random()*5);
+		// 	this.scene.add(temp.mesh);
+		// 	this.objects.push(temp);
+		// }
+	}
+
+	togglePopulate(){
+		console.log('tog');
+		if (this.canPopulate)
+			this.canPopulate = false;
+		else
+			this.canPopulate = true;
+	}
+
+	addMolecule(molecule){
+		this.objects.push(molecule);
+		this.scene.add(molecule.mesh);
 	}
 
 	update(){
+		// console.log(this.canPopulate);
+		// if (this.objects.length<15 && this.canPopulate){
+		// 	var angle, posX, posY;
+		// 	angle = Math.random() *2*Math.PI;
+		// 	posX = Math.random()*birthRadius*Math.cos(angle);
+		// 	posY = Math.random()*birthRadius*Math.sin(angle);
+		// 	temp2 = new Water(1, angle, posX, posY, 1000);
+		// 	this.objects.push(temp2);
+		// 	this.scene.add(temp2.mesh);
+		// 	this.canPopulate = false;
+		// 	var _this = this;
+		// 	setTimeout(function(){
+		// 		_this.togglePopulate();
+		// 	}, 900);
+		// }
+
+		// for (var i=0; i<this.objects.length; i++){
+		// 	this.objects[i].update();
+		// }
+		// temp.mesh.rotation.y += .005;
+		// // test.material.uniforms.time.value += .005;
+		// // test.rotation.y += .003;
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
@@ -102,7 +210,7 @@ class WORLD{
 
 	collectTrash(){
 		for (var i=0; i<this.objects.length; i++){ //if past camera, remove from scene and delete from array
-			if (this.objects[i].pastCamera()){
+			if (this.objects[i].pastCamera() || this.objects[i].outOfRange()){
 				this.scene.remove(this.objects[i].mesh);
 				this.objects.splice(i, 1);
 			}
@@ -145,340 +253,6 @@ class WORLD{
 	}
 }
 
-var World = new WORLD();
-
-//BASE CLASSES
-
-class Item{
-	constructor(mesh, x, y, z){
-		this.mesh = mesh;
-	}
-	rotate(x, y, z){ 
-		this.mesh.rotation.x += x;
-		this.mesh.rotation.y += y;
-		this.mesh.rotation.z += z;
-	}
-	translate(x, y, z){ //moves one unit towards a point in space
-		this.mesh.position.x += x;
-		this.mesh.position.y += y;
-		this.mesh.position.z += z;
-	}
-
-	moveToward(x, y, z, magnitude){
-		if (x == Math.floor(Math.abs(this.mesh.position.x)/magnitude) && y == Math.floor(Math.abs(this.mesh.position.y)/magnitude) && z == Math.floor(Math.abs(this.mesh.position.z)/magnitude)){
-			// console.log(this.mesh.position);
-			return true;
-		} //if at the position already
-
-		var amtX, amtY, amtZ;
-		amtX = x-this.mesh.position.x;
-
-		amtX = amtX/Math.abs(amtX);
-
-		amtX *= magnitude;
-
-
-		amtY = y-this.mesh.position.y;
-		amtY = amtY/Math.abs(amtY);
-		amtY *= magnitude;
-
-		amtZ = z-this.mesh.position.z;
-		amtZ = amtZ/Math.abs(amtZ);
-		amtZ *= magnitude
-
-		this.translate(amtX, amtY, amtZ);
-		return false;
-	}
-
-	pastCamera(){
-		return this.mesh.position.z > World.camera.position.z;
-	}
-}
-
-class Atom extends Item{
-	constructor(mesh, x, y, z){
-		super(mesh, x, y, z);
-	}
-}
-
-class Molecule extends Item{
-	constructor(mesh, x, y, z){
-		super(mesh, x, y, z);
-	}
-}
-
-class iceNucleus extends Atom{
-	constructor(x, y, z){
-		var innerGeom, outerGeom, mat, glowMat, nucleus, glow, mesh;
-		innerGeom = new THREE.SphereGeometry(10, 40, 40, 0, Math.PI * 2, 0, Math.PI * 2); //constructor	
-		outerGeom = innerGeom.clone();
-		outerGeom.mergeVertices();
-
-		mat = new THREE.MeshPhongMaterial({
-			shininess: 25,
-			ambient: 0x050505,
-			specular: 0xffffff,
-			emissive: COLORS.Ice,
-			color: COLORS.Blue
-		});
-
-		for (var i=0; i<outerGeom.vertices.length; i++){
-			outerGeom.vertices[i].x += Math.cos(Math.random()*2*Math.PI) * Math.random() ;
-			outerGeom.vertices[i].x += Math.sin(Math.random()*2*Math.PI) * Math.random() ;
-		}
-
-		glowMat = new THREE.ShaderMaterial( 
-		{
-		    uniforms: 
-			{ 
-				"c":   { type: "f", value: 1.0 },
-				"p":   { type: "f", value: 1.4 },
-				glowColor: { type: "c", value: new THREE.Color(COLORS.Blue) },
-				viewVector: { type: "v3", value: World.camera.position }
-			},
-			vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
-			fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
-			side: THREE.FrontSide,
-			blending: THREE.AdditiveBlending,
-			transparent: true
-	}   );
-
-		nucleus = new THREE.Mesh(innerGeom, mat);
-		nucleus.position.set(x, y, z);
-
-		glow = new THREE.Mesh(outerGeom, glowMat);
-		glow.position.set(x, y, z);
-		glow.scale.multiplyScalar(1.5);
-
-		mesh = new THREE.Group();
-		mesh.add(nucleus);
-		mesh.add(glow);
-		super(mesh, x, y, z);
-		return this;
-	}
-}
-
-class Triangle extends Atom{
-	constructor(color, thickness, x, y, z){
-		this.slices = []; //array of triangle slice meshes
-		this.mesh = new THREE.Group();
-
-		var geom, mat, triangle, mesh;
-		var spaceBetween = thickness/10;
-		var _this = this;
-		for (var i=0; i< thickness; i++){
-			geom = new THREE.RingGeometry(5, 10, 1, 1);
-
-			mat = new THREE.MeshPhongMaterial({
-				shininess: 25,
-				ambient: 0x050505,
-				specular: 0xffffff,
-				emissive: color,
-				// transparent: true,
-				// opacity: .5
-			});
-
-			triangle = new THREE.Mesh(geom, mat);
-			triangle.position.set(0, 0, i*spaceBetween);
-			_this.mesh.add(triangle);
-			_this.slices.push(triangle);
-		}
-		return this;
-	}
-}
-
-Gasherbrum = function(x, y, z){ //four intersecting triangles
-	var geom, mat, tri1, tri2, tri3, tri4, mesh;
-
-	tri1 = new Triangle(COLORS.Red, 5, 0, 0, 0);
-	tri1.mesh.rotation.z = Math.PI/2;
-
-	tri2 = new Triangle(COLORS.Blue, 5, 0, 0, 0);
-	tri2.mesh.rotation.z = Math.PI/2;
-	tri2.mesh.rotation.y += Math.PI/2;
-	tri2.mesh.rotation.z += Math.PI/3;
-
-	tri3 = new Triangle(COLORS.White, 5, 0, 0, 0);
-	tri3.mesh.rotation.z = Math.PI/2 + Math.PI/3;
-	tri3.mesh.rotation.y += Math.PI/2;
-	// tri3.mesh.rotation.y = Math.PI/3;
-	// tri3.mesh.rotation.z = Math.PI/4;
-
-	tri4 = new Triangle(COLORS.Ice, 5, 0, 0, 0);
-	tri4.mesh.rotation.y = Math.PI/2;
-
-	mesh = new THREE.Group();
-	mesh.add(tri1.mesh); 
-	mesh.add(tri2.mesh); mesh.add(tri3.mesh); mesh.add(tri4.mesh);
-	mesh.position.set(x, y, z);
-
-	this.mesh = mesh;
-	return this;
-}
-
-class Torus extends Atom{
-	constructor(x, y, z){
-		var mesh = new THREE.Group();
-		var geom = new THREE.TorusGeometry( 12, 2, 5, 7);
-		var mat = new THREE.MeshPhongMaterial({
-			shininess: 25,
-			ambient: 0x050505,
-			specular: 0xffffff,
-			emissive: COLORS.Ice,
-			opacity: .8,
-			transparent: true,
-		});
-
-		var torus = new THREE.Mesh(geom, mat);
-		torus.position.set(0, 0, 0);
-		mesh.add(torus);
-
-		var outerGeom = new THREE.SphereGeometry(20, 40, 40); //constructor
-		outerGeom.mergeVertices();
-
-		// for (var i=0; i<outerGeom.vertices.length; i++){
-		// 	outerGeom.vertices[i].x += Math.cos(Math.random()*2*Math.PI) * 10*Math.random() ;
-		// 	outerGeom.vertices[i].x += Math.sin(Math.random()*2*Math.PI) * 10*Math.random() ;
-		// }
-
-		var glowMat = new THREE.ShaderMaterial( 
-		{
-		    uniforms: 
-			{ 
-				"c":   { type: "f", value: 1.0 },
-				"p":   { type: "f", value: 1.4 },
-				glowColor: { type: "c", value: new THREE.Color(COLORS.Blue) },
-				viewVector: { type: "v3", value: World.camera.position }
-			},
-			vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
-			fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
-			side: THREE.FrontSide,
-			blending: THREE.AdditiveBlending,
-			transparent: true, 
-			opacity: .5
-		}   );
-
-		var forceField = new THREE.Mesh(outerGeom, glowMat);
-		forceField.position.set(0, 0, 0);
-		// mesh.add(forceField);
-		
-		mesh.position.set(x, y, z);
-		super(mesh, x, y, z);
-		return this;
-	}
-	update(){
-		this.rotate(0, 0, .05);
-	}
-}
-
-class TorusRing extends Molecule{
-	constructor(radius, x, y, z){
-		var dispX, dispY, temp, lightning;
-		var angle = Math.PI/3;
-		var mesh = new THREE.Group();
-		var atoms = [];
-
-		for (var i=0; i<6; i++){
-			angle = i*Math.PI/3; //add rings
-			dispX = radius*Math.cos(angle);
-			dispY = radius*Math.sin(angle);
-			temp = new Torus(dispX, dispY, 0);
-			temp.mesh.rotation.x += Math.PI/2;
-			temp.mesh.rotation.y += angle;
-			atoms.push(temp);
-			mesh.add(temp.mesh);
-
-			lightning = new Lightning(1, 50, dispX, dispY, 0); //add lightnings
-			lightning.mesh.rotation.z += angle + Math.PI/3;
-			lightning.mesh.position.x -= 25*Math.cos(angle + Math.PI/3);
-			lightning.mesh.position.y -= 25*Math.sin(angle + Math.PI/3);
-			atoms.push(lightning);
-			mesh.add(lightning.mesh);
-		}
-
-		var nucleus = new iceNucleus(0, 0, 0);
-		mesh.add(nucleus.mesh);
-
-		mesh.position.set(x, y, z);
-		super(mesh, x, y, z);
-
-		this.atoms = atoms.slice();
-
-		var _this = this;
-		this.amp = Math.random()*.01;
-		return this;
-	}
-	update(){
-		for (var i=0; i<this.atoms.length; i++){
-				this.atoms[i].update();
-		}
-		this.rotate(Math.random()*this.amp, Math.random()*this.amp, Math.random()*this.amp);
-	}
-}
-
-class Lightning extends Atom{
-	constructor(radius, length, x, y, z){
-		var geom, mat, cylinder;
-		geom = new THREE.CylinderGeometry(radius, radius, length, 2, 50);
-		geom.mergeVertices();
-		var vertices = [];
-
-		for (var i=0; i<geom.vertices.length; i++){
-			var v = geom.vertices[i];
-
-			vertices.push({
-				x: v.x,
-				y: v.y,
-				z: v.z,
-				angle: Math.PI/2, //Math.random() * Math.PI * 2, 
-				amp: Math.random()*3.5,
-				speed: Math.random()*2
-			});
-		}
-
-		mat = new THREE.MeshPhongMaterial({
-			shininess: 50,
-			ambient: 0x050505,
-			emissive: COLORS.Ice,
-			wireframe: true,
-			wireframeLinecap: "round",
-			wireframeLinejoin: "round",
-			wireFrameLinewidth: .1
-		});
-
-		cylinder = new THREE.Mesh(geom, mat);
-		cylinder.position.set(x, y, z);
-		cylinder.rotation.z = Math.PI/2
-
-		super(cylinder, x, y, z);
-		this.vertices = vertices.slice();
-		return this;
-	}
-
-	crackle(){
-		var verts = this.mesh.geometry.vertices;
-		var length = verts.length;
-
-		for (var i=0; i<length; i++){
-			var v = verts[i];
-			var vprops = this.vertices[i];
-
-			// v.x = vprops.x + Math.cos(vprops.angle)*vprops.amp;
-			v.x = vprops.x + Math.sin(vprops.angle)*vprops.amp;
-
-			vprops.angle += vprops.speed;
-		}
-
-		this.mesh.geometry.verticesNeedUpdate = true;
-		// this.mesh.rotation.x += .0025;
-	}
-
-	update(){
-		this.crackle();
-	}
-
-}
-
 //mouse events
 
 var mouse = {x:0,y:0};
@@ -492,9 +266,13 @@ function handleMouseMove(e){
     mouse.y = e.clientY;
 }
 
+window.addEventListener('mousedown', addWater);
+
 // window.addEventListener('mousemove', handleMouseMove);
 
 //render
+
+var World = new WORLD();
 
 World.createLights();
 World.populate();
