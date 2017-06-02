@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:8080/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Physical States</title>
+<link rel="shortcut icon" href="http://localhost:8080/assets/images/icon.png" type="image/x-icon"><style>
+	body{
+		overflow: hidden;
+		margin: 0;
+	}
+</style></head>
+
+
+<body>
+
+<script src="./Physical States_files/three.js.download"></script>
+
+<script id="vertexShader" type="x-shader/x-vertex">
+varying vec2 vUv;
+void main() 
+{ 
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+</script>
+
+<!-- fragment shader a.k.a. pixel shader -->
+<script id="fragmentShader" type="x-shader/x-vertex"> 
+ 
+uniform sampler2D baseTexture;
+uniform float baseSpeed;
+uniform sampler2D noiseTexture;
+uniform float noiseScale;
+uniform float alpha;
+uniform float time;
+
+varying vec2 vUv;
+void main() 
+{
+	vec2 uvTimeShift = vUv + vec2( -0.7, 1.5 ) * time * baseSpeed;	
+	vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
+	vec2 uvNoiseTimeShift = vUv + noiseScale * vec2( noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b );
+	vec4 baseColor = texture2D( baseTexture, uvNoiseTimeShift );
+
+	baseColor.a = alpha;
+	gl_FragColor = baseColor;
+}  
+</script>
+
+<script id="glowVertexShader" type="x-shader/x-vertex">
+	uniform vec3 viewVector;
+	uniform float c;
+	uniform float p;
+	varying float intensity;
+	void main() 
+	{
+	    vec3 vNormal = normalize( normalMatrix * normal );
+		vec3 vNormel = normalize( normalMatrix * viewVector );
+		intensity = pow( c - dot(vNormal, vNormel), p );
+		
+	    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+	}
+</script>
+
+<script id="glowFragmentShader" type="x-shader/x-vertex">	 
+	uniform vec3 glowColor;
+	varying float intensity;
+	void main() 
+	{
+		vec3 glow = glowColor * intensity;
+	    gl_FragColor = vec4( glow, 1.0 );
+	}
+</script>
+
+<script src="./Physical States_files/Tween.js.download"></script>
+<script src="./Physical States_files/classes.js.download"></script>
+<script src="./Physical States_files/script.js.download"></script><canvas width="783" height="662" style="width: 783px; height: 662px;"></canvas>
+</body></html>
