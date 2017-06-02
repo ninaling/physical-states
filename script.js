@@ -13,6 +13,7 @@ const COLORS = {
 var HEIGHT = window.innerHeight;
 var WIDTH = window.innerWidth;
 const ORIGIN = new THREE.Vector3(0, 0, 0);
+const SCENES = ['title', 'ice', 'metal', 'water', 'iron', 'mdma', 'salt'];
 
 //global variables for testing
 var test;
@@ -160,8 +161,66 @@ class WORLD{
 		this.lights.push(directionalLight);
 	}
 
+	changeScene(scene){
+		this.clearScene();
+		if (scene == 'ice'){
+			this.populateIce();
+		}
+		else if (scene == 'water'){
+			this.populateWater();
+		}
+		else if (scene == 'iron'){
+			this.populateIron();
+		}
+		else if (scene == 'metal'){
+			this.populateMetal();
+		}
+		else if (scene == 'title'){
+			this.populateTitle();
+		}
+		else if (scene == 'mdma'){
+			this.populateMDMA();
+		}
+		else if (scene == 'salt'){
+			this.populateSalt();
+		}
+		
+	}
+
 	populate(){
-		return;
+		var loader;
+	    var _this = this;
+	    loader = new THREE.FontLoader();
+	    loader.load('/assets/ultra.json', function(font){
+	      var geometry, mat, mesh;
+	      geometry = new THREE.TextGeometry('STATES', {
+	        font: font,
+	        size: 1,
+	        height: .1,
+	        curveSegments:12,
+	        bevelThickness: 0,
+	        bevelSize: .005,
+	        bevelEnabled: false
+	      });
+
+	      THREE.GeometryUtils.center( geometry ).
+
+	      mat = new THREE.MeshBasicMaterial({
+	        color: 0xff0000
+	      });
+
+	      mesh = new THREE.Mesh(geometry, mat);
+	      mesh.position.set(0, 0, 995);
+	      TITLE = new Title(mesh, 0, 0, 995);
+	      TITLE.mapToCube(_this.cubeCamera);
+	      TITLE.mesh.material.color = new THREE.Color(COLORS.Ice);
+	      _this.scene.add(mesh);
+	      _this.objects.push(TITLE);
+	    });
+
+	    titleGlobe = new TitleGlobe(25, 0, 0, 980);
+	    this.scene.add(titleGlobe.mesh);
+	    this.objects.push(titleGlobe);
 	}
 
 	populateMetal(){
