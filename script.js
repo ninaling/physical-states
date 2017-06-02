@@ -159,6 +159,42 @@ class WORLD{
 		return;
 	}
 
+	populateTitle(){
+		var loader;
+	    var _this = this;
+	    loader = new THREE.FontLoader();
+	    loader.load('/assets/ultra.json', function(font){
+	      var geometry, mat, mesh;
+	      geometry = new THREE.TextGeometry('STATES', {
+	        font: font,
+	        size: 1,
+	        height: .1,
+	        curveSegments:12,
+	        bevelThickness: 0,
+	        bevelSize: .005,
+	        bevelEnabled: false
+	      });
+
+	      THREE.GeometryUtils.center( geometry ).
+
+	      mat = new THREE.MeshBasicMaterial({
+	        color: 0xff0000
+	      });
+
+	      mesh = new THREE.Mesh(geometry, mat);
+	      mesh.position.set(0, 0, 995);
+	      TITLE = new Title(mesh, 0, 0, 995);
+	      TITLE.mapToCube(_this.cubeCamera);
+	      TITLE.mesh.material.color = new THREE.Color(COLORS.Ice);
+	      _this.scene.add(mesh);
+	      _this.objects.push(TITLE);
+	    });
+
+	    titleGlobe = new TitleGlobe(25, 0, 0, 980);
+	    this.scene.add(titleGlobe.mesh);
+	    this.objects.push(titleGlobe);
+	}
+
 	populateWater(){
 		globalWaterSphere = new GlobalWaterSphere(50, 0, 0, 950);
 	    globalWaterSphere.mapToCube(this.cubeCamera);
@@ -195,6 +231,12 @@ class WORLD{
 
 	update(){
 		return;
+	}
+
+	updateTitle(){
+		for(var i=0; i<this.objects.length; i++){
+	      this.objects[i].update();
+	    }
 	}
 
 	updateWater(){
