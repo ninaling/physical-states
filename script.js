@@ -45,7 +45,7 @@ function addIce(){
 	angle = Math.random() *2*Math.PI;
 	posX = Math.random()*birthRadius*Math.cos(angle);
 	posY = Math.random()*birthRadius*Math.sin(angle);
-	temp2 = new Ice(1, angle, -1, posX, posY, 1000);
+	temp2 = new Ice(1, angle, -1, posX, posY, 997);
 
 	World.scene.add(temp2.mesh);
 	World.objects.push(temp2);

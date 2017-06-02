@@ -186,7 +186,7 @@ class IceDome extends Item{
 }
 
 class Ice extends Molecule{
-  constructor(size, angle, x, y, z){
+  constructor(size, angle, dir, x, y, z){
     var oxygen, hydrogen, hydrogen2, mesh;
     var atoms = [];
 
@@ -220,6 +220,7 @@ class Ice extends Molecule{
     super(mesh, x, y, z, atoms);
     this.angle = angle;
     this.speed = Math.random();
+    this.dir = dir;
   }
 
   update(){
@@ -244,7 +245,7 @@ class Ice extends Molecule{
     this.mesh.rotation.z += this.speed*.05;
     this.mesh.rotation.y += this.speed*.05;
 
-    this.mesh.position.z -= this.speed*.5;
+    this.mesh.position.z += this.dir*this.speed*.5;
   }
 }
 
