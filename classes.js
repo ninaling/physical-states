@@ -167,6 +167,14 @@ class Ice extends Molecule{
 
     oxygen = new Oxygen(size/2, 0, 0, 0);
 
+    var vertices = oxygen.mesh.children[0].geometry.vertices;
+
+    for (var i=0; i<vertices.length; i++){
+      vertices[i].x += Math.sin(Math.random())*.1;
+      vertices[i].y += Math.sin(Math.random())*.1;
+      vertices[i].z += Math.sin(Math.random())*.1;
+    }
+
     hydrogen = new Hydrogen(size/4, 0, 0, 0);
     hydrogen.mesh.position.set(-size/1.5, -size/1.5, 0);
     hydrogen2 = new Hydrogen(size/4, 0, 0, 0);

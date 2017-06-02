@@ -104,6 +104,7 @@ class WORLD{
 		this.iceCubeCamera = iceCubeCamera;
 		this.renderer = renderer;
 		this.canPopulate = true;
+		this.curScene;
 		return this;
 	}
 
@@ -121,6 +122,10 @@ class WORLD{
 	}
 
 	populate(){
+		return;
+	}
+
+	populateIce(){
 		temp = new IceDome(domeRadius, 500, 0, 0, 1000);
 		temp.mapToCube(this.iceCubeCamera);
 		this.objects.push(temp);
@@ -141,6 +146,10 @@ class WORLD{
 	}
 
 	update(){
+		return;
+	}
+
+	updateIce(){
 		if (this.objects.length<25 && this.canPopulate){
 			var angle, posX, posY;
 			angle = Math.random() *2*Math.PI;
@@ -156,9 +165,6 @@ class WORLD{
 			}, 900);
 		}
 
-		for (var i=0; i<this.objects.length; i++){
-			this.objects[i].update();
-		}
 		temp.mesh.rotation.y += .005;
 		// test.material.uniforms.time.value += .005;
 		// test.rotation.y += .003;
@@ -233,7 +239,10 @@ window.addEventListener('mousedown', addWater);
 
 var World = new WORLD();
 
+
+//ICE
+
 World.createLights();
-World.populate();
+World.populateIce();
 
 loop();
