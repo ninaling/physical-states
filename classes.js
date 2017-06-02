@@ -222,7 +222,7 @@ class Ice extends Molecule{
 }
 
 
-class GlobalIceSphere extends Item{
+class GlobalWaterSphere extends Item{
 	constructor(radius, x, y, z){
 		var mesh, geom, mat;
 		var sampleTexture = new THREE.TextureLoader().load('/assets/images/ocean.png');

@@ -23,8 +23,8 @@ var domeRadius = 50;
 var birthRadius = domeRadius/10;
 var TITLE;
 var titleGlobe;
-var globalIceSphere;
-var birthRadiusIce = 5;
+var globalWaterSphere;
+var birthRadiusWater = 5;
 
 //auxillary functions
 function loop(){
@@ -78,7 +78,7 @@ var spawnIce = function(e){
 }
 
 function distortIceBackground(){
-	globalIceSphere.distort();
+	globalWaterSphere.distort();
 }
 
 var requestId;
@@ -156,22 +156,14 @@ class WORLD{
 	}
 
 	populate(){
-		globalIceSphere = new GlobalIceSphere(50, 0, 0, 950);
-	    globalIceSphere.mapToCube(this.cubeCamera);
-	    this.scene.add(globalIceSphere.mesh);
-	    this.objects.push(globalIceSphere);
+		return;
+	}
 
-	    // temp = new IceRing(.5, 0, 0, 980);
-	    // this.scene.add(temp.mesh);
-	    // this.objects.push(temp);
-
-	    // temp2 = new IceCube(5, 0, 0, 950);
-	    // this.scene.add(temp2.mesh);
-	    // this.objects.push(temp2);
-
-	    // temp = new THREE.Mesh(new THREE.SphereGeometry(5, 30, 30), new THREE.MeshBasicMaterial({color: 0xff0000}));
-	    // temp.position.set(0, 0, 980);
-	    // this.scene.add(temp);  
+	populateWater(){
+		globalWaterSphere = new GlobalWaterSphere(50, 0, 0, 950);
+	    globalWaterSphere.mapToCube(this.cubeCamera);
+	    this.scene.add(globalWaterSphere.mesh);
+	    this.objects.push(globalWaterSphere);
 	    
 	    var x, y, z;
 	    x = Math.random()*WIDTH/2;
@@ -202,14 +194,18 @@ class WORLD{
 	}
 
 	update(){
+		return;
+	}
+
+	updateWater(){
 		for(var i=0; i<this.objects.length; i++){
 	      this.objects[i].update();
 	    }
 	    if (this.objects.length<25 && this.canPopulate){
 	      var angle, posX, posY;
 	      angle = Math.random() *2*Math.PI;
-	      posX = Math.random()*birthRadiusIce*Math.cos(angle);
-	      posY = Math.random()*birthRadiusIce*Math.sin(angle);
+	      posX = Math.random()*birthRadiusWater*Math.cos(angle);
+	      posY = Math.random()*birthRadiusWater*Math.sin(angle);
 	      temp2 = new Water(1 + Math.random()*5, angle, 1, posX, posY, 900);
 	      this.objects.push(temp2);
 	      this.scene.add(temp2.mesh);
@@ -304,6 +300,8 @@ function handleMouseMove(e){
 }
 
 window.addEventListener('mousedown', addWater);
+window.addEventListener('mousedown', distortIceBackground);
+window.addEventListener('mousedown', spawnIce);
 
 // window.addEventListener('mousemove', handleMouseMove);
 
