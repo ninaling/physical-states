@@ -52,6 +52,38 @@ class Item{
 	update(){ //default update
 		return;
 	}
+
+	spinWildly(){
+		var i=0;
+		var _this = this;
+		var interval = setInterval(function(){
+			if (i > 200){
+				clearInterval(interval);
+				return;
+			}
+			if (i<150){
+				_this.mesh.rotation.y += .075;
+				_this.mesh.rotation.x += .075;
+			}
+			else if (i<160){
+				_this.mesh.rotation.y += .05;
+				_this.mesh.rotation.x += .05;
+			}
+			else if (i<180){
+				_this.mesh.rotation.y += .03;
+				_this.mesh.rotation.x += .03;
+			}
+			else if (i<190){
+				_this.mesh.rotation.y += .02;
+				_this.mesh.rotation.x += .02;
+			}
+			else{
+				_this.mesh.rotation.y += .01;
+				_this.mesh.rotation.x += .01;
+			}
+			i++;
+		}, 5);
+	}
 }
 
 class Atom extends Item{
