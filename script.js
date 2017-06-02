@@ -67,7 +67,7 @@ function float(){
 
 class WORLD{
 	constructor(){ //initialize scene
-		var scene, camera, cubeCamera, waterCubeCamera, aspectRatio, near, far, fieldOfView, renderer; //cube camera isn't necessary, but use it to test 
+		var scene, camera, cubeCamera, iceCubeCamera, aspectRatio, near, far, fieldOfView, renderer; //cube camera isn't necessary, but use it to test 
 
 		scene = new THREE.Scene();
 		scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
@@ -84,11 +84,11 @@ class WORLD{
 		cubeCamera.position.set(0, 0, 1000);
 		scene.add(cubeCamera);
 
-		waterCubeCamera = new THREE.CubeCamera(near, far, 256);
-		waterCubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
-		waterCubeCamera.position.set(0, 0, 980);
+		iceCubeCamera = new THREE.CubeCamera(near, far, 256);
+		iceCubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
+		iceCubeCamera.position.set(0, 0, 980);
 
-		scene.add(waterCubeCamera);
+		scene.add(iceCubeCamera);
 
 		renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 		renderer.setClearColor(COLORS.DarkBlue);
@@ -101,7 +101,7 @@ class WORLD{
 		this.scene = scene;
 		this.camera = camera;
 		this.cubeCamera = cubeCamera;
-		this.waterCubeCamera = waterCubeCamera;
+		this.iceCubeCamera = iceCubeCamera;
 		this.renderer = renderer;
 		this.canPopulate = true;
 		return this;
@@ -121,61 +121,10 @@ class WORLD{
 	}
 
 	populate(){
-		// var loader;
-		// var _this = this;
-		// loader = new THREE.FontLoader();
-		// loader.load('/assets/ultra.json', function(font){
-		// 	var geometry, mat, mesh;
-		// 	geometry = new THREE.TextGeometry('STATES', {
-		// 		font: font,
-		// 		size: 1,
-		// 		height: .1,
-		// 		curveSegments:12,
-		// 		bevelThickness: 0,
-		// 		bevelSize: .005,
-		// 		bevelEnabled: false
-		// 	});
-
-		// 	THREE.GeometryUtils.center( geometry ).
-
-		// 	mat = new THREE.MeshBasicMaterial({
-		// 		color: 0xff0000
-		// 	});
-
-		// 	mesh = new THREE.Mesh(geometry, mat);
-		// 	mesh.position.set(0, 0, 995);
-		// 	TITLE = new Title(mesh, 0, 0, 995);
-		// 	TITLE.mapToCube(_this.cubeCamera);
-		// 	TITLE.mesh.material.color = new THREE.Color(COLORS.Ice);
-		// 	_this.scene.add(mesh);
-		// 	_this.objects.push(TITLE);
-		// });
-
-		// titleGlobe = new TitleGlobe(25, 0, 0, 980);
-		// this.scene.add(titleGlobe.mesh);
-		// this.objects.push(titleGlobe);
-
-		// temp = new MDMA(Math.PI*2*Math.random(), 0, 0, 950);
-		// this.scene.add(temp.mesh);
-
-		// for (var i=0; i<5; i++){
-		// 	temp = new Water(Math.random()*5 + 1, Math.random()*2*Math.PI, -1, 0, 0, 1000);
-		// 	this.scene.add(temp.mesh);
-		// 	this.objects.push(temp);
-		// }
-		// for (var i=0; i<5; i++){
-		// 	temp = new Water(.25, Math.PI, 0, -2 + Math.random()*4, -.75 + Math.random()*1.5, 993 + Math.random()*5);
-		// 	this.scene.add(temp.mesh);
-		// 	this.objects.push(temp);
-		// }
-
-		// temp = new THREE.Mesh(new THREE.SphereGeometry(5, 30, 30), new THREE.MeshBasicMaterial({color: 0xff0000}));
-		// temp.position.set(0, 0, 950);
-		// this.scene.add(temp);
-
-		temp2 = new MDMA(Math.random()*2*Math.PI, 0, 0, 950);
-		this.scene.add(temp2.mesh);
-		this.objects.push(temp2);
+		temp = new IceDome(domeRadius, 500, 0, 0, 1000);
+		temp.mapToCube(this.iceCubeCamera);
+		this.objects.push(temp);
+		this.scene.add(temp.mesh);
 	}
 
 	togglePopulate(){
@@ -192,28 +141,27 @@ class WORLD{
 	}
 
 	update(){
-		// console.log(this.canPopulate);
-		// if (this.objects.length<15 && this.canPopulate){
-		// 	var angle, posX, posY;
-		// 	angle = Math.random() *2*Math.PI;
-		// 	posX = Math.random()*birthRadius*Math.cos(angle);
-		// 	posY = Math.random()*birthRadius*Math.sin(angle);
-		// 	temp2 = new Water(1, angle, posX, posY, 1000);
-		// 	this.objects.push(temp2);
-		// 	this.scene.add(temp2.mesh);
-		// 	this.canPopulate = false;
-		// 	var _this = this;
-		// 	setTimeout(function(){
-		// 		_this.togglePopulate();
-		// 	}, 900);
-		// }
+		if (this.objects.length<25 && this.canPopulate){
+			var angle, posX, posY;
+			angle = Math.random() *2*Math.PI;
+			posX = Math.random()*birthRadius*Math.cos(angle);
+			posY = Math.random()*birthRadius*Math.sin(angle);
+			temp2 = new Ice(1, angle, posX, posY, 1000);
+			this.objects.push(temp2);
+			this.scene.add(temp2.mesh);
+			this.canPopulate = false;
+			var _this = this;
+			setTimeout(function(){
+				_this.togglePopulate();
+			}, 900);
+		}
 
-		// for (var i=0; i<this.objects.length; i++){
-		// 	this.objects[i].update();
-		// }
-		// temp.mesh.rotation.y += .005;
-		// // test.material.uniforms.time.value += .005;
-		// // test.rotation.y += .003;
+		for (var i=0; i<this.objects.length; i++){
+			this.objects[i].update();
+		}
+		temp.mesh.rotation.y += .005;
+		// test.material.uniforms.time.value += .005;
+		// test.rotation.y += .003;
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}

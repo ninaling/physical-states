@@ -131,6 +131,88 @@ class TitleGlobe extends Item{
 	}
 }
 
+class IceDome extends Item{
+  constructor(radius, height, x, y, z){
+    var mesh, geom, mat;
+
+    geom = new THREE.CylinderGeometry(radius/5, radius, height, 3, 1, true);
+
+    mat = new THREE.MeshBasicMaterial({transparent: true, opacity: 1});
+    mat.side = THREE.DoubleSide; //see inside
+
+    mesh = new THREE.Mesh(geom, mat);
+    mesh.position.set(x, y, z); //place where the camera is
+    mesh.rotation.x = -Math.PI/2;
+
+    super(mesh, x, y, z);
+  }
+
+  mapToCube(cubeCamera){
+    this.mesh.material.envMap = cubeCamera.renderTarget;
+    this.cubeCamera = World.iceCubeCamera;
+  }
+
+  update(){
+    this.mesh.rotation.y += .005;
+    this.cubeCamera.updateCubeMap(World.renderer, World.scene);
+  }
+}
+
+class Ice extends Molecule{
+  constructor(size, angle, x, y, z){
+    var oxygen, hydrogen, hydrogen2, mesh;
+    var atoms = [];
+
+    mesh = new THREE.Group();
+
+    oxygen = new Oxygen(size/2, 0, 0, 0);
+
+    hydrogen = new Hydrogen(size/4, 0, 0, 0);
+    hydrogen.mesh.position.set(-size/1.5, -size/1.5, 0);
+    hydrogen2 = new Hydrogen(size/4, 0, 0, 0);
+    hydrogen2.mesh.position.set(size/1.5, -size/1.5, 0);
+
+    atoms.push(oxygen);
+    atoms.push(hydrogen);
+    atoms.push(hydrogen2);
+
+    mesh.add(oxygen.mesh);
+    mesh.add(hydrogen.mesh);
+    mesh.add(hydrogen2.mesh);
+
+    mesh.position.set(x, y, z);
+
+    super(mesh, x, y, z, atoms);
+    this.angle = angle;
+    this.speed = Math.random();
+  }
+
+  update(){
+    // this.mesh.position.x = 30*Math.cos(this.angle);
+    // this.mesh.position.z = 950 + 30*Math.sin(this.angle);
+    // this.mesh.position.y = 20*Math.sin(this.angle);
+
+    // this.mesh.rotation.z += this.speed*.05;
+    // this.mesh.rotation.y += this.speed*.05;
+    // // console.log(Math.cos(this.angle));
+    // if (this.angle >= Math.PI*2){
+    //  console.log('angle limit');
+    //  this.angle = 0;
+    // }
+    // else{
+    //  this.angle += this.speed*.005;
+    // }
+
+    // this.mesh.position.z += .05;
+    // this.mesh.position.y = 20*Math.sin(this.angle);
+
+    this.mesh.rotation.z += this.speed*.05;
+    this.mesh.rotation.y += this.speed*.05;
+
+    this.mesh.position.z -= this.speed*.5;
+  }
+}
+
 class WaterDome extends Item{
 	constructor(radius, height, x, y, z){
 		var mesh, geom, mat;
