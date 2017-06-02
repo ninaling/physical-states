@@ -222,7 +222,7 @@ class WORLD{
 
 	populate(){
 		var n = 4;
-		salt = new Salt(0, 0, 900);
+		var salt = new Salt(0, 0, 900);
 		this.scene.add(salt.mesh);
 		this.objects.push(salt);
 	}

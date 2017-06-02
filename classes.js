@@ -1782,7 +1782,7 @@ class Salt extends Molecule{
 		  });*/
 		  var sampleTexture2 = THREE.ImageUtils.loadTexture('/assets/images/salt2.jpg');
 		  sampleTexture2.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
-		  customUniforms2 = {
+		  var customUniforms2 = {
 		      baseTexture:  { type: "t", value: sampleTexture2 },
 		      baseSpeed:    { type: "f", value: 0.05 },
 		      noiseTexture:   { type: "t", value: noiseTexture },
