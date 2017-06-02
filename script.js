@@ -317,6 +317,7 @@ class WORLD{
 	      TITLE.mesh.material.color = new THREE.Color(COLORS.Ice);
 	      _this.scene.add(mesh);
 	      _this.objects.push(TITLE);
+
 	    });
 
 	    titleGlobe = new TitleGlobe(25, 0, 0, 980);
