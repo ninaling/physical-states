@@ -5,7 +5,9 @@ const COLORS = {
 	Red: 0xff0000,
 	White: 0xffffff,
 	Gray: 0xe1e1e1,
-	DarkBlue: 0x070a19
+	DarkBlue: 0x070a19,
+	iron: 0x6b6e72,
+	electron: 0xffffff
 };
 
 var HEIGHT = window.innerHeight;
@@ -25,6 +27,7 @@ var TITLE;
 var titleGlobe;
 var globalWaterSphere;
 var birthRadiusWater = 5;
+var lattice;
 
 //auxillary functions
 function loop(){
@@ -158,6 +161,13 @@ class WORLD{
 	populate(){
 		return;
 	}
+	
+	populateIron(){
+		var n = 4;
+		lattice = new Lattice(n);
+		this.scene.add(lattice.mesh);
+		this.objects.push(lattice);
+	}
 
 	populateTitle(){
 		var loader;
@@ -231,6 +241,12 @@ class WORLD{
 
 	update(){
 		return;
+	}
+
+	updateIron(){
+		for(var i=0; i<this.objects.length; i++){
+	      this.objects[i].update();
+	    }
 	}
 
 	updateTitle(){

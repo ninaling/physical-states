@@ -1253,7 +1253,7 @@ class MDMA extends Molecule{
 
 class Lattice extends Molecule{
 	constructor(n){
-	  var mesh, layers, electrons,
+	  var mesh, layers, electrons;
 	  var ionSize = 16;
 	  var dis = 20*ionSize/3;
 	  ionSize *= 1.5;
@@ -1261,7 +1261,7 @@ class Lattice extends Molecule{
 
 	  var iongeo = new THREE.SphereGeometry(ionSize, 30, 30);
 	  var ionmat = new THREE.MeshPhongMaterial({
-	    color: Colors.iron,
+	    color: COLORS.iron,
 	    reflectivity: .3,
 	    metal: true,
 	    shininess: 50
@@ -1269,7 +1269,7 @@ class Lattice extends Molecule{
 
 	  var egeo = new THREE.SphereGeometry(ionSize/15, 10, 10);
 	  var emat = new THREE.MeshPhongMaterial({
-	    color: Colors.electron,
+	    color: COLORS.electron,
 	    reflectivity: .3,
 	    metal: true,
 	    shininess: 50
@@ -1331,9 +1331,27 @@ class Lattice extends Molecule{
 	    layers[k].position.z -= k*dis;
 	    mesh.add(layers[k]);
 	  }
-
 	  mesh.receiveShadow = true;
+	  mesh.position.set(-window.innerWidth/2, window.innerHeight/2, 950);
 	  super(mesh, 0, 0, 0);
+	  this.electrons = electrons;
+	  this.layers = layers;
+	  this.numKLayers = numKLayers;
+	  this.dis = dis;
+	}
 
+	update(){
+		var speed = 3;
+	    for (var i = 0; i < this.numKLayers*2; i++) {
+	      if (this.layers[i].position.z >= 200) {
+	        this.layers[i].position.z -= this.numKLayers*2*this.dis + speed;
+	      }
+	      this.layers[i].position.z += speed;
+
+	      if (this.electrons[i].position.z >= 200) {
+	        this.electrons[i].position.z -= this.numKLayers*2*this.dis + speed*5;
+	      }
+	      this.electrons[i].position.z += speed*5;
+	    }
 	}
 }
