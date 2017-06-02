@@ -139,7 +139,7 @@ class TitleGlobe extends Item{
 				return;
 			}
 			if (i<150){
-				_this.mesh.material.uniforms.time.value += .35;
+				_this.mesh.material.uniforms.time.value += .3;
 			}
 			else if (i<160){
 				_this.mesh.material.uniforms.time.value += .05;
