@@ -1,0 +1,6 @@
+{
+  "name": "threejs-build",
+  "author": "https://github.com/bodylabs/threejs-builder",
+  "version": "71.0.0",
+  "main": "build/three.min.js"
+}
