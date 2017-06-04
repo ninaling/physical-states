@@ -94,7 +94,7 @@ function float(){
 
 class WORLD{
 	constructor(){ //initialize scene
-		var scene, camera, cubeCamera, iceCubeCamera, aspectRatio, near, far, fieldOfView, renderer; //cube camera isn't necessary, but use it to test 
+		var scene, camera, cubeCamera, iceCubeCamera, aspectRatio, near, far, fieldOfView, renderer; //cube camera isn't necessary, but use it to test
 
 		scene = new THREE.Scene();
 		scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
@@ -279,7 +279,7 @@ class WORLD{
 	      this.scene.add(this.electrons[k]);
 	    }
 	}
-	
+
 	populateIron(){
 		this.scene.fog = new THREE.Fog(0x1e1d1b, 100, 800);
 
@@ -352,13 +352,13 @@ class WORLD{
 
 	    var water = new Water(.3, Math.random()*2*Math.PI, 0, 1, -1.25, 995);
 	    this.scene.add(water.mesh);
-	    this.objects.push(water);	
+	    this.objects.push(water);
 	    icons.push(water.mesh);
 	    this.titleIconObjects.push(water);
 
 	    var smiley = new Smiley(.15, 2, -1.25, 995);
 	    this.scene.add(smiley.mesh);
-	    this.objects.push(smiley);	
+	    this.objects.push(smiley);
 	    icons.push(smiley.mesh);
 	    this.titleIconObjects.push(smiley);
 
@@ -378,7 +378,7 @@ class WORLD{
 	    globalWaterSphere.mapToCube(this.cubeCamera);
 	    this.scene.add(globalWaterSphere.mesh);
 	    this.objects.push(globalWaterSphere);
-	    
+
 	    var x, y, z;
 	    x = Math.random()*WIDTH/2;
 	    y = Math.random()*HEIGHT/2;
@@ -509,7 +509,7 @@ class WORLD{
 				this.scene.remove(this.objects[i].mesh);
 				this.objects.splice(i, 1);
 			}
-		} 
+		}
 	}
 
 	collapse(){ //returns complete if all objects have reached the origin
@@ -594,7 +594,7 @@ function selectScene(e){ //select scene from title using raycasting
 					setTimeout(function(){
 						World.changeScene('iron');
 					}, 1000);
-				} 
+				}
 				else if (intersects[i].object == metal){
 					World.titleIconObjects[2].spinWildly();
 					setTimeout(function(){
@@ -621,7 +621,7 @@ function selectScene(e){ //select scene from title using raycasting
 					setTimeout(function(){
 						World.changeScene('water');
 					}, 1000);
-				} 
+				}
 				else if (intersects[i].object.parent.parent == ice){
 					World.titleIconObjects[1].spinWildly();
 					setTimeout(function(){
