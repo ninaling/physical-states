@@ -1,3 +1,15 @@
+const COLORS = {
+	Blue: 0x66b7ff,
+	Ice: 0xadf6ff,
+	LightBlue: 0xeaf2ff,
+	Red: 0xff0000,
+	White: 0xffffff,
+	Gray: 0xe1e1e1,
+	DarkBlue: 0x070a19,
+	iron: 0x6b6e72,
+	electron: 0xffffff
+};
+
 //CLASS DECLARATIONS
 
 class Item{
@@ -51,6 +63,38 @@ class Item{
 
 	update(){ //default update
 		return;
+	}
+
+	spinWildly(){
+		var i=0;
+		var _this = this;
+		var interval = setInterval(function(){
+			if (i > 200){
+				clearInterval(interval);
+				return;
+			}
+			if (i<150){
+				_this.mesh.rotation.y += .075;
+				_this.mesh.rotation.x += .075;
+			}
+			else if (i<160){
+				_this.mesh.rotation.y += .05;
+				_this.mesh.rotation.x += .05;
+			}
+			else if (i<180){
+				_this.mesh.rotation.y += .03;
+				_this.mesh.rotation.x += .03;
+			}
+			else if (i<190){
+				_this.mesh.rotation.y += .02;
+				_this.mesh.rotation.x += .02;
+			}
+			else{
+				_this.mesh.rotation.y += .01;
+				_this.mesh.rotation.x += .01;
+			}
+			i++;
+		}, 5);
 	}
 }
 
@@ -1653,5 +1697,258 @@ class Lattice extends Molecule{
 	      }
 	      this.electrons[i].position.z += speed*5;
 	    }
+	}
+}
+
+ var namat = new THREE.MeshPhongMaterial({
+		    color: COLORS.Red,
+		    transparent: true,
+		    opacity: 1,
+		    shading: THREE.FlatShading,
+	});
+
+class Sodium extends Atom{
+	constructor(size){
+		//size *= 2;
+		  var sodium = new THREE.BoxGeometry(size, size, size, 100, 100, 100);
+		  var geo = new THREE.EdgesGeometry(sodium);
+		  //var sodium = new THREE.SphereGeometry(size, 100, 100);
+		  var mat = new THREE.LineBasicMaterial({color: Colors.red, linewidth: 100});
+		  var wireframe = new THREE.LineSegments(geo, mat);
+
+		  var group = new THREE.Group();
+
+		  return wireframe;
+	}
+}
+
+var cl1, na1, connect1, connect2, time = 0;
+class Salt extends Molecule{
+	constructor(n, x, y, z){
+		  var mesh, layers;
+		  var atoms = [];
+		  var na = 4;
+		  var cl = 2*na;
+		  var dis = 16*(na+cl)/3;
+		  var connectsmall = new THREE.CylinderGeometry(.2*na, .2*na, .1*dis, 30, 30);
+		  na *= 2;
+		  cl *= 1.5;
+		  mesh = new THREE.Object3D();
+
+		  //var sodium = new THREE.SphereGeometry(na, 100, 100);
+		  var sodium = new THREE.BoxGeometry(na, na, na, 20, 20, 20);
+		  //var chloride = new THREE.SphereGeometry(cl, 100, 100);
+		  var chloride = new THREE.BoxGeometry(cl, cl, cl, 20, 20, 20);
+		  //var connect = new THREE.CylinderGeometry(.2*na, .2*na, dis, 100, 100);
+
+		  var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/salt.jpg');
+	      sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+	      var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/crate.jpg');
+	      noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+	      customUniforms = {
+	      baseTexture:  { type: "t", value: sampleTexture },
+	      baseSpeed:    { type: "f", value: 0.05 },
+	      noiseTexture:   { type: "t", value: noiseTexture },
+	      noiseScale:   { type: "f", value: 0.5337 },
+	      alpha:      { type: "f", value: 1.0 },
+	      time:       { type: "f", value: 1.0 },        
+	        fogColor:    { type: "c", value: World.scene.fog.color },
+	        fogNear:     { type: "f", value: World.scene.fog.near },
+	        fogFar:      { type: "f", value: World.scene.fog.far }
+	      };
+
+	      var namat = new THREE.ShaderMaterial({
+	        uniforms: customUniforms,
+	        vertexShader: document.getElementById('vertexShader').textContent,
+	        fragmentShader: document.getElementById('fragmentShader').textContent,
+	        fog: true,
+	        // map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+	      });
+
+		  /*var namat = new THREE.MeshPhongMaterial({
+		    color: Colors.blue,
+		    transparent: true,
+		    opacity: .9,
+		    //shading: THREE.FlatShading,
+		    map: texture,
+		  });*/
+
+		  /*var clmat = new THREE.MeshPhongMaterial({
+		    color: Colors.red,
+		    transparent: true,
+		    opacity: .9,
+		    shading: THREE.FlatShading,
+		  });*/
+		  var sampleTexture2 = THREE.ImageUtils.loadTexture('/assets/images/salt2.jpg');
+		  sampleTexture2.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+		  var customUniforms2 = {
+		      baseTexture:  { type: "t", value: sampleTexture2 },
+		      baseSpeed:    { type: "f", value: 0.05 },
+		      noiseTexture:   { type: "t", value: noiseTexture },
+		      noiseScale:   { type: "f", value: 0.5337 },
+		      alpha:      { type: "f", value: 1.0 },
+		      time:       { type: "f", value: 1.0 },        
+		        fogColor:    { type: "c", value: World.scene.fog.color },
+		        fogNear:     { type: "f", value: World.scene.fog.near },
+		        fogFar:      { type: "f", value: World.scene.fog.far }
+		      };
+		  var clmat = new THREE.ShaderMaterial({
+		        uniforms: customUniforms2,
+		        vertexShader: document.getElementById('vertexShader').textContent,
+		        fragmentShader: document.getElementById('fragmentShader').textContent,
+		        fog: true,
+		        // map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+		      });
+
+		  var connectormat = new THREE.MeshPhongMaterial({
+		    color: COLORS.Gray,
+		    transparent: true,
+		    opacity: .5,
+		    shading: THREE.FlatShading,
+		  });
+
+
+		  var i, j, k;
+		  var atom;
+		  var x, y, z;
+		  var m;
+
+		  var numKLayers = (n*2) + 2;
+
+		  //cl1 = new Sodium(na);
+		  //this.mesh.add(cl1);
+
+		  layers = [];
+
+		  for(k=0; k<numKLayers; k++){
+
+		    layers[k] = new THREE.Group();
+
+		    for(j=0; j<(n*2-1)-1; j++){
+		      for(i=0; i<(n*2-1)+1; i++){
+		        if((i+j+k)%2==0){
+		          cl1 = new THREE.Mesh(chloride, clmat);
+		          //cl1 = new Sodium(na);
+		          cl1.position.x += i*dis;
+		          cl1.position.y -= j*dis;
+		          cl1.position.z = 0;
+		          // this.mesh.add(cl1);
+		          layers[k].add(cl1);
+		          atom = cl1;
+		          x = i*dis;
+		          y = -j*dis;
+		          z = -k*dis;
+		        }else{
+		          na1 = new THREE.Mesh(sodium, namat);
+		          na1.position.x += i*dis;
+		          na1.position.y -= j*dis;
+		          cl1.position.z = 0;
+		          // this.mesh.add(na1);
+		          layers[k].add(na1);
+		          atom = na1;
+		        }
+		        if(i!=0){
+		          //connect1 = new THREE.Mesh(connect, connectormat);
+		          for(m=0; m<5; m++){
+		          connect1 = new THREE.Mesh(connectsmall, connectormat);
+		          connect1.rotation.z = Math.PI/2;
+		          connect1.position.z = 0;
+		          connect1.position.y = atom.position.y;
+		          connect1.position.x = atom.position.x + (-1*(-.40*m*dis/2 - .20*dis/2 - time))%dis;
+		          // this.mesh.add(connect1);
+		          layers[k].add(connect1);
+		          }
+		        }
+		        if(j!=0){
+		          //connect2 = new THREE.Mesh(connect, connectormat);
+		          for(m=0; m<5; m++){
+		          connect2 = new THREE.Mesh(connectsmall, connectormat);
+		          connect2.position.y = atom.position.y + .40*m*dis/2 + .20*dis/2;
+		          connect2.position.x = atom.position.x;
+		          connect2.position.z = 0;
+		          // this.mesh.add(connect2);
+		          layers[k].add(connect2);
+		          }
+		        }
+		        if(k!=0){
+		          //connect1 = new THREE.Mesh(connect, connectormat);
+		          for(m=0; m<5; m++){
+		          connect1 = new THREE.Mesh(connectsmall, connectormat);
+		          connect1.rotation.x = Math.PI/2;
+		          connect1.position.x = atom.position.x;
+		          connect1.position.y = atom.position.y;
+		          connect1.position.z = .40*m*dis/2 - .20*dis/2;
+		          // this.mesh.add(connect1);
+		          layers[k].add(connect1);
+		          }
+		        }
+		      }
+		    }
+		    layers[k].position.z -= k*dis;
+		    mesh.add(layers[k]);
+		  }
+
+		  mesh.receiveShadow = true;
+		  mesh.position.set(x, y, z);
+		  super(mesh, x, y, z, atoms);
+		  this.mesh = mesh;
+		  this.layers = layers;
+		  this.numKLayers = numKLayers;
+		  this.dis = dis;
+	}
+
+	update(){
+		var speed = 2;
+		for (var i = 0; i < this.numKLayers; i++) {
+			// console.log(this.layers[i].position.z);
+			if (this.layers[i].position.z >= 225) {
+				this.layers[i].position.z -= this.numKLayers*this.dis + speed;
+			}
+			this.layers[i].position.z += speed;
+		}
+		//na1.material.uniforms.time.value += .005;
+		//na1.rotation.y += .003;
+	}
+}
+
+class SaltCube extends Atom{
+	constructor(size, x, y, z){
+		var geom, mat, mesh;
+		geom = new THREE.BoxGeometry(size, size, size);
+
+		var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/salt2.jpg');
+	      sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+	      var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/crate.jpg');
+	      noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+	      customUniforms = {
+	      baseTexture:  { type: "t", value: sampleTexture },
+	      baseSpeed:    { type: "f", value: 0.05 },
+	      noiseTexture:   { type: "t", value: noiseTexture },
+	      noiseScale:   { type: "f", value: 0.5337 },
+	      alpha:      { type: "f", value: 1.0 },
+	      time:       { type: "f", value: 1.0 },
+	      };
+
+	      mat = new THREE.ShaderMaterial({
+	        uniforms: customUniforms,
+	        vertexShader: document.getElementById('vertexShader').textContent,
+	        fragmentShader: document.getElementById('fragmentShader').textContent
+	        // map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+	      });
+
+	      mesh = new THREE.Mesh(geom, mat);
+	      mesh.position.set(x, y, z);
+	      super(mesh, x, y, z);
+	      this.speed = Math.random();
+	}
+
+	update(){
+		this.mesh.rotation.y += this.speed*.05;
+		this.mesh.rotation.x += this.speed*.05;
+
 	}
 }
