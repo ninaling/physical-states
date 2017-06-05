@@ -200,7 +200,7 @@ class WORLD{
 				World.collectTrash();
 				World.renderer.render(World.scene, World.camera);
 				window.requestAnimationFrame(loop);
-				window.addEventListener('mousedown', addIce);
+				// window.addEventListener('mousedown', addIce);
 			}
 		}
 		else if (scene == 'water'){
@@ -211,7 +211,7 @@ class WORLD{
 				World.collectTrash();
 				World.renderer.render(World.scene, World.camera);
 				window.requestAnimationFrame(loop);
-				window.addEventListener('mousedown', spawnWater);
+				// window.addEventListener('mousedown', spawnWater);
 			}
 		}
 		else if (scene == 'iron'){
@@ -262,7 +262,7 @@ class WORLD{
 				World.collectTrash();
 				World.renderer.render(World.scene, World.camera);
 				window.requestAnimationFrame(loop);
-				window.addEventListener('mousedown', spawnDiamondRing);
+				// window.addEventListener('mousedown', spawnDiamondRing);
 			}
 		}
 		else if (scene == 'title'){
