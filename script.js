@@ -22,6 +22,7 @@ var MDMAMol;
 var salt;
 var iconsPresent = false;
 var iceDome;
+var BUTTON;
 
 //auxillary functions
 
@@ -441,6 +442,7 @@ class WORLD{
 	populateIcons(){
 		var _this = this;
 	    var icons = [];
+
 		var diamond = new Diamond(.1, -3, -2.1, 993.5);
 	    this.scene.add(diamond.mesh);
 	    // this.objects.push(diamond);
@@ -453,7 +455,7 @@ class WORLD{
 	    icons.push(iron.mesh);
 	 	this.titleIconObjects["iron"] = iron;
 
-	    var ice = new CubicIce(.25, Math.PI*2, -1, -2.1, 993.5);
+	    var ice = new CubicIce(.3, Math.PI*2, -1, -2.1, 993.5);
 	    ice.update = function(){
 	    	this.mesh.rotation.z += this.speed*.05;
    			this.mesh.rotation.y += this.speed*.05;
@@ -487,6 +489,11 @@ class WORLD{
 	    // this.objects.push(salt);
 	    icons.push(salt.mesh);
 	    this.titleIconObjects["salt"] = salt;
+
+	    BUTTON = new Button(.25, -5.5, 2.25, 993.5);
+		this.scene.add(BUTTON.mesh);
+		this.titleIconObjects["button"] = BUTTON;
+		icons.push(BUTTON.mesh);
 
 	    this.titleIcons = icons;
 
@@ -535,6 +542,21 @@ class WORLD{
 
 	updateDiamond(){
 		this.update();
+
+		if (this.objects.length<7 && this.canPopulate){
+	      var angle, posX, posY;
+	      angle = Math.random() *2*Math.PI;
+	      posX = Math.random()*50*Math.cos(angle);
+	      posY = Math.random()*50*Math.sin(angle);
+	      var temp2 = new DiamondRing(1 + Math.random(), posX, posY, 950);
+	      this.objects.push(temp2);
+	      this.scene.add(temp2.mesh);
+	      this.canPopulate = false;
+	      var _this = this;
+	      setTimeout(function(){
+	        _this.togglePopulate();
+	      }, 300);
+	    }
 	}
 
 	update(){
@@ -601,7 +623,7 @@ class WORLD{
 	      var _this = this;
 	      setTimeout(function(){
 	        _this.togglePopulate();
-	      }, 900);
+	      }, 700);
 	    }
 	}
 
@@ -736,6 +758,7 @@ function selectScene(e){ //select scene from title using raycasting
 	var water = World.titleIcons[4];
 	var mdma = World.titleIcons[5];
 	var salt = World.titleIcons[6];
+	var button = World.titleIcons[7];
 
 	mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
 	mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
@@ -746,6 +769,11 @@ function selectScene(e){ //select scene from title using raycasting
 	for (var i=0; i<intersects.length; i++){
 		for (var k=0; k<World.titleIcons.length; k++){
 			if (intersects[i].object == World.titleIcons[k]){
+				if (intersects[i].object == button){
+					BUTTON.spinWildly();
+					controller.start();
+					return;
+				}
 				distortTitleBackground();
 				if (intersects[i].object == iron){
 					World.titleIconObjects["iron"].spinWildly();
@@ -771,6 +799,7 @@ function selectScene(e){ //select scene from title using raycasting
 						World.changeScene('salt');
 					}, 1000);
 				}
+				return;
 			}
 
 			else if (intersects[i].object.parent == World.titleIcons[k]){
@@ -781,6 +810,7 @@ function selectScene(e){ //select scene from title using raycasting
 						World.changeScene('diamond');
 					}, 1000);
 				}
+				return;
 			}
 			else if (intersects[i].object.parent.parent == World.titleIcons[k]){
 				distortTitleBackground();
@@ -796,6 +826,7 @@ function selectScene(e){ //select scene from title using raycasting
 						World.changeScene('ice');
 					}, 1000);
 				}
+				return;
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 var timestamps = {
 	5640: "iron",
-	17660: "diamond",
+	17660: "salt",
 	28030: "metal",
 	39240: "diamond",
 	53820: "iron",
@@ -33,7 +33,6 @@ class Controller{
 }
 
 function doSetTimeout(time, mode) {
-
 	setTimeout(function(){
 		if (mode == 'title'){
 			World.changeScene(mode);
@@ -54,4 +53,4 @@ function doSetTimeout(time, mode) {
 }
 
 var controller = new Controller();
-controller.start();
+// controller.start();

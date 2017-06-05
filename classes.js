@@ -181,6 +181,7 @@ class TitleGlobe extends Item{
 	}
 
 	distort(){
+		console.log('disrty');
 		var i=0;
 		var _this = this;
 		var interval = setInterval(function(){
@@ -204,7 +205,7 @@ class TitleGlobe extends Item{
 				_this.mesh.material.uniforms.time.value += .005;
 			}
 			i++;
-		}, 5);
+		}, 7);
 	}
 }
 
@@ -2025,15 +2026,14 @@ class DiamondRing extends Molecule{
 		mesh.position.set(x, y, z);
 
 		super(mesh, x, y, z, atoms);
-		this.speed = Math.random();
+		this.speed = 1+Math.random();
 		this.radius = radius;
 		this.interval = interval;
 	}
 
 	update(){
-		this.mesh.rotation.z += .05*this.speed;
-		this.mesh.position.z += .07*this.speed;
-		this.radius += .85*this.speed;
+		this.mesh.rotation.z += .02*this.speed;
+		this.radius += .25*this.speed;
 
 		var angle;
 		for (var i=0; i<this.atoms.length; i++){
@@ -2042,6 +2042,10 @@ class DiamondRing extends Molecule{
 			this.atoms[i].mesh.position.x = this.radius * Math.cos(angle);
 			this.atoms[i].mesh.position.y = this.radius * Math.sin(angle);
 		}
+	}
+
+	outOfRange(){
+		return this.mesh.position.z >= 1000 || this.radius >= 50;
 	}
 }
 
@@ -2120,6 +2124,74 @@ class S extends Atom{
 			}
 			else if (i<180){
 				_this.mesh.rotation.y += .03*speed;
+			}
+			else if (i<190){
+				_this.mesh.rotation.y += .02*speed;
+			}
+			else{
+				_this.mesh.rotation.y += .01*speed;
+			}
+			i++;
+		}, 5);
+	}
+}
+
+class Button extends Item{
+	constructor(radius, x, y, z){
+		var geom, mat, mesh;
+		geom = new THREE.BoxGeometry(radius, radius, radius);
+
+		var sampleTexture = new THREE.TextureLoader().load('/assets/images/microscopy2.jpg');
+		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
+		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+		var customUniforms = {
+			baseTexture: 	{ type: "t", value: sampleTexture },
+			baseSpeed: 		{ type: "f", value: 0.01 },
+			noiseTexture: 	{ type: "t", value: noiseTexture },
+			noiseScale:		{ type: "f", value: 0.5 },
+			alpha: 			{ type: "f", value: 1.0 },
+			time: 			{ type: "f", value: 1.0 }
+		};
+
+		mat = new THREE.ShaderMaterial({
+			uniforms: customUniforms,
+			vertexShader: document.getElementById('vertexShader').textContent,
+			fragmentShader: document.getElementById('fragmentShader').textContent,
+			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+		});
+
+		mesh = new THREE.Mesh(geom, mat);
+		mesh.position.set(x, y, z);
+		super(mesh, x, y, z);
+		this.speed = Math.random() + 1;
+	}
+
+	update(){
+		this.mesh.material.uniforms.time.value += .5*this.speed;
+		this.mesh.rotation.y += .01;
+	}
+
+	spinWildly(){
+			var i=0;
+		var _this = this;
+		var speed = Math.random() + .7;
+		var interval = setInterval(function(){
+			if (i > 200){
+				clearInterval(interval);
+				return;
+			}
+			if (i<125){
+				_this.mesh.rotation.y += .075*speed;
+			}
+			else if (i<150){
+				_this.mesh.rotation.y += .05*speed;
+			}
+			else if (i<180){
+				_this.mesh.rotation.y += .03*speed;
+
 			}
 			else if (i<190){
 				_this.mesh.rotation.y += .02*speed;
