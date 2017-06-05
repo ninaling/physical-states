@@ -163,7 +163,7 @@ class WORLD{
 		this.electrons = [];
 		this.layers = [];
 		this.titleIcons = [];
-		this.titleIconObjects = [];
+		this.titleIconObjects = {};
 		this.scene = scene;
 		this.camera = camera;
 		this.cubeCamera = cubeCamera;
@@ -190,7 +190,6 @@ class WORLD{
 	changeScene(scene){
 		this.clearScene();
 		this.removeEventListeners();
-		this.titleIconObjects = [];
 		this.titleIcons = [];
 		if (scene == 'ice'){
 			console.log('selected ice');
@@ -440,15 +439,15 @@ class WORLD{
 
 	    var diamond = new Diamond(.1, -3, -1.25, 995);
 	    this.scene.add(diamond.mesh);
-	    this.objects.push(diamond);
+	    // this.objects.push(diamond);
 	    icons.push(diamond.mesh);
-	    this.titleIconObjects.push(diamond);
+	    this.titleIconObjects["diamond"] = diamond;
 
 	    var iron = new Iron(.15, -2, -1.25, 995);
 	    this.scene.add(iron.mesh);
-	    this.objects.push(iron);
+	    // this.objects.push(iron);
 	    icons.push(iron.mesh);
-	    this.titleIconObjects.push(iron);
+	 	this.titleIconObjects["iron"] = iron;
 
 	    var ice = new CubicIce(.25, Math.PI*2, -1, -1.25, 995);
 	    ice.update = function(){
@@ -456,34 +455,34 @@ class WORLD{
    			this.mesh.rotation.y += this.speed*.05;
 	    }
 	    this.scene.add(ice.mesh);
-	    this.objects.push(ice);
+	    // this.objects.push(ice);
 	    icons.push(ice.mesh);
-	    this.titleIconObjects.push(ice);
+	    this.titleIconObjects["ice"] = ice;
 
 	    var metalNode = new TitleMetalNode(.17, 0, -1.25, 995);
 	    this.scene.add(metalNode.mesh);
-	    this.objects.push(metalNode);
+	    // this.objects.push(metalNode);
 	    metalNode.mapToCube(this.cubeCamera);
 	    icons.push(metalNode.mesh);
-	    this.titleIconObjects.push(metalNode);
+	    this.titleIconObjects["metal"] = metalNode;
 
 	    var water = new Water(.3, Math.random()*2*Math.PI, 0, 1, -1.25, 995);
 	    this.scene.add(water.mesh);
-	    this.objects.push(water);
+	    // this.objects.push(water);
 	    icons.push(water.mesh);
-	    this.titleIconObjects.push(water);
+	    this.titleIconObjects["water"] = water;
 
 	    var smiley = new Smiley(.15, 2, -1.25, 995);
 	    this.scene.add(smiley.mesh);
-	    this.objects.push(smiley);
+	    // this.objects.push(smiley);
 	    icons.push(smiley.mesh);
-	    this.titleIconObjects.push(smiley);
+	    this.titleIconObjects["mdma"] = smiley;
 
 	    var salt = new SaltCube(.2, 3, -1.25, 995);
 	    this.scene.add(salt.mesh);
-	    this.objects.push(salt);
+	    // this.objects.push(salt);
 	    icons.push(salt.mesh);
-	    this.titleIconObjects.push(salt);
+	    this.titleIconObjects["salt"] = salt;
 
 	    this.titleIcons = icons;
 
@@ -535,6 +534,10 @@ class WORLD{
 	update(){
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
+		}
+
+		for (var key in this.titleIconObjects){
+			this.titleIconObjects[key].update();
 		}
 	}
 
@@ -734,25 +737,25 @@ function selectScene(e){ //select scene from title using raycasting
 			if (intersects[i].object == World.titleIcons[k]){
 				distortTitleBackground();
 				if (intersects[i].object == iron){
-					World.titleIconObjects[1].spinWildly();
+					World.titleIconObjects["iron"].spinWildly();
 					setTimeout(function(){
 						World.changeScene('iron');
 					}, 1000);
 				}
 				else if (intersects[i].object == metal){
-					World.titleIconObjects[3].spinWildly();
+					World.titleIconObjects["metal"].spinWildly();
 					setTimeout(function(){
 						World.changeScene('metal');
 					}, 1000);
 				}
 				else if (intersects[i].object == mdma){
-					World.titleIconObjects[5].spinWildly();
+					World.titleIconObjects["mdma"].spinWildly();
 					setTimeout(function(){
 						World.changeScene('mdma');
 					}, 1000);
 				}
 				else if (intersects[i].object == salt){
-					World.titleIconObjects[6].spinWildly();
+					World.titleIconObjects["salt"].spinWildly();
 					setTimeout(function(){
 						World.changeScene('salt');
 					}, 1000);
@@ -762,7 +765,7 @@ function selectScene(e){ //select scene from title using raycasting
 			else if (intersects[i].object.parent == World.titleIcons[k]){
 				distortTitleBackground();
 				if(intersects[i].object.parent == diamond){
-					World.titleIconObjects[0].spinWildly();
+					World.titleIconObjects["diamond"].spinWildly();
 					setTimeout(function(){
 						World.changeScene('diamond');
 					}, 1000);
@@ -771,13 +774,13 @@ function selectScene(e){ //select scene from title using raycasting
 			else if (intersects[i].object.parent.parent == World.titleIcons[k]){
 				distortTitleBackground();
 				if (intersects[i].object.parent.parent == water){
-					World.titleIconObjects[4].spinWildly();
+					World.titleIconObjects["water"].spinWildly();
 					setTimeout(function(){
 						World.changeScene('water');
 					}, 1000);
 				}
 				else if (intersects[i].object.parent.parent == ice){
-					World.titleIconObjects[2].spinWildly();
+					World.titleIconObjects["ice"].spinWildly();
 					setTimeout(function(){
 						World.changeScene('ice');
 					}, 1000);

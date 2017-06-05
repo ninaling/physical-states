@@ -1,7 +1,7 @@
 var timestamps = {
-	5000: 'water',
-	10000: 'ice',
-	15000: 'mdma'
+	3000: "iron",
+	6000: "water",
+	9000: "mdma"
 };
 
 class Controller{
@@ -11,15 +11,21 @@ class Controller{
 
 	start(){
 		var start = new Date().getTime();
-		// setInterval(function() {
-		//     var now = new Date().getTime();
-		// }, 100);
 		for (var time in timestamps) {
-			setTimeout(function(){
-				World.changeScene(timestamps[time]);
-			}, time);
+			doSetTimeout(time, timestamps[time]);
+			console.log("set timeout for "+timestamps[time]+" at "+time.toString());
 		}
 	}
+}
+
+function doSetTimeout(time, mode) {
+	setTimeout(function(){
+		distortTitleBackground();//need to change function to distort any background, not just title
+		World.titleIconObjects[mode].spinWildly();
+		setTimeout(function(){
+			World.changeScene(mode);
+		}, 1000);
+	}, time);
 }
 
 var controller = new Controller();
