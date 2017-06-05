@@ -6,9 +6,9 @@ var timestamps = {
 	53820: "iron",
 	59030: "metal",
 	74660: "ice",
-	106270: "mdma",
-	112520: "water",
-	124840: "title"
+	96840: "mdma",
+	103190: "water",
+	115500: "title"
 };
 
 class Controller{
@@ -21,6 +21,7 @@ class Controller{
 		this.audio.src = 'assets/sounds/legion.mp3';
 		this.audio.loop = false;
 		this.audio.autoplay = false;
+		this.audio.volume = 1;
 
 		this.audio.play();
 		var start = new Date().getTime();
@@ -37,10 +38,10 @@ function doSetTimeout(time, mode) {
 		if (mode == 'title'){
 			World.changeScene(mode);
 			setTimeout(function(){
-				audio.src = 'assets/sounds/rumbling.mp3';
-				audio.loop = true;
-				audio.autoplay = true;
-				audio.volume = .5;
+				// audio.src = 'assets/sounds/rumbling.mp3';
+				// audio.loop = true;
+				// audio.autoplay = true;
+				// audio.volume = .5;
 			}, 1000);
 			return;
 		}
@@ -106,42 +107,42 @@ function doSetTimeout(time, mode) {
 // 	}, time);
 // }
 
-var start = new Date().getTime(),
-    time = 0,
-    elapsed = 0;
+// var start = new Date().getTime(),
+//     time = 0,
+//     elapsed = 0;
 
-var audio = document.getElementsByTagName('audio')[0];
+// var audio = document.getElementsByTagName('audio')[0];
 
-function playAudio(){
-	audio.src = 'assets/sounds/legion.mp3';
-	audio.volume = 1;
-	audio.loop = false;
-	audio.autoplay = false;
-	audio.play();
-}
+// function playAudio(){
+// 	audio.src = 'assets/sounds/legion.mp3';
+// 	audio.volume = 1;
+// 	audio.loop = false;
+// 	audio.autoplay = false;
+// 	audio.play();
+// }
 
-function instance()
-{
-    time += 100;
+// function instance()
+// {
+//     time += 100;
 
-    elapsed = time / 100 / 10000 ;
-    if(Math.round(elapsed) == elapsed) { elapsed += '.0'; }
+//     elapsed = time / 100 / 10000 ;
+//     if(Math.round(elapsed) == elapsed) { elapsed += '.0'; }
 
-	console.log(elapsed);
+// 	console.log(elapsed);
 
-	if (elapsed == 66)
-		World.changeScene('iron');
+// 	if (elapsed == 66)
+// 		World.changeScene('iron');
 
-    var diff = (new Date().getTime() - start) - time;
-    window.setTimeout(instance, (100 - diff));
-}
+//     var diff = (new Date().getTime() - start) - time;
+//     window.setTimeout(instance, (100 - diff));
+// }
 
-// window.setTimeout(instance, 100);
+// // window.setTimeout(instance, 100);
 
-function play(){
-	playAudio();
-	setTimeout(instance, 100);
-}
+// function play(){
+// 	playAudio();
+// 	setTimeout(instance, 100);
+// }
 
 var controller = new Controller();
 // controller.play();
