@@ -20,6 +20,7 @@ var birthRadiusWater = 20;
 var lattice;
 var MDMAMol;
 var salt;
+var iconsPresent = false;
 
 //auxillary functions
 
@@ -402,8 +403,7 @@ class WORLD{
 
 	populateTitle(){
 		var loader;
-	    var _this = this;
-	    var icons = [];
+		var _this = this;
 	    loader = new THREE.FontLoader();
 	    loader.load('/assets/ultra.json', function(font){
 	      var geometry, mat, mesh;
@@ -437,7 +437,15 @@ class WORLD{
 	    this.scene.add(titleGlobe.mesh);
 	    this.objects.push(titleGlobe);
 
-	    var diamond = new Diamond(.1, -3, -1.25, 995);
+	    if (!iconsPresent){
+	    	this.populateIcons();
+	    }
+	}
+
+	populateIcons(){
+		var _this = this;
+	    var icons = [];
+		var diamond = new Diamond(.1, -3, -1.25, 995);
 	    this.scene.add(diamond.mesh);
 	    // this.objects.push(diamond);
 	    icons.push(diamond.mesh);
@@ -486,6 +494,8 @@ class WORLD{
 
 	    this.titleIcons = icons;
 
+	    iconsPresent = true;
+
 	    window.addEventListener('mousedown', selectScene);
 	}
 
@@ -507,7 +517,7 @@ class WORLD{
 	}
 
 	populateIce(){
-		this.populateHomeButton();
+		// this.populateHomeButton();
 		temp = new IceDome(domeRadius, 500, 0, 0, 1000);
 		temp.mapToCube(this.iceCubeCamera);
 		this.objects.push(temp);
@@ -670,7 +680,7 @@ class WORLD{
 		window.removeEventListener('mousedown', addIce);
 		window.removeEventListener('mousedown', spawnWater);
 		window.removeEventListener('mousedown', distortWaterBackground);
-		window.removeEventListener('mousedown', selectScene);
+		// window.removeEventListener('mousedown', selectScene);
 		window.removeEventListener('mousedown', spawnDiamondRing);
 		window.removeEventListener('mousedown', selectHome);
 	}

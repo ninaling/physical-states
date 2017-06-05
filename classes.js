@@ -940,12 +940,15 @@ class TitleMetalNode extends Atom{ //construct them with radius 1
 
 	mapToCube(cubeCamera){
 		this.mesh.material.envMap = cubeCamera.renderTarget;
+		this.cubeCamera = cubeCamera;
 	}
 
 	update(){
 		this.mesh.rotation.x += .01;
 		this.mesh.rotation.y += .01;
 		this.mesh.rotation.z += .01;
+
+		// this.cubeCamera.updateCubeMap(World.renderer, World.scene);
 	}
 }
  
