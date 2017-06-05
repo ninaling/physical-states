@@ -77,22 +77,27 @@ class Item{
 			if (i<150){
 				_this.mesh.rotation.y += .075*speed;
 				_this.mesh.rotation.x += .075*speed;
+				_this.mesh.rotation.z += .075*speed;
 			}
 			else if (i<160){
 				_this.mesh.rotation.y += .05*speed;
 				_this.mesh.rotation.x += .05*speed;
+				_this.mesh.rotation.z += .05*speed;
 			}
 			else if (i<180){
 				_this.mesh.rotation.y += .03*speed;
 				_this.mesh.rotation.x += .03*speed;
+				_this.mesh.rotation.z += .03*speed;
 			}
 			else if (i<190){
 				_this.mesh.rotation.y += .02*speed;
 				_this.mesh.rotation.x += .02*speed;
+				_this.mesh.rotation.z += .02*speed;
 			}
 			else{
 				_this.mesh.rotation.y += .01*speed;
 				_this.mesh.rotation.x += .01*speed;
+				_this.mesh.rotation.z += .01*speed;
 			}
 			i++;
 		}, 5);
@@ -291,6 +296,10 @@ class Ice extends Molecule{
     this.mesh.rotation.y += this.speed*.05;
 
     this.mesh.position.z += this.dir*this.speed*.5;
+  }
+
+  outOfRange(){
+  	return this.mesh.position.z <= 800;
   }
 }
 
@@ -936,6 +945,7 @@ class TitleMetalNode extends Atom{ //construct them with radius 1
 		mesh.position.set(x, y, z);
 
 		super(mesh, x, y, z);
+		this.speed = Math.random();
 	}
 
 	mapToCube(cubeCamera){
@@ -944,9 +954,9 @@ class TitleMetalNode extends Atom{ //construct them with radius 1
 	}
 
 	update(){
-		this.mesh.rotation.x += .01;
-		this.mesh.rotation.y += .01;
-		this.mesh.rotation.z += .01;
+		this.mesh.rotation.x += this.speed;
+		this.mesh.rotation.y += this.speed;
+		this.mesh.rotation.z += this.speed;
 
 		// this.cubeCamera.updateCubeMap(World.renderer, World.scene);
 	}
@@ -1228,6 +1238,7 @@ class Background extends Item{
 }
 
 var neheTexture = new THREE.TextureLoader().load("assets/images/image.png");
+var neheTexture2 = new THREE.TextureLoader().load("assets/images/image.png");
 
 class Smiley extends Atom{
 	constructor(radius, x, y, z){
@@ -1252,7 +1263,7 @@ class Smiley extends Atom{
 
 var SphereGeometry = new THREE.SphereGeometry(1.2, 8, 8);
 var SphereMaterial = new THREE.MeshBasicMaterial({
-        map: neheTexture
+        map: neheTexture2
 });
 
 var CylinderGeometry = new THREE.CylinderGeometry(.15, .2, 3, 3);
@@ -1758,16 +1769,16 @@ class Salt extends Molecule{
 	      noiseScale:   { type: "f", value: 0.5337 },
 	      alpha:      { type: "f", value: 1.0 },
 	      time:       { type: "f", value: 1.0 },        
-	        fogColor:    { type: "c", value: World.scene.fog.color },
-	        fogNear:     { type: "f", value: World.scene.fog.near },
-	        fogFar:      { type: "f", value: World.scene.fog.far }
+	        // fogColor:    { type: "c", value: World.scene.fog.color },
+	        // fogNear:     { type: "f", value: World.scene.fog.near },
+	        // fogFar:      { type: "f", value: World.scene.fog.far }
 	      };
 
 	      var namat = new THREE.ShaderMaterial({
 	        uniforms: customUniforms,
 	        vertexShader: document.getElementById('vertexShader').textContent,
 	        fragmentShader: document.getElementById('fragmentShader').textContent,
-	        fog: true,
+	        // fog: true,
 	        // map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
 	      });
 
@@ -1794,15 +1805,15 @@ class Salt extends Molecule{
 		      noiseScale:   { type: "f", value: 0.5337 },
 		      alpha:      { type: "f", value: 1.0 },
 		      time:       { type: "f", value: 1.0 },        
-		        fogColor:    { type: "c", value: World.scene.fog.color },
-		        fogNear:     { type: "f", value: World.scene.fog.near },
-		        fogFar:      { type: "f", value: World.scene.fog.far }
+		        // fogColor:    { type: "c", value: World.scene.fog.color },
+		        // fogNear:     { type: "f", value: World.scene.fog.near },
+		        // fogFar:      { type: "f", value: World.scene.fog.far }
 		      };
 		  var clmat = new THREE.ShaderMaterial({
 		        uniforms: customUniforms2,
 		        vertexShader: document.getElementById('vertexShader').textContent,
 		        fragmentShader: document.getElementById('fragmentShader').textContent,
-		        fog: true,
+		        // fog: true,
 		        // map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
 		      });
 
