@@ -23,11 +23,12 @@ var salt;
 var iconsPresent = false;
 var iceDome;
 var BUTTON;
+var carbonTube;
 
 //auxillary functions
 
 var loop = function(){
-	World.updateTitle(); //update positions of all objects in scene
+	World.updateCarbon(); //update positions of all objects in scene
 	World.collectTrash();
 	// World.camera.position.z -= 1.5;
 	World.renderer.render(World.scene, World.camera);
@@ -273,6 +274,12 @@ class WORLD{
 				window.requestAnimationFrame(loop);
 			}
 		}
+	}
+
+	populateCarbon(){
+		carbonTube = new CarbonTube();
+		this.scene.add(carbonTube.mesh);
+		this.objects.push(carbonTube);
 	}
 
 	populateDiamond(){	
@@ -538,6 +545,10 @@ class WORLD{
 	addMolecule(molecule){
 		this.objects.push(molecule);
 		this.scene.add(molecule.mesh);
+	}
+
+	updateCarbon(){
+		return;
 	}
 
 	updateDiamond(){
@@ -842,6 +853,6 @@ audio.volume = .75;
 var World = new WORLD();
 
 World.createLights();
-World.populateTitle();
+World.populateCarbon();
 
 loop();
