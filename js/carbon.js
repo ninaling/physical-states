@@ -117,7 +117,33 @@ Lattice = function(n){
 
 	var ion = new THREE.SphereGeometry(ionSize, 5, 5);
 
-	var ionmat = new THREE.MeshPhongMaterial({
+	var sampleTexture = THREE.ImageUtils.loadTexture('../carbon.jpg');
+	sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+	//var noiseTexture = THREE.ImageUtils.loadTexture('../crate.jpg');
+	//noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+	customUniforms = {
+		baseTexture: 	{ type: "t", value: sampleTexture },
+		baseSpeed: 		{ type: "f", value: 0.05 },
+		//noiseTexture: 	{ type: "t", value: noiseTexture },
+		noiseScale:		{ type: "f", value: 0.5337 },
+		alpha: 			{ type: "f", value: 1.0 },
+		time: 			{ type: "f", value: 1.0 },				
+	    fogColor:    { type: "c", value: scene.fog.color },
+   		fogNear:     { type: "f", value: scene.fog.near },
+    	fogFar:      { type: "f", value: scene.fog.far }
+	};
+
+	var ionmat = new THREE.ShaderMaterial({
+		uniforms: customUniforms,
+		vertexShader: document.getElementById('vertexShader').textContent,
+		fragmentShader: document.getElementById('fragmentShader').textContent,
+		fog: true,
+				// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+	});
+
+	var ionmat2 = new THREE.MeshPhongMaterial({
 		color: Colors.red,
 		transparent: true,
 		opacity: .9,
