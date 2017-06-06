@@ -513,19 +513,19 @@ class WORLD{
 		var _this = this;
 	    var icons = [];
 
-		var diamond = new Diamond(.1, -3.5, -2.1, 993.5);
+		var diamond = new Diamond(.1, -4, -2.1, 993.5);
 	    this.scene.add(diamond.mesh);
 	    // this.objects.push(diamond);
 	    icons.push(diamond.mesh);
 	    this.titleIconObjects["diamond"] = diamond;
 
-	    var iron = new Iron(.15, -2.5, -2.1, 993.5);
+	    var iron = new Iron(.15, -3, -2.1, 993.5);
 	    this.scene.add(iron.mesh);
 	    // this.objects.push(iron);
 	    icons.push(iron.mesh);
 	 	this.titleIconObjects["iron"] = iron;
 
-	    var ice = new CubicIce(.3, Math.PI*2, -1.5, -2.1, 993.5);
+	    var ice = new CubicIce(.3, Math.PI*2, -2, -2.1, 993.5);
 	    ice.update = function(){
 	    	this.mesh.rotation.z += this.speed*.05;
    			this.mesh.rotation.y += this.speed*.05;
@@ -535,40 +535,40 @@ class WORLD{
 	    icons.push(ice.mesh);
 	    this.titleIconObjects["ice"] = ice;
 
-	    var metalNode = new TitleMetalNode(.17, -.5, -2.1, 993.5);
+	    var metalNode = new TitleMetalNode(.17, -1, -2.1, 993.5);
 	    this.scene.add(metalNode.mesh);
 	    // this.objects.push(metalNode);
 	    metalNode.mapToCube(this.cubeCamera);
 	    icons.push(metalNode.mesh);
 	    this.titleIconObjects["metal"] = metalNode;
 
-	    var water = new Water(.3, Math.random()*2*Math.PI, 0, .5, -2.1, 993.5);
+	    var water = new Water(.3, Math.random()*2*Math.PI, 0, 0, -2.1, 993.5);
 	    this.scene.add(water.mesh);
 	    // this.objects.push(water);
 	    icons.push(water.mesh);
 	    this.titleIconObjects["water"] = water;
 
-	    var smiley = new Smiley(.15, 1.5, -2.1, 993.5);
+	    var smiley = new Smiley(.15, 1, -2.1, 993.5);
 	    this.scene.add(smiley.mesh);
 	    // this.objects.push(smiley);
 	    icons.push(smiley.mesh);
 	    this.titleIconObjects["mdma"] = smiley;
 
-	    var salt = new SaltCube(.2, 2.5, -2.1, 993.5);
+	    var salt = new SaltCube(.2, 2, -2.1, 993.5);
 	    this.scene.add(salt.mesh);
 	    // this.objects.push(salt);
 	    icons.push(salt.mesh);
 	    this.titleIconObjects["salt"] = salt;
 
-	    var carbon_lattice = new Carbon_LatticeCube(.2, 4.5, -2.1, 993.5);
-	    this.scene.add(carbon_lattice.mesh);
-	    icons.push(carbon_lattice.mesh);
-	    this.titleIconObjects["carbon_lattice"] = carbon_lattice;
-
-	    var carbon = new Carbon(.15, 3.5, -2.1, 993.5);
+	    var carbon = new Carbon(.15, 3, -2.1, 993.5);
 	    this.scene.add(carbon.mesh);
 	    icons.push(carbon.mesh);
 	    this.titleIconObjects["carbon"] = carbon;
+
+	    var carbon_lattice = new Carbon_LatticeCube(.175, 4, -2.1, 993.5);
+	    this.scene.add(carbon_lattice.mesh);
+	    icons.push(carbon_lattice.mesh);
+	    this.titleIconObjects["carbon_lattice"] = carbon_lattice;
 
 	 //    BUTTON = new Button(.25, -5.5, 2.25, 993.5);
 		// this.scene.add(BUTTON.mesh);
@@ -840,7 +840,6 @@ function selectHome(e){
 		}
 	}
 
-	console.log(intersects);
 }
 
 function selectScene(e){ //select scene from title using raycasting
@@ -854,8 +853,8 @@ function selectScene(e){ //select scene from title using raycasting
 	var water = World.titleIcons[4];
 	var mdma = World.titleIcons[5];
 	var salt = World.titleIcons[6];
-	var carbon_lattice = World.titleIcons[7];
-	var carbon = World.titleIcons[8];
+	var carbon = World.titleIcons[7];
+	var carbon_lattice = World.titleIcons[8];
 	// var button = World.titleIcons[8];
 
 	mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
