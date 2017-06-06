@@ -343,8 +343,7 @@ class WORLD{
 	}
 
 	populateSalt(){
-		// this.populateHomeButton();
-		// this.scene.fog = new THREE.Fog(0x1e1d1b, -50, 800);
+		this.scene.fog = new THREE.Fog(COLORS.DarkBlue, 50, 300);
 		this.scene.add(saltLattice.mesh);
 		this.objects.push(saltLattice);
 	}
@@ -398,7 +397,7 @@ class WORLD{
 
 	populateIron(){
 		// this.populateHomeButton();
-		// this.scene.fog = new THREE.Fog(0x1e1d1b, 100, 800);
+		this.scene.fog = new THREE.Fog(COLORS.DarkBlue, 100, 700);
 		var n = 4;
 		lattice = new Lattice(n);
 		lattice.mesh.position.set(-window.innerWidth/4, window.innerHeight/2, 950);
