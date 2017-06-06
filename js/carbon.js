@@ -1,3 +1,4 @@
+
 var Colors = {
 	red:0xf25346,
 	white:0xd8d0d1,
@@ -135,7 +136,7 @@ Lattice = function(n){
     	fogFar:      { type: "f", value: scene.fog.far }
 	};
 
-	var ionmat = new THREE.ShaderMaterial({
+	var ionmat2 = new THREE.ShaderMaterial({
 		uniforms: customUniforms,
 		vertexShader: document.getElementById('vertexShader').textContent,
 		fragmentShader: document.getElementById('fragmentShader').textContent,
@@ -143,11 +144,13 @@ Lattice = function(n){
 				// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
 	});
 
-	var ionmat2 = new THREE.MeshPhongMaterial({
-		color: Colors.red,
+	var ionmat = new THREE.MeshPhongMaterial({
+		color: 0xc0c0c0,
 		transparent: true,
 		opacity: .9,
 		shading: THREE.FlatShading,
+		bumpMap: sampleTexture,
+		shininess: 40
 	});
 
 	var i, j, k;
@@ -204,6 +207,8 @@ function createLattice(){
 	lattice.mesh.position.x = -1.1*move;
 	lattice.mesh.position.z = -100;
 	scene.add(lattice.mesh);
+	//scene.add( oldWall );
+
 }
 
 var mousePos={x:0, y:0};
