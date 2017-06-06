@@ -15,11 +15,20 @@ var birthRadius = domeRadius/10;
 var TITLE;
 var homeButton;
 var titleGlobe;
-var globalWaterSphere;
+var diamondPlane = new MetalPlane(0, 0, 1000); //create diamond, water, salt and carbon on startup so it doesn't lag later on
+var globalWaterSphere = new GlobalWaterSphere(50, 0, 0, 950);
 var birthRadiusWater = 20;
 var lattice;
 var MDMAMol;
-var salt;
+
+var n = 4;
+var move = (n-1)*16*(4+4*2)/3;
+var saltLattice = new Salt(n, 0, 0, 900);
+var y = 1.3*move;
+var x = -1.1*move;
+var z = 900;
+saltLattice.mesh.position.set(x, y, z);
+
 var iconsPresent = false;
 var iceDome;
 var BUTTON;
@@ -325,26 +334,17 @@ class WORLD{
 
 	populateDiamond(){	
 		// this.populateHomeButton();
-		var temp = new MetalPlane(0, 0, 1000);
 		// temp.mapToCube(this.cubeCamera);
-		this.scene.add(temp.mesh);
-		this.objects.push(temp);
+		this.scene.add(diamondPlane.mesh);
+		this.objects.push(diamondPlane);
 		window.addEventListener('mousedown', spawnDiamondRing);
 	}
 
 	populateSalt(){
 		// this.populateHomeButton();
 		// this.scene.fog = new THREE.Fog(0x1e1d1b, -50, 800);
-
-		var n = 4;
-		var move = (n-1)*16*(4+4*2)/3;
-		salt = new Salt(n, 0, 0, 900);
-		var y = 1.3*move;
-		var x = -1.1*move;
-		var z = 900;
-		salt.mesh.position.set(x, y, z);
-		this.scene.add(salt.mesh);
-		this.objects.push(salt);
+		this.scene.add(saltLattice.mesh);
+		this.objects.push(saltLattice);
 	}
 
 	populateMDMA(){
@@ -557,7 +557,6 @@ class WORLD{
 
 	populateWater(){
 		// this.populateHomeButton();
-		globalWaterSphere = new GlobalWaterSphere(50, 0, 0, 950);
 	    globalWaterSphere.mapToCube(this.cubeCamera);
 	    this.scene.add(globalWaterSphere.mesh);
 	    this.objects.push(globalWaterSphere);
