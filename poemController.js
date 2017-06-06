@@ -31,6 +31,18 @@ class Controller{
 		}
 	}
 
+	mute() {
+		// this.audio.pause();
+		this.audio.volume = 0;
+		document.getElementById("controls__sound").classList.remove('unmuted');
+	}
+
+	unmute() {
+		// this.audio.play();
+		this.audio.volume = 1;
+		document.getElementById("controls__sound").classList.add('unmuted');
+	}
+
 }
 
 function doSetTimeout(time, mode) {
@@ -145,4 +157,25 @@ function doSetTimeout(time, mode) {
 // }
 
 var controller = new Controller();
+var muted = 0;
+var started = false;
+
+console.log(document.getElementById("controls__sound"));
+document.getElementById("controls__sound").onclick = function(){
+	if(!muted) {
+		controller.mute();
+		muted = 1;
+	} else {
+		controller.unmute();
+		muted = 0;
+	}
+};
+
+document.getElementById("controls__play").onclick = function(){
+	if(!started) {
+		started = true;
+		controller.start();
+		document.getElementById("controls__play").classList.add('playing');
+	}
+};
 // controller.play();
