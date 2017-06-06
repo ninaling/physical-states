@@ -38,10 +38,10 @@ function doSetTimeout(time, mode) {
 		if (mode == 'title'){
 			World.changeScene(mode);
 			setTimeout(function(){
-				// audio.src = 'assets/sounds/rumbling.mp3';
-				// audio.loop = true;
-				// audio.autoplay = true;
-				// audio.volume = .5;
+				audio.src = 'assets/sounds/rumbling.mp3';
+				audio.loop = true;
+				audio.autoplay = true;
+				audio.volume = .5;
 			}, 1000);
 			return;
 		}
