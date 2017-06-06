@@ -4,7 +4,7 @@ var timestamps = {
 	28030: "metal",
 	39240: "diamond",
 	53820: "iron",
-	59030: "metal",
+	59030: "carbon",
 	74660: "ice",
 	96840: "mdma",
 	103190: "water",
