@@ -15,22 +15,11 @@ var birthRadius = domeRadius/10;
 var TITLE;
 var homeButton;
 var titleGlobe;
-var diamondPlane = new MetalPlane(0, 0, 1000); //create diamond, water, salt and carbon on startup so it doesn't lag later on
-var globalWaterSphere = new GlobalWaterSphere(50, 0, 0, 950);
+var globalWaterSphere;
 var birthRadiusWater = 20;
 var lattice;
 var MDMAMol;
-
-var MDMAGlobe = new MDMABackground(0, 0, 980);
-
-var n = 4;
-var move = (n-1)*16*(4+4*2)/3;
-var saltLattice = new Salt(n, 0, 0, 900);
-var y = 1.3*move;
-var x = -1.1*move;
-var z = 900;
-saltLattice.mesh.position.set(x, y, z);
-
+var salt;
 var iconsPresent = false;
 var iceDome;
 var BUTTON;
@@ -124,15 +113,6 @@ function distortWaterBackground(){
 
 function distortTitleBackground(){
 	titleGlobe.distort();
-}
-
-function handleWindowResize(){
-	HEIGHT = window.innerHeight;
-	WIDTH = window.innerWidth;
-
-	World.renderer.setSize(WIDTH,HEIGHT);
-	World.camera.aspect = WIDTH/HEIGHT;
-    World.camera.updateProjectionMatrix();
 }
 
 var requestId;
@@ -335,16 +315,27 @@ class WORLD{
 	}
 
 	populateDiamond(){	
+		
+		var temp = new MetalPlane(0, 0, 1000);
 		// temp.mapToCube(this.cubeCamera);
-		this.scene.add(diamondPlane.mesh);
-		this.objects.push(diamondPlane);
+		this.scene.add(temp.mesh);
+		this.objects.push(temp);
 		window.addEventListener('mousedown', spawnDiamondRing);
 	}
 
 	populateSalt(){
-		this.scene.fog = new THREE.Fog(COLORS.DarkBlue, 50, 300);
-		this.scene.add(saltLattice.mesh);
-		this.objects.push(saltLattice);
+		
+		// this.scene.fog = new THREE.Fog(0x1e1d1b, -50, 800);
+
+		var n = 4;
+		var move = (n-1)*16*(4+4*2)/3;
+		salt = new Salt(n, 0, 0, 900);
+		var y = 1.3*move;
+		var x = -1.1*move;
+		var z = 900;
+		salt.mesh.position.set(x, y, z);
+		this.scene.add(salt.mesh);
+		this.objects.push(salt);
 	}
 
 	populateMDMA(){
@@ -352,9 +343,9 @@ class WORLD{
 		MDMAMol = new MDMALattice(4, 0, 0, 950);
 		this.scene.add(MDMAMol.mesh);
 		this.objects.push(MDMAMol);
-		
-		this.scene.add(MDMAGlobe.mesh);
-		this.objects.push(MDMAGlobe);
+		var background = new MDMABackground(0, 0, 980);
+		this.scene.add(background.mesh);
+		this.objects.push(background);
 	}
 
 	populateMetal(){
@@ -395,7 +386,8 @@ class WORLD{
 	}
 
 	populateIron(){
-		this.scene.fog = new THREE.Fog(COLORS.DarkBlue, 100, 700);
+		
+		// this.scene.fog = new THREE.Fog(0x1e1d1b, 100, 800);
 		var n = 4;
 		lattice = new Lattice(n);
 		lattice.mesh.position.set(-window.innerWidth/4, window.innerHeight/2, 950);
@@ -407,7 +399,7 @@ class WORLD{
 		console.log('populating home button');
 		var _this = this;
 		var loader = new THREE.FontLoader();
-	    loader.load('assets/ultra.json', function(font){
+	    loader.load('/assets/ultra.json', function(font){
 	      var geometry, mat, mesh;
 	      geometry = new THREE.TextGeometry('H', {
 	        font: font,
@@ -449,12 +441,12 @@ class WORLD{
 		var loader;
 		var _this = this;
 	    loader = new THREE.FontLoader();
-	    loader.load('assets/ultra.json', function(font){
+	    loader.load('/assets/ultra.json', function(font){
 	      var geometry, mat, mesh;
 	      geometry = new THREE.TextGeometry('STATES', {
 	        font: font,
 	        size: 1,
-	        height: .07,
+	        height: .05,
 	        curveSegments:12,
 	        bevelThickness: 0,
 	        bevelSize: .005,
@@ -555,7 +547,9 @@ class WORLD{
 	}
 
 	populateWater(){
-
+		
+		globalWaterSphere = new GlobalWaterSphere(50, 0, 0, 950);
+	    globalWaterSphere.mapToCube(this.cubeCamera);
 	    this.scene.add(globalWaterSphere.mesh);
 	    this.objects.push(globalWaterSphere);
 
@@ -758,7 +752,7 @@ class WORLD{
 		for (var k=0; k<this.electrons.length; k++){
 			this.scene.remove(this.electrons[k]);
 		}
-		this.scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
+		this.scene.remove(this.scene.fog);
 		this.objects = []; //clear objects array
 		this.electrons = [];
 		this.layers = [];
@@ -904,8 +898,6 @@ function selectScene(e){ //select scene from title using raycasting
 }
 
 // window.addEventListener('mousemove', handleMouseMove);
-
-window.addEventListener('resize', handleWindowResize);
 
 var audio = document.getElementsByTagName('audio')[0];
 audio.volume = .75;

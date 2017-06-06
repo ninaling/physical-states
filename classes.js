@@ -439,8 +439,8 @@ class GlobalWaterSphere extends Item{
 	}
 
 	update(){
-		this.mesh.rotation.y += .0015;
-		this.mesh.rotation.z += .015;
+		this.mesh.rotation.y += .003;
+		this.mesh.rotation.z += .0025;
 		this.mesh.material.uniforms.time.value += .025;
 		// this.cubeCamera.updateCubeMap(World.renderer, World.scene);
 	}

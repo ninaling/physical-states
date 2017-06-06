@@ -335,6 +335,12 @@ class WORLD{
 	}
 
 	populateDiamond(){	
+<<<<<<< HEAD
+		// this.populateHomeButton();
+=======
+		
+		var temp = new MetalPlane(0, 0, 1000);
+>>>>>>> master
 		// temp.mapToCube(this.cubeCamera);
 		this.scene.add(diamondPlane.mesh);
 		this.objects.push(diamondPlane);
@@ -342,9 +348,24 @@ class WORLD{
 	}
 
 	populateSalt(){
+<<<<<<< HEAD
 		this.scene.fog = new THREE.Fog(COLORS.DarkBlue, 50, 300);
 		this.scene.add(saltLattice.mesh);
 		this.objects.push(saltLattice);
+=======
+		
+		// this.scene.fog = new THREE.Fog(0x1e1d1b, -50, 800);
+
+		var n = 4;
+		var move = (n-1)*16*(4+4*2)/3;
+		salt = new Salt(n, 0, 0, 900);
+		var y = 1.3*move;
+		var x = -1.1*move;
+		var z = 900;
+		salt.mesh.position.set(x, y, z);
+		this.scene.add(salt.mesh);
+		this.objects.push(salt);
+>>>>>>> master
 	}
 
 	populateMDMA(){
@@ -395,7 +416,13 @@ class WORLD{
 	}
 
 	populateIron(){
+<<<<<<< HEAD
+		// this.populateHomeButton();
 		this.scene.fog = new THREE.Fog(COLORS.DarkBlue, 100, 700);
+=======
+		
+		// this.scene.fog = new THREE.Fog(0x1e1d1b, 100, 800);
+>>>>>>> master
 		var n = 4;
 		lattice = new Lattice(n);
 		lattice.mesh.position.set(-window.innerWidth/4, window.innerHeight/2, 950);
@@ -555,7 +582,13 @@ class WORLD{
 	}
 
 	populateWater(){
-
+<<<<<<< HEAD
+		// this.populateHomeButton();
+=======
+		
+		globalWaterSphere = new GlobalWaterSphere(50, 0, 0, 950);
+>>>>>>> master
+	    globalWaterSphere.mapToCube(this.cubeCamera);
 	    this.scene.add(globalWaterSphere.mesh);
 	    this.objects.push(globalWaterSphere);
 
@@ -758,7 +791,7 @@ class WORLD{
 		for (var k=0; k<this.electrons.length; k++){
 			this.scene.remove(this.electrons[k]);
 		}
-		this.scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
+		this.scene.remove(this.scene.fog);
 		this.objects = []; //clear objects array
 		this.electrons = [];
 		this.layers = [];
