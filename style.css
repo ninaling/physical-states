@@ -53,7 +53,7 @@
 	margin: 0;
 }
 
-.credits a {
+.credits a, .credits__cl a{
 	color: inherit;
 }
 
@@ -63,7 +63,9 @@
 }
 
 .credits__cl {
-	text-align: center;
+	text-align: left;
+	font-family: monospace;
+	color: #fff;
 }
 
 .credits__credits {

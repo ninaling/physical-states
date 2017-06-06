@@ -315,7 +315,7 @@ class WORLD{
 	}
 
 	populateDiamond(){	
-		// this.populateHomeButton();
+		
 		var temp = new MetalPlane(0, 0, 1000);
 		// temp.mapToCube(this.cubeCamera);
 		this.scene.add(temp.mesh);
@@ -324,7 +324,7 @@ class WORLD{
 	}
 
 	populateSalt(){
-		// this.populateHomeButton();
+		
 		// this.scene.fog = new THREE.Fog(0x1e1d1b, -50, 800);
 
 		var n = 4;
@@ -339,7 +339,7 @@ class WORLD{
 	}
 
 	populateMDMA(){
-		// this.populateHomeButton();
+		
 		MDMAMol = new MDMALattice(4, 0, 0, 950);
 		this.scene.add(MDMAMol.mesh);
 		this.objects.push(MDMAMol);
@@ -349,7 +349,7 @@ class WORLD{
 	}
 
 	populateMetal(){
-		// this.populateHomeButton();
+		
 		var ionSize = 16;
 	    var dis = 15*ionSize/1.3;
 	    ionSize *= 1.5;
@@ -386,7 +386,7 @@ class WORLD{
 	}
 
 	populateIron(){
-		// this.populateHomeButton();
+		
 		// this.scene.fog = new THREE.Fog(0x1e1d1b, 100, 800);
 		var n = 4;
 		lattice = new Lattice(n);
@@ -534,10 +534,10 @@ class WORLD{
 	    icons.push(carbon.mesh);
 	    this.titleIconObjects["carbon"] = carbon;
 
-	    BUTTON = new Button(.25, -5.5, 2.25, 993.5);
-		this.scene.add(BUTTON.mesh);
-		this.titleIconObjects["button"] = BUTTON;
-		icons.push(BUTTON.mesh);
+	 //    BUTTON = new Button(.25, -5.5, 2.25, 993.5);
+		// this.scene.add(BUTTON.mesh);
+		// this.titleIconObjects["button"] = BUTTON;
+		// icons.push(BUTTON.mesh);
 
 	    this.titleIcons = icons;
 
@@ -547,7 +547,7 @@ class WORLD{
 	}
 
 	populateWater(){
-		// this.populateHomeButton();
+		
 		globalWaterSphere = new GlobalWaterSphere(50, 0, 0, 950);
 	    globalWaterSphere.mapToCube(this.cubeCamera);
 	    this.scene.add(globalWaterSphere.mesh);
@@ -564,7 +564,7 @@ class WORLD{
 	}
 
 	populateIce(){
-		// this.populateHomeButton();
+		
 		iceDome = new IceDome(domeRadius, 500, 0, 0, 1000);
 		iceDome.mapToCube(this.iceCubeCamera);
 		this.objects.push(iceDome);
@@ -817,7 +817,7 @@ function selectScene(e){ //select scene from title using raycasting
 	var mdma = World.titleIcons[5];
 	var salt = World.titleIcons[6];
 	var carbon = World.titleIcons[7];
-	var button = World.titleIcons[8];
+	// var button = World.titleIcons[8];
 
 	mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
 	mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
@@ -828,11 +828,11 @@ function selectScene(e){ //select scene from title using raycasting
 	for (var i=0; i<intersects.length; i++){
 		for (var k=0; k<World.titleIcons.length; k++){
 			if (intersects[i].object == World.titleIcons[k]){
-				if (intersects[i].object == button){
-					BUTTON.spinWildly();
-					controller.start();
-					return;
-				}
+				// if (intersects[i].object == button){
+				// 	BUTTON.spinWildly();
+				// 	controller.start();
+				// 	return;
+				// }
 				distortTitleBackground();
 				if (intersects[i].object == iron){
 					World.titleIconObjects["iron"].spinWildly();
