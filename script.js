@@ -22,6 +22,9 @@ var MDMAMol;
 var salt;
 var iconsPresent = false;
 var iceDome;
+var BUTTON;
+var carbonTube = new CarbonTube();
+var carbonGlobe;
 
 //auxillary functions
 
@@ -193,7 +196,6 @@ class WORLD{
 		this.clearScene();
 		this.removeEventListeners();
 		if (scene == 'ice'){
-			console.log('selected ice');
 			this.populateIce();
 			loop = function(){
 				World.updateIce();
@@ -203,7 +205,6 @@ class WORLD{
 			}
 		}
 		else if (scene == 'water'){
-			console.log('selected water');
 			this.populateWater();
 			loop = function(){
 				World.updateWater();
@@ -213,7 +214,6 @@ class WORLD{
 			}
 		}
 		else if (scene == 'iron'){
-			console.log('selected iron');
 			this.populateIron();
 			loop = function(){
 				World.updateIron();
@@ -223,7 +223,6 @@ class WORLD{
 			}
 		}
 		else if (scene == 'metal'){
-			console.log('selected metal');
 			this.populateMetal();
 			loop = function(){
 				World.updateMetal();
@@ -233,7 +232,6 @@ class WORLD{
 			}
 		}
 		else if (scene == 'mdma'){
-			console.log('selected mdma');
 			this.populateMDMA();
 			loop = function(){
 				World.updateMDMA();
@@ -243,7 +241,6 @@ class WORLD{
 			}
 		}
 		else if (scene == 'salt'){
-			console.log('selected salt');
 			this.populateSalt();
 			loop = function(){
 				World.updateSalt();
@@ -253,7 +250,6 @@ class WORLD{
 			}
 		}
 		else if (scene == 'diamond'){
-			console.log('selected diamond');
 			this.populateDiamond();
 			loop = function(){
 				World.updateDiamond();
@@ -262,8 +258,16 @@ class WORLD{
 				window.requestAnimationFrame(loop);
 			}
 		}
+		else if (scene == 'carbon'){
+			this.populateCarbon();
+			loop = function(){
+				World.updateCarbon();
+				World.collectTrash();
+				World.renderer.render(World.scene, World.camera);
+				window.requestAnimationFrame(loop);
+			}
+		}
 		else if (scene == 'title'){
-			console.log('selected title');
 			this.populateTitle();
 			loop = function(){
 				World.updateTitle();
@@ -272,6 +276,42 @@ class WORLD{
 				window.requestAnimationFrame(loop);
 			}
 		}
+	}
+
+	populateCarbon(){
+		this.scene.add(carbonTube.mesh);
+		this.objects.push(carbonTube);
+
+		// carbonGlobe = new CarbonGlobe(2000, 0, 0, 1000);
+		// this.scene.add(carbonGlobe.mesh);
+		// this.objects.push(carbonGlobe);
+
+		// window.addEventListener('mousemove', function (event) {
+		// 	mouseX = event.clientX - windowHalfX;
+		// 	mouseY = event.clientY - windowHalfY;
+
+		// }, false);
+
+		// window.addEventListener('touchstart', function (event) {
+
+		// 	if (event.touches.length === 1) {
+		// 		event.preventDefault();
+		// 		mouseX = event.touches[0].pageX - windowHalfX;
+		// 		mouseY = event.touches[0].pageY - windowHalfY;
+		// 	}
+
+		// }, false);
+
+		// window.addEventListener('touchmove', function (event) {
+
+		// 	if (event.touches.length === 1) {
+		// 		event.preventDefault();
+		// 		mouseX = event.touches[0].pageX - windowHalfX;
+		// 		mouseY = event.touches[0].pageY - windowHalfY;
+		// 	}
+
+		// }, false);
+
 	}
 
 	populateDiamond(){	
@@ -406,7 +446,7 @@ class WORLD{
 	      geometry = new THREE.TextGeometry('STATES', {
 	        font: font,
 	        size: 1,
-	        height: .1,
+	        height: .05,
 	        curveSegments:12,
 	        bevelThickness: 0,
 	        bevelSize: .005,
@@ -441,19 +481,20 @@ class WORLD{
 	populateIcons(){
 		var _this = this;
 	    var icons = [];
-		var diamond = new Diamond(.1, -3, -2.1, 993.5);
+
+		var diamond = new Diamond(.1, -3.5, -2.1, 993.5);
 	    this.scene.add(diamond.mesh);
 	    // this.objects.push(diamond);
 	    icons.push(diamond.mesh);
 	    this.titleIconObjects["diamond"] = diamond;
 
-	    var iron = new Iron(.15, -2, -2.1, 993.5);
+	    var iron = new Iron(.15, -2.5, -2.1, 993.5);
 	    this.scene.add(iron.mesh);
 	    // this.objects.push(iron);
 	    icons.push(iron.mesh);
 	 	this.titleIconObjects["iron"] = iron;
 
-	    var ice = new CubicIce(.25, Math.PI*2, -1, -2.1, 993.5);
+	    var ice = new CubicIce(.3, Math.PI*2, -1.5, -2.1, 993.5);
 	    ice.update = function(){
 	    	this.mesh.rotation.z += this.speed*.05;
    			this.mesh.rotation.y += this.speed*.05;
@@ -463,30 +504,40 @@ class WORLD{
 	    icons.push(ice.mesh);
 	    this.titleIconObjects["ice"] = ice;
 
-	    var metalNode = new TitleMetalNode(.17, 0, -2.1, 993.5);
+	    var metalNode = new TitleMetalNode(.17, -.5, -2.1, 993.5);
 	    this.scene.add(metalNode.mesh);
 	    // this.objects.push(metalNode);
 	    metalNode.mapToCube(this.cubeCamera);
 	    icons.push(metalNode.mesh);
 	    this.titleIconObjects["metal"] = metalNode;
 
-	    var water = new Water(.3, Math.random()*2*Math.PI, 0, 1, -2.1, 993.5);
+	    var water = new Water(.3, Math.random()*2*Math.PI, 0, .5, -2.1, 993.5);
 	    this.scene.add(water.mesh);
 	    // this.objects.push(water);
 	    icons.push(water.mesh);
 	    this.titleIconObjects["water"] = water;
 
-	    var smiley = new Smiley(.15, 2, -2.1, 993.5);
+	    var smiley = new Smiley(.15, 1.5, -2.1, 993.5);
 	    this.scene.add(smiley.mesh);
 	    // this.objects.push(smiley);
 	    icons.push(smiley.mesh);
 	    this.titleIconObjects["mdma"] = smiley;
 
-	    var salt = new SaltCube(.2, 3, -2.1, 993.5);
+	    var salt = new SaltCube(.2, 2.5, -2.1, 993.5);
 	    this.scene.add(salt.mesh);
 	    // this.objects.push(salt);
 	    icons.push(salt.mesh);
 	    this.titleIconObjects["salt"] = salt;
+
+	    var carbon = new Carbon(.15, 3.5, -2.1, 993.5);
+	    this.scene.add(carbon.mesh);
+	    icons.push(carbon.mesh);
+	    this.titleIconObjects["carbon"] = carbon;
+
+	    BUTTON = new Button(.25, -5.5, 2.25, 993.5);
+		this.scene.add(BUTTON.mesh);
+		this.titleIconObjects["button"] = BUTTON;
+		icons.push(BUTTON.mesh);
 
 	    this.titleIcons = icons;
 
@@ -533,11 +584,40 @@ class WORLD{
 		this.scene.add(molecule.mesh);
 	}
 
+	updateCarbon(){
+		for (var i=0; i<this.objects.length; i++){
+			this.objects[i].update();
+		}
+
+		for (var key in this.titleIconObjects){
+			this.titleIconObjects[key].update();
+		}
+		World.camera.position.x += (mouseX - World.camera.position.x) * 0.1;
+		World.camera.position.y += (- mouseY - World.camera.position.y) * 0.1;
+	}
+
 	updateDiamond(){
 		this.update();
+
+		if (this.objects.length<7 && this.canPopulate){
+	      var angle, posX, posY;
+	      angle = Math.random() *2*Math.PI;
+	      posX = Math.random()*50*Math.cos(angle);
+	      posY = Math.random()*50*Math.sin(angle);
+	      var temp2 = new DiamondRing(1 + Math.random(), posX, posY, 950);
+	      this.objects.push(temp2);
+	      this.scene.add(temp2.mesh);
+	      this.canPopulate = false;
+	      var _this = this;
+	      setTimeout(function(){
+	        _this.togglePopulate();
+	      }, 300);
+	    }
 	}
 
 	update(){
+		World.camera.position.x = 0;
+		World.camera.position.y = 0;
 		for (var i=0; i<this.objects.length; i++){
 			this.objects[i].update();
 		}
@@ -601,7 +681,7 @@ class WORLD{
 	      var _this = this;
 	      setTimeout(function(){
 	        _this.togglePopulate();
-	      }, 900);
+	      }, 700);
 	    }
 	}
 
@@ -736,6 +816,8 @@ function selectScene(e){ //select scene from title using raycasting
 	var water = World.titleIcons[4];
 	var mdma = World.titleIcons[5];
 	var salt = World.titleIcons[6];
+	var carbon = World.titleIcons[7];
+	var button = World.titleIcons[8];
 
 	mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
 	mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
@@ -746,6 +828,11 @@ function selectScene(e){ //select scene from title using raycasting
 	for (var i=0; i<intersects.length; i++){
 		for (var k=0; k<World.titleIcons.length; k++){
 			if (intersects[i].object == World.titleIcons[k]){
+				if (intersects[i].object == button){
+					BUTTON.spinWildly();
+					controller.start();
+					return;
+				}
 				distortTitleBackground();
 				if (intersects[i].object == iron){
 					World.titleIconObjects["iron"].spinWildly();
@@ -771,6 +858,13 @@ function selectScene(e){ //select scene from title using raycasting
 						World.changeScene('salt');
 					}, 1000);
 				}
+				else if (intersects[i].object == carbon){
+					World.titleIconObjects["carbon"].spinWildly();
+					setTimeout(function(){
+						World.changeScene('carbon');
+					}, 1000);
+				}
+				return;
 			}
 
 			else if (intersects[i].object.parent == World.titleIcons[k]){
@@ -781,6 +875,7 @@ function selectScene(e){ //select scene from title using raycasting
 						World.changeScene('diamond');
 					}, 1000);
 				}
+				return;
 			}
 			else if (intersects[i].object.parent.parent == World.titleIcons[k]){
 				distortTitleBackground();
@@ -796,6 +891,7 @@ function selectScene(e){ //select scene from title using raycasting
 						World.changeScene('ice');
 					}, 1000);
 				}
+				return;
 			}
 		}
 	}
