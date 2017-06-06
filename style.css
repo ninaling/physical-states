@@ -1,0 +1,71 @@
+.controls {
+	position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: right;
+    padding: 20px;   
+}
+
+#controls__sound {
+	margin-left: 10px;
+	cursor: pointer;
+}
+#controls__sound rect {
+	transform-origin: bottom;
+	transform: scaleY(1);
+	opacity: 0.5;
+}
+
+@keyframes sounds {
+  from { transform: scaleY(1); }
+  to { transform: scaleY(1.8); }
+}
+
+#controls__sound.unmuted rect {
+	animation: sounds infinite reverse 0.5s ease-in-out;
+	opacity: 1;
+}
+
+#controls__play {
+	opacity: 0.5;
+	cursor: pointer;
+}
+
+#controls__play.playing {
+	opacity: 1;
+}
+
+.credits {
+	position: absolute;
+	color: #fff;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	font-family: monospace;
+	padding:  20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: space-between;
+}
+
+.credits p {
+	margin: 0;
+}
+
+.credits a {
+	color: inherit;
+}
+
+.credits div {
+    width: 33.3%;
+    flex: 1 1 auto;
+}
+
+.credits__cl {
+	text-align: center;
+}
+
+.credits__credits {
+	text-align: right;
+}
