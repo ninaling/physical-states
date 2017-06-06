@@ -1,4 +1,10 @@
 # physical-states
 
-Credits:
-lasldlssd
+TEAM:
+
+Nina Ling (Project Lead)
+Bryan Wong
+Rishabh Aggarwal
+Martin Kong
+Christine Sun
+Ria Qi
