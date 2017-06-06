@@ -8,3 +8,6 @@ Rishabh Aggarwal
 Martin Kong
 Christine Sun
 Ria Qi
+Simon Zhou
+Swetha Akella
+Amir Ljuljanovic
