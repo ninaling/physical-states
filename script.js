@@ -21,6 +21,8 @@ var birthRadiusWater = 20;
 var lattice;
 var MDMAMol;
 
+var MDMAGlobe = new MDMABackground(0, 0, 980);
+
 var n = 4;
 var move = (n-1)*16*(4+4*2)/3;
 var saltLattice = new Salt(n, 0, 0, 900);
@@ -352,9 +354,9 @@ class WORLD{
 		MDMAMol = new MDMALattice(4, 0, 0, 950);
 		this.scene.add(MDMAMol.mesh);
 		this.objects.push(MDMAMol);
-		var background = new MDMABackground(0, 0, 980);
-		this.scene.add(background.mesh);
-		this.objects.push(background);
+		
+		this.scene.add(MDMAGlobe.mesh);
+		this.objects.push(MDMAGlobe);
 	}
 
 	populateMetal(){
