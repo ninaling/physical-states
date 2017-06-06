@@ -7,7 +7,8 @@ const COLORS = {
 	Gray: 0xe1e1e1,
 	DarkBlue: 0x070a19,
 	iron: 0x6b6e72,
-	electron: 0xffffff
+	electron: 0xffffff,
+	Silver: 0xc0c0c0
 };
 
 //CLASS DECLARATIONS
@@ -1735,6 +1736,133 @@ class Sodium extends Atom{
 		  var group = new THREE.Group();
 
 		  return wireframe;
+	}
+}
+
+class Carbon_Lattice extends Molecule{
+	constructor(n, x, y, z){
+		var ionSize = 22;
+		var atoms = [];
+		var dis = 110;
+		var mesh = new THREE.Object3D();
+
+		var ion = new THREE.SphereGeometry(ionSize, 5, 5);
+
+		var sampleTexture = THREE.ImageUtils.loadTexture('assets/images/carbon_lattice.jpg');
+		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+		customUniforms = {
+			baseTexture: 	{ type: "t", value: sampleTexture },
+			baseSpeed: 		{ type: "f", value: 0.05 },
+			//noiseTexture: 	{ type: "t", value: noiseTexture },
+			noiseScale:		{ type: "f", value: 0.5337 },
+			alpha: 			{ type: "f", value: 1.0 },
+			time: 			{ type: "f", value: 1.0 },				
+		    /*fogColor:    { type: "c", value: scene.fog.color },
+	   		fogNear:     { type: "f", value: scene.fog.near },
+	    	fogFar:      { type: "f", value: scene.fog.far }*/
+		};
+
+		var ionmat = new THREE.MeshPhongMaterial({
+			color: 0xc0c0c0,
+			transparent: true,
+			opacity: .9,
+			shading: THREE.FlatShading,
+			bumpMap: sampleTexture,
+			shininess: 40
+		});
+
+		var i, j, k;
+		var atom;
+		var x, y, z;
+		var m;
+
+		var numKLayers = (n*2) + 2;
+
+		var layers = [];
+
+		for(k=0; k<numKLayers; k++){
+
+			layers[k] = new THREE.Group();
+
+			for(j=0; j<(n*2-1)-1; j++){
+				for(i=0; i<(n*2-1)+1; i++){
+					cl1 = new THREE.Mesh(ion, ionmat);
+					cl1.position.x += i*dis + (Math.random()*0.8*dis - 0.4*dis);
+					cl1.position.y -= j*dis + (Math.random()*0.8*dis - 0.4*dis);
+					cl1.position.z = 0;
+					layers[k].add(cl1);
+					atom = cl1;
+					/*x = i*dis;
+					y = -j*dis;
+					z = -k*dis;*/
+				}
+			}
+			layers[k].position.z -= k*dis;
+			mesh.add(layers[k]);
+		}
+
+		mesh.receiveShadow = true;
+		mesh.position.set(x, y, z);
+		super(mesh, x, y, z, atoms);
+		this.mesh = mesh;
+		this.layers = layers;
+		this.numKLayers = numKLayers;
+		this.dis = dis;
+	}
+	
+	update(){
+		var speed = 3;
+		for (var i = 0; i < this.numKLayers; i++) {
+			// console.log(this.layers[i].position.z);
+			if (this.layers[i].position.z >= 200) {
+				this.layers[i].position.z -= this.numKLayers*this.dis + speed;
+			}
+			this.layers[i].position.z += speed;
+		}
+	}
+}
+
+class Carbon_LatticeCube extends Atom{
+	constructor(size, x, y, z){
+		var geom, mat, mesh;
+		geom = new THREE.SphereGeometry(size, 5, 5);
+		//geom = new THREE.BoxGeometry(size, size, size);
+
+		var sampleTexture = THREE.ImageUtils.loadTexture('assets/images/carbon_lattice.jpg');
+		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
+
+		customUniforms = {
+			baseTexture: 	{ type: "t", value: sampleTexture },
+			baseSpeed: 		{ type: "f", value: 0.05 },
+			//noiseTexture: 	{ type: "t", value: noiseTexture },
+			noiseScale:		{ type: "f", value: 0.5337 },
+			alpha: 			{ type: "f", value: 1.0 },
+			time: 			{ type: "f", value: 1.0 },				
+		    /*fogColor:    { type: "c", value: scene.fog.color },
+	   		fogNear:     { type: "f", value: scene.fog.near },
+	    	fogFar:      { type: "f", value: scene.fog.far }*/
+		};
+
+		var ionmat = new THREE.MeshPhongMaterial({
+			color: COLORS.Silver,
+			transparent: true,
+			opacity: .9,
+			shading: THREE.FlatShading,
+			bumpMap: sampleTexture,
+			shininess: 40
+		});
+
+	    mesh = new THREE.Mesh(geom, ionmat);
+	    mesh.position.set(x, y, z);
+	    super(mesh, x, y, z);
+	    this.speed = Math.random();
+	}
+
+	update(){
+		this.mesh.rotation.y += this.speed*.05;
+		this.mesh.rotation.x += this.speed*.05;
+
 	}
 }
 
