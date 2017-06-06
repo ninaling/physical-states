@@ -208,20 +208,15 @@ Salt = function(n){
 				// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
 	});
 
-	/*var namat = new THREE.MeshPhongMaterial({
-		color: Colors.blue,
-		transparent: true,
-		opacity: .9,
-		//shading: THREE.FlatShading,
-		map: texture,
-	});*/
-
-	/*var clmat = new THREE.MeshPhongMaterial({
-		color: Colors.red,
+	var namat2 = new THREE.MeshPhongMaterial({
+		color: 0x52BEE7,
 		transparent: true,
 		opacity: .9,
 		shading: THREE.FlatShading,
-	});*/
+		//map: texture,
+		bumpMap: sampleTexture
+	});
+
 	var sampleTexture2 = THREE.ImageUtils.loadTexture('../salt2.jpg');
 	sampleTexture2.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 	customUniforms2 = {
@@ -242,6 +237,14 @@ Salt = function(n){
 				fog: true,
 				// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
 			});
+
+	var clmat2 = new THREE.MeshPhongMaterial({
+		color: 0xC1294D,
+		transparent: true,
+		opacity: .9,
+		shading: THREE.FlatShading,
+		bumpMap: sampleTexture2
+	});
 
 	var connectormat = new THREE.MeshPhongMaterial({
 		color: Colors.lightgray,
