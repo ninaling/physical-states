@@ -23,21 +23,21 @@ var MDMAMol;
 
 var MDMAGlobe = new MDMABackground(0, 0, 980);
 
-var n = 4;
+/*var n = 4;
 var move = (n-1)*16*(4+4*2)/3;
 var saltLattice = new Salt(n, 0, 0, 900);
 var y = 1.3*move;
 var x = -1.1*move;
 var z = 900;
-saltLattice.mesh.position.set(x, y, z);
+saltLattice.mesh.position.set(x, y, z);*/
 
-var n = 3;
+/*var n = 3;
 var move = (n-1)*16*(8+8*2)/3;
 var carbon_Lattice = new Carbon_Lattice(n, 0, 0, 900);
 var y = 1.2*move;
 var x = -1.1*move;
 var z = 900;
-carbon_Lattice.mesh.position.set(x, y, z);
+carbon_Lattice.mesh.position.set(x, y, z);*/
 
 var iconsPresent = false;
 var iceDome;
@@ -360,12 +360,30 @@ class WORLD{
 
 	populateSalt(){
 		this.scene.fog = new THREE.Fog(COLORS.DarkBlue, 50, 300);
+
+		var n = 4;
+		var move = (n-1)*16*(4+4*2)/3;
+		var saltLattice = new Salt(n, 0, 0, 900);
+		var y = 1.3*move;
+		var x = -1.1*move;
+		var z = 900;
+		saltLattice.mesh.position.set(x, y, z);
+
 		this.scene.add(saltLattice.mesh);
 		this.objects.push(saltLattice);
 	}
 	
 	populateCarbon_Lattice(){
 		this.scene.fog = new THREE.Fog(COLORS.DarkBlue, 50, 300);
+
+		var n = 3;
+		var move = (n-1)*16*(8+8*2)/3;
+		var carbon_Lattice = new Carbon_Lattice(n, 0, 0, 900);
+		var y = 1.2*move;
+		var x = -1.1*move;
+		var z = 900;
+		carbon_Lattice.mesh.position.set(x, y, z);
+
 		this.scene.add(carbon_Lattice.mesh);
 		this.objects.push(carbon_Lattice);
 	}

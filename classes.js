@@ -1758,9 +1758,9 @@ class Carbon_Lattice extends Molecule{
 			noiseScale:		{ type: "f", value: 0.5337 },
 			alpha: 			{ type: "f", value: 1.0 },
 			time: 			{ type: "f", value: 1.0 },				
-		    /*fogColor:    { type: "c", value: scene.fog.color },
-	   		fogNear:     { type: "f", value: scene.fog.near },
-	    	fogFar:      { type: "f", value: scene.fog.far }*/
+		    /*fogColor:    { type: "c", value: World.scene.fog.color },
+	   		fogNear:     { type: "f", value: World.scene.fog.near },
+	    	fogFar:      { type: "f", value: World.scene.fog.far }*/
 		};
 
 		var ionmat = new THREE.MeshPhongMaterial({
@@ -1898,16 +1898,16 @@ class Salt extends Molecule{
 	      noiseScale:   { type: "f", value: 0.5337 },
 	      alpha:      { type: "f", value: 1.0 },
 	      time:       { type: "f", value: 1.0 },        
-	        // fogColor:    { type: "c", value: World.scene.fog.color },
-	        // fogNear:     { type: "f", value: World.scene.fog.near },
-	        // fogFar:      { type: "f", value: World.scene.fog.far }
+	      fogColor:    { type: "c", value: World.scene.fog.color },
+	      fogNear:     { type: "f", value: World.scene.fog.near },
+	      fogFar:      { type: "f", value: World.scene.fog.far }
 	      };
 
 	      var namat = new THREE.ShaderMaterial({
 	        uniforms: customUniforms,
 	        vertexShader: document.getElementById('vertexShader').textContent,
 	        fragmentShader: document.getElementById('fragmentShader').textContent,
-	        // fog: true,
+	        fog: true,
 	        // map: THREE.ImageUtils.loadTexture('assets/images/carbon.jpg')
 	      });
 
@@ -1934,15 +1934,15 @@ class Salt extends Molecule{
 		      noiseScale:   { type: "f", value: 0.5337 },
 		      alpha:      { type: "f", value: 1.0 },
 		      time:       { type: "f", value: 1.0 },        
-		        // fogColor:    { type: "c", value: World.scene.fog.color },
-		        // fogNear:     { type: "f", value: World.scene.fog.near },
-		        // fogFar:      { type: "f", value: World.scene.fog.far }
+		      fogColor:    { type: "c", value: World.scene.fog.color },
+		      fogNear:     { type: "f", value: World.scene.fog.near },
+		      fogFar:      { type: "f", value: World.scene.fog.far }
 		      };
 		  var clmat = new THREE.ShaderMaterial({
 		        uniforms: customUniforms2,
 		        vertexShader: document.getElementById('vertexShader').textContent,
 		        fragmentShader: document.getElementById('fragmentShader').textContent,
-		        // fog: true,
+		        fog: true,
 		        // map: THREE.ImageUtils.loadTexture('assets/images/carbon.jpg')
 		      });
 
