@@ -115,6 +115,15 @@ function distortTitleBackground(){
 	titleGlobe.distort();
 }
 
+function handleWindowResize(){
+	HEIGHT = window.innerHeight;
+	WIDTH = window.innerWidth;
+
+	World.renderer.setSize(WIDTH,HEIGHT);
+	World.camera.aspect = WIDTH/HEIGHT;
+    World.camera.updateProjectionMatrix();
+}
+
 var requestId;
 function collapseWorld(){
 	if(World.collapse()){
@@ -399,7 +408,7 @@ class WORLD{
 		console.log('populating home button');
 		var _this = this;
 		var loader = new THREE.FontLoader();
-	    loader.load('/assets/ultra.json', function(font){
+	    loader.load('assets/ultra.json', function(font){
 	      var geometry, mat, mesh;
 	      geometry = new THREE.TextGeometry('H', {
 	        font: font,
@@ -441,7 +450,7 @@ class WORLD{
 		var loader;
 		var _this = this;
 	    loader = new THREE.FontLoader();
-	    loader.load('/assets/ultra.json', function(font){
+	    loader.load('assets/ultra.json', function(font){
 	      var geometry, mat, mesh;
 	      geometry = new THREE.TextGeometry('STATES', {
 	        font: font,
@@ -898,6 +907,8 @@ function selectScene(e){ //select scene from title using raycasting
 }
 
 // window.addEventListener('mousemove', handleMouseMove);
+
+window.addEventListener('resize', handleWindowResize);
 
 var audio = document.getElementsByTagName('audio')[0];
 audio.volume = .75;

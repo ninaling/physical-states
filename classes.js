@@ -142,10 +142,10 @@ class Title extends Item{
 class TitleGlobe extends Item{
 	constructor(radius, x, y, z){
 		var mesh, geom, mat;
-		var sampleTexture = new THREE.TextureLoader().load('/assets/images/microscopy2.jpg');
+		var sampleTexture = new THREE.TextureLoader().load('assets/images/microscopy2.jpg');
 		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
+		var noiseTexture = new THREE.TextureLoader().load('assets/images/cloud.png');
 		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
 		var customUniforms = {
@@ -161,7 +161,7 @@ class TitleGlobe extends Item{
 			uniforms: customUniforms,
 			vertexShader: document.getElementById('vertexShader').textContent,
 			fragmentShader: document.getElementById('fragmentShader').textContent,
-			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+			// map: THREE.ImageUtils.loadTexture('assets/images/carbon.jpg')
 		});
 
 		// mat = new THREE.MeshBasicMaterial({color: COLORS.Blue});
@@ -372,10 +372,10 @@ class CubicIce extends Molecule{
 class GlobalWaterSphere extends Item{
 	constructor(radius, x, y, z){
 		var mesh, geom, mat;
-		var sampleTexture = new THREE.TextureLoader().load('/assets/images/ocean.png');
+		var sampleTexture = new THREE.TextureLoader().load('assets/images/ocean.png');
 		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
+		var noiseTexture = new THREE.TextureLoader().load('assets/images/cloud.png');
 		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
 		var customUniforms = {
@@ -391,7 +391,7 @@ class GlobalWaterSphere extends Item{
 			uniforms: customUniforms,
 			vertexShader: document.getElementById('vertexShader').textContent,
 			fragmentShader: document.getElementById('fragmentShader').textContent,
-			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+			// map: THREE.ImageUtils.loadTexture('assets/images/carbon.jpg')
 		});
 
 		geom = new THREE.SphereGeometry(radius, 30, 30);
@@ -1547,10 +1547,10 @@ class MDMALattice extends Molecule{
 
 class MDMABackground extends Item{
 	constructor(x, y, z){
-		var sampleTexture = new THREE.TextureLoader().load('/assets/images/mdma2.jpg');
+		var sampleTexture = new THREE.TextureLoader().load('assets/images/mdma2.jpg');
 		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
+		var noiseTexture = new THREE.TextureLoader().load('assets/images/cloud.png');
 		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
 		var customUniforms = {
@@ -1566,7 +1566,7 @@ class MDMABackground extends Item{
 			uniforms: customUniforms,
 			vertexShader: document.getElementById('vertexShader').textContent,
 			fragmentShader: document.getElementById('fragmentShader').textContent,
-			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+			// map: THREE.ImageUtils.loadTexture('assets/images/carbon.jpg')
 		});
 
 		var mesh = new THREE.Mesh(new THREE.SphereGeometry(WIDTH*2, 50, 50), mat);
@@ -1757,10 +1757,10 @@ class Salt extends Molecule{
 		  var chloride = new THREE.BoxGeometry(cl, cl, cl, 20, 20, 20);
 		  //var connect = new THREE.CylinderGeometry(.2*na, .2*na, dis, 100, 100);
 
-		  var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/salt.jpg');
+		  var sampleTexture = THREE.ImageUtils.loadTexture('assets/images/salt.jpg');
 	      sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-	      var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/crate.jpg');
+	      var noiseTexture = THREE.ImageUtils.loadTexture('assets/images/crate.jpg');
 	      noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
 	      customUniforms = {
@@ -1780,7 +1780,7 @@ class Salt extends Molecule{
 	        vertexShader: document.getElementById('vertexShader').textContent,
 	        fragmentShader: document.getElementById('fragmentShader').textContent,
 	        // fog: true,
-	        // map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+	        // map: THREE.ImageUtils.loadTexture('assets/images/carbon.jpg')
 	      });
 
 		  /*var namat = new THREE.MeshPhongMaterial({
@@ -1797,7 +1797,7 @@ class Salt extends Molecule{
 		    opacity: .9,
 		    shading: THREE.FlatShading,
 		  });*/
-		  var sampleTexture2 = THREE.ImageUtils.loadTexture('/assets/images/salt2.jpg');
+		  var sampleTexture2 = THREE.ImageUtils.loadTexture('assets/images/salt2.jpg');
 		  sampleTexture2.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 		  var customUniforms2 = {
 		      baseTexture:  { type: "t", value: sampleTexture2 },
@@ -1815,7 +1815,7 @@ class Salt extends Molecule{
 		        vertexShader: document.getElementById('vertexShader').textContent,
 		        fragmentShader: document.getElementById('fragmentShader').textContent,
 		        // fog: true,
-		        // map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+		        // map: THREE.ImageUtils.loadTexture('assets/images/carbon.jpg')
 		      });
 
 		  var connectormat = new THREE.MeshPhongMaterial({
@@ -1934,10 +1934,10 @@ class SaltCube extends Atom{
 		var geom, mat, mesh;
 		geom = new THREE.BoxGeometry(size, size, size);
 
-		var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/salt2.jpg');
+		var sampleTexture = THREE.ImageUtils.loadTexture('assets/images/salt2.jpg');
 	      sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-	      var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/crate.jpg');
+	      var noiseTexture = THREE.ImageUtils.loadTexture('assets/images/crate.jpg');
 	      noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
 	      customUniforms = {
@@ -1953,7 +1953,7 @@ class SaltCube extends Atom{
 	        uniforms: customUniforms,
 	        vertexShader: document.getElementById('vertexShader').textContent,
 	        fragmentShader: document.getElementById('fragmentShader').textContent
-	        // map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+	        // map: THREE.ImageUtils.loadTexture('assets/images/carbon.jpg')
 	      });
 
 	      mesh = new THREE.Mesh(geom, mat);
@@ -2054,10 +2054,10 @@ class MetalPlane extends Item{
 		var geom, mat, mesh;
 
 		geom = new THREE.SphereGeometry(100, 40, 40);
-		var sampleTexture = THREE.ImageUtils.loadTexture('/assets/images/diamonds.jpg');
+		var sampleTexture = THREE.ImageUtils.loadTexture('assets/images/diamonds.jpg');
 	      sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-	      var noiseTexture = THREE.ImageUtils.loadTexture('/assets/images/diamonds.jpg');
+	      var noiseTexture = THREE.ImageUtils.loadTexture('assets/images/diamonds.jpg');
 	      noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
 	      customUniforms = {
@@ -2073,7 +2073,7 @@ class MetalPlane extends Item{
 	        uniforms: customUniforms,
 	        vertexShader: document.getElementById('vertexShader').textContent,
 	        fragmentShader: document.getElementById('fragmentShader').textContent
-	        // map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+	        // map: THREE.ImageUtils.loadTexture('assets/images/carbon.jpg')
 	      });
 		mat.side = THREE.DoubleSide;
 
@@ -2141,10 +2141,10 @@ class Button extends Item{
 		var geom, mat, mesh;
 		geom = new THREE.BoxGeometry(radius, radius, radius);
 
-		var sampleTexture = new THREE.TextureLoader().load('/assets/images/microscopy2.jpg');
+		var sampleTexture = new THREE.TextureLoader().load('assets/images/microscopy2.jpg');
 		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
+		var noiseTexture = new THREE.TextureLoader().load('assets/images/cloud.png');
 		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
 		var customUniforms = {
@@ -2160,7 +2160,7 @@ class Button extends Item{
 			uniforms: customUniforms,
 			vertexShader: document.getElementById('vertexShader').textContent,
 			fragmentShader: document.getElementById('fragmentShader').textContent,
-			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+			// map: THREE.ImageUtils.loadTexture('assets/images/carbon.jpg')
 		});
 
 		mesh = new THREE.Mesh(geom, mat);
@@ -2321,10 +2321,10 @@ class Carbon extends Atom{
 		var geom, mat, mesh;
 		geom = new THREE.SphereGeometry(radius, 30, 30);
 		
-		var sampleTexture = new THREE.TextureLoader().load('/assets/images/carbon.jpg');
+		var sampleTexture = new THREE.TextureLoader().load('assets/images/carbon.jpg');
 		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
+		var noiseTexture = new THREE.TextureLoader().load('assets/images/cloud.png');
 		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
 		var customUniforms = {
@@ -2340,7 +2340,7 @@ class Carbon extends Atom{
 			uniforms: customUniforms,
 			vertexShader: document.getElementById('vertexShader').textContent,
 			fragmentShader: document.getElementById('fragmentShader').textContent,
-			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+			// map: THREE.ImageUtils.loadTexture('assets/images/carbon.jpg')
 		});
 
 		mesh = new THREE.Mesh(geom, mat);
@@ -2362,10 +2362,10 @@ class Carbon extends Atom{
 class CarbonGlobe extends Item{
 	constructor(radius, x, y, z){
 		var mesh, geom, mat;
-		var sampleTexture = new THREE.TextureLoader().load('/assets/images/carbon.jpg');
+		var sampleTexture = new THREE.TextureLoader().load('assets/images/carbon.jpg');
 		sampleTexture.wrapS = sampleTexture.wrapT = THREE.RepeatWrapping;
 
-		var noiseTexture = new THREE.TextureLoader().load('/assets/images/cloud.png');
+		var noiseTexture = new THREE.TextureLoader().load('assets/images/cloud.png');
 		noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
 		var customUniforms = {
@@ -2381,7 +2381,7 @@ class CarbonGlobe extends Item{
 			uniforms: customUniforms,
 			vertexShader: document.getElementById('vertexShader').textContent,
 			fragmentShader: document.getElementById('fragmentShader').textContent,
-			// map: THREE.ImageUtils.loadTexture('/assets/images/carbon.jpg')
+			// map: THREE.ImageUtils.loadTexture('assets/images/carbon.jpg')
 		});
 
 		// mat = new THREE.MeshBasicMaterial({color: COLORS.Blue});
