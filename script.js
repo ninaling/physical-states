@@ -455,7 +455,7 @@ class WORLD{
 	      geometry = new THREE.TextGeometry('STATES', {
 	        font: font,
 	        size: 1,
-	        height: .05,
+	        height: .07,
 	        curveSegments:12,
 	        bevelThickness: 0,
 	        bevelSize: .005,
