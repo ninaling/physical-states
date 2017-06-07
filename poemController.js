@@ -55,7 +55,7 @@ function doSetTimeout(time, mode) {
 				audio.autoplay = true;
 				audio.volume = .5;
 				started = false;
-			}, 1000);
+			}, 3000);
 			return;
 		}
 		distortTitleBackground();//need to change function to distort any background, not just title
